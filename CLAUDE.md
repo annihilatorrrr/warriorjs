@@ -32,7 +32,7 @@ pnpm monorepo with Turborepo. Code is organized into three top-level directories
 
 Dependency flow: spatial → abilities → units → towers, spatial → core → scoring → cli.
 
-Each package compiles with `tsc` to `lib/`.
+Each package compiles with `tsc` to `dist/`.
 
 ## Conventions
 

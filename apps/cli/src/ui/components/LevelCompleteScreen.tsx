@@ -48,7 +48,7 @@ export default function LevelCompleteScreen({
 
   return (
     <PlayLayout
-      events={levelRun.events}
+      turns={levelRun.turns}
       warriorName={levelRun.warriorName}
       towerName={levelRun.towerName}
       levelNumber={levelRun.levelNumber}

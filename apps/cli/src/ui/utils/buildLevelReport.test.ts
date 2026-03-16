@@ -9,7 +9,7 @@ function makeEvent(score: number, floorMap: { unit?: unknown }[][] = [[]]) {
 describe('buildLevelReport', () => {
   test('returns failure result when level not passed', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, events: [] },
+      levelResult: { passed: false, turns: [] },
       levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 },
       levelNumber: 2,
       hasNextLevel: true,
@@ -34,7 +34,7 @@ describe('buildLevelReport', () => {
 
   test('returns failure result with isShowingClue when clue already requested', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, events: [] },
+      levelResult: { passed: false, turns: [] },
       levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 },
       levelNumber: 2,
       hasNextLevel: true,
@@ -49,7 +49,7 @@ describe('buildLevelReport', () => {
 
   test('returns failure result with hasClue false when no clue exists', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, events: [] },
+      levelResult: { passed: false, turns: [] },
       levelConfig: { timeBonus: 10, aceScore: 30 },
       levelNumber: 1,
       hasNextLevel: true,
@@ -65,7 +65,7 @@ describe('buildLevelReport', () => {
     const result = buildLevelReport({
       levelResult: {
         passed: true,
-        events: [[makeEvent(5), makeEvent(10)], [makeEvent(15)]],
+        turns: [[makeEvent(5), makeEvent(10)], [makeEvent(15)]],
       },
       levelConfig: { timeBonus: 10, aceScore: 30 },
       levelNumber: 3,
@@ -90,7 +90,7 @@ describe('buildLevelReport', () => {
     const result = buildLevelReport({
       levelResult: {
         passed: true,
-        events: [[makeEvent(20)]],
+        turns: [[makeEvent(20)]],
       },
       levelConfig: { timeBonus: 0, aceScore: 100 },
       levelNumber: 1,
@@ -107,7 +107,7 @@ describe('buildLevelReport', () => {
     const result = buildLevelReport({
       levelResult: {
         passed: true,
-        events: [[makeEvent(20)]],
+        turns: [[makeEvent(20)]],
       },
       levelConfig: { timeBonus: 0 },
       levelNumber: 1,
@@ -124,7 +124,7 @@ describe('buildLevelReport', () => {
     const result = buildLevelReport({
       levelResult: {
         passed: true,
-        events: [[makeEvent(10)]],
+        turns: [[makeEvent(10)]],
       },
       levelConfig: { aceScore: 100 },
       levelNumber: 1,

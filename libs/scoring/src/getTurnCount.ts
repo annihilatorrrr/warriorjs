@@ -1,11 +1,11 @@
 /**
  * Returns the number of turns played.
  *
- * @param events The events that happened during the play.
+ * @param turns The turns that happened during the play.
  * @returns The turn count.
  */
-function getTurnCount(events: unknown[][]): number {
-  return events.length;
+function getTurnCount(turns: unknown[][]): number {
+  return turns.length;
 }
 
 export default getTurnCount;

@@ -1,7 +1,7 @@
 import type Floor from './Floor.js';
 import type Unit from './Unit.js';
 
-export interface LogEvent {
+export interface TurnEvent {
   message: string;
   unit: { name: string; color: string } | null;
   floorMap: { character: string; unit?: { color: string } }[][];
@@ -10,21 +10,21 @@ export interface LogEvent {
 
 const Logger: {
   floor: Floor | null;
-  events: LogEvent[][];
-  lastTurn: LogEvent[] | null;
-  initialState: LogEvent | null;
+  turns: TurnEvent[][];
+  lastTurn: TurnEvent[] | null;
+  initialState: TurnEvent | null;
   play(floor: Floor): void;
   turn(): void;
   unit(unit: Unit, message: string): void;
 } = {
   floor: null,
-  events: [],
+  turns: [],
   lastTurn: null,
   initialState: null,
 
   play(floor: Floor) {
     Logger.floor = floor;
-    Logger.events = [];
+    Logger.turns = [];
     Logger.lastTurn = null;
     Logger.initialState = {
       message: '',
@@ -36,7 +36,7 @@ const Logger: {
 
   turn() {
     Logger.lastTurn = [];
-    Logger.events.push(Logger.lastTurn);
+    Logger.turns.push(Logger.lastTurn);
   },
 
   unit(unit: Unit, message: string) {

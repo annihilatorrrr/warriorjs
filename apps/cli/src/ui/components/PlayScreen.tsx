@@ -3,7 +3,7 @@ import type React from 'react';
 import { useMemo } from 'react';
 
 import { usePlayback } from '../hooks/usePlayback.js';
-import type { PlayEvent } from '../types.js';
+import type { TurnEvent } from '../types.js';
 import Divider from './Divider.js';
 import FloorMap from './FloorMap.js';
 import Header from './Header.js';
@@ -12,8 +12,8 @@ import Scrubber from './Scrubber.js';
 import WarriorStatus from './WarriorStatus.js';
 
 interface PlayScreenProps {
-  events: PlayEvent[][];
-  initialState: PlayEvent;
+  turns: TurnEvent[][];
+  initialState: TurnEvent;
   warriorName: string;
   towerName: string;
   levelNumber: number;
@@ -24,7 +24,7 @@ interface PlayScreenProps {
 }
 
 export default function PlayScreen({
-  events,
+  turns,
   initialState,
   warriorName,
   towerName,
@@ -34,9 +34,9 @@ export default function PlayScreen({
   reviewMode,
   onPlaybackComplete,
 }: PlayScreenProps): React.ReactElement {
-  const eventsWithInitial = useMemo(() => [[initialState], ...events], [initialState, events]);
-  const { state } = usePlayback(eventsWithInitial.length, onPlaybackComplete, reviewMode);
-  const currentTurnEvents = eventsWithInitial[state.currentTurn];
+  const turnsWithInitial = useMemo(() => [[initialState], ...turns], [initialState, turns]);
+  const { state } = usePlayback(turnsWithInitial.length, onPlaybackComplete, reviewMode);
+  const currentTurnEvents = turnsWithInitial[state.currentTurn];
   const lastEvent = currentTurnEvents?.[currentTurnEvents.length - 1];
 
   return (
@@ -61,12 +61,12 @@ export default function PlayScreen({
       </Box>
       <Divider />
       <Box flexDirection="column" height={10}>
-        <LogArea events={eventsWithInitial} currentTurn={state.currentTurn} />
+        <LogArea turns={turnsWithInitial} currentTurn={state.currentTurn} />
       </Box>
       <Divider />
       <Scrubber
         currentTurn={state.currentTurn}
-        totalTurns={eventsWithInitial.length}
+        totalTurns={turnsWithInitial.length}
         speed={state.speed}
         mode={state.mode}
         isPlaying={state.isPlaying}

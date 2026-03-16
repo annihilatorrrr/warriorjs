@@ -11,7 +11,7 @@ export interface LevelConfig {
   floor: { warrior: { maxHealth: number } };
 }
 
-export interface PlayEvent {
+export interface TurnEvent {
   message: string;
   unit: { name: string; color: string } | null;
   floorMap: { character: string; unit?: { color: string } }[][];
@@ -20,13 +20,13 @@ export interface PlayEvent {
 
 export interface LevelResult {
   passed: boolean;
-  events: PlayEvent[][];
-  initialState: PlayEvent;
+  turns: TurnEvent[][];
+  initialState: TurnEvent;
 }
 
 export interface LevelRun {
-  events: PlayEvent[][];
-  initialState: PlayEvent;
+  turns: TurnEvent[][];
+  initialState: TurnEvent;
   warriorName: string;
   towerName: string;
   levelNumber: number;

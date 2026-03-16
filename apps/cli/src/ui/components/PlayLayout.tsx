@@ -1,13 +1,13 @@
 import { Box } from 'ink';
 import type React from 'react';
 
-import type { PlayEvent } from '../types.js';
+import type { TurnEvent } from '../types.js';
 import Divider from './Divider.js';
 import FloorMap from './FloorMap.js';
 import Header from './Header.js';
 
 interface PlayLayoutProps {
-  events: PlayEvent[][];
+  turns: TurnEvent[][];
   warriorName: string;
   towerName: string;
   levelNumber: number;
@@ -16,14 +16,14 @@ interface PlayLayoutProps {
 }
 
 export default function PlayLayout({
-  events,
+  turns,
   warriorName,
   towerName,
   levelNumber,
   totalScore,
   children,
 }: PlayLayoutProps): React.ReactElement {
-  const lastTurnEvents = events[events.length - 1];
+  const lastTurnEvents = turns[turns.length - 1];
   const lastEvent = lastTurnEvents?.[lastTurnEvents.length - 1];
 
   return (

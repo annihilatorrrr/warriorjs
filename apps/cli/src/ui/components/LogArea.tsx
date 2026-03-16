@@ -2,10 +2,10 @@ import { Box, Text } from 'ink';
 import type React from 'react';
 import { useMemo } from 'react';
 
-import type { PlayEvent } from '../types.js';
+import type { TurnEvent } from '../types.js';
 
 interface LogAreaProps {
-  events: PlayEvent[][];
+  turns: TurnEvent[][];
   currentTurn: number;
   maxLines?: number;
 }
@@ -13,12 +13,12 @@ interface LogAreaProps {
 interface LogLine {
   type: 'turn' | 'event';
   turnNumber: number;
-  event?: PlayEvent;
+  event?: TurnEvent;
 }
 
-function buildUnitColorMap(events: PlayEvent[][]): Map<string, string> {
+function buildUnitColorMap(turns: TurnEvent[][]): Map<string, string> {
   const map = new Map<string, string>();
-  for (const turn of events) {
+  for (const turn of turns) {
     for (const event of turn) {
       if (event.unit) {
         map.set(event.unit.name, event.unit.color);
@@ -69,17 +69,17 @@ function colorizeMessage(
 }
 
 export default function LogArea({
-  events,
+  turns,
   currentTurn,
   maxLines = 10,
 }: LogAreaProps): React.ReactElement {
-  const unitColors = useMemo(() => buildUnitColorMap(events), [events]);
+  const unitColors = useMemo(() => buildUnitColorMap(turns), [turns]);
   const colorizeRegex = useMemo(() => buildColorizeRegex(unitColors), [unitColors]);
 
   // Build a flat list of lines (turn headers + events), newest first.
   const visibleLines = useMemo(() => {
     const lines: LogLine[] = [];
-    const visibleTurns = events.slice(0, currentTurn + 1);
+    const visibleTurns = turns.slice(0, currentTurn + 1);
 
     for (let i = visibleTurns.length - 1; i >= 0; i--) {
       const turnEvents = visibleTurns[i]!;
@@ -95,7 +95,7 @@ export default function LogArea({
     }
 
     return lines.slice(0, maxLines);
-  }, [events, currentTurn, maxLines]);
+  }, [turns, currentTurn, maxLines]);
 
   return (
     <Box flexDirection="column">

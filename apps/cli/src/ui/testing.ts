@@ -2,7 +2,7 @@ import type { LevelReport, LevelRun } from './types.js';
 
 export function makeLevelRun(overrides: Partial<LevelRun> = {}): LevelRun {
   return {
-    events: [
+    turns: [
       [
         {
           message: 'test',

@@ -4,7 +4,7 @@ import { describe, expect, test } from 'vitest';
 import LogArea from './LogArea.js';
 
 describe('LogArea', () => {
-  const events = [
+  const turns = [
     [
       {
         message: '',
@@ -38,7 +38,7 @@ describe('LogArea', () => {
   ];
 
   test('renders log messages up to current turn', () => {
-    const { lastFrame } = render(<LogArea events={events} currentTurn={2} />);
+    const { lastFrame } = render(<LogArea turns={turns} currentTurn={2} />);
     const output = lastFrame()!;
     expect(output).toContain('Turn 2');
     expect(output).toContain('attacks forward');
@@ -48,7 +48,7 @@ describe('LogArea', () => {
   });
 
   test('truncates to maxLines', () => {
-    const { lastFrame } = render(<LogArea events={events} currentTurn={2} maxLines={3} />);
+    const { lastFrame } = render(<LogArea turns={turns} currentTurn={2} maxLines={3} />);
     const output = lastFrame()!;
     expect(output).toContain('Turn 2');
     expect(output).toContain('attacks forward');
@@ -57,13 +57,13 @@ describe('LogArea', () => {
   });
 
   test('shows nothing on turn zero', () => {
-    const { lastFrame } = render(<LogArea events={events} currentTurn={0} />);
+    const { lastFrame } = render(<LogArea turns={turns} currentTurn={0} />);
     const output = lastFrame()!;
     expect(output).not.toContain('Turn');
   });
 
   test('shows only turns up to currentTurn', () => {
-    const { lastFrame } = render(<LogArea events={events} currentTurn={1} />);
+    const { lastFrame } = render(<LogArea turns={turns} currentTurn={1} />);
     const output = lastFrame()!;
     expect(output).toContain('Turn 1');
     expect(output).toContain('walks forward');

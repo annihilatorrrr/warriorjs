@@ -88,7 +88,7 @@ const defaultLevelConfig: LevelConfig = {
 
 const defaultLevelResult: LevelResult = {
   passed: true,
-  events: [
+  turns: [
     [
       {
         message: 'walks forward',

@@ -15,7 +15,7 @@ describe('PlayScreen', () => {
     warriorStatus: { health: 20, score: 0 },
   };
 
-  const events = [
+  const turns = [
     [
       {
         message: 'walks forward',
@@ -33,7 +33,7 @@ describe('PlayScreen', () => {
   test('renders initial state on turn zero', () => {
     const { lastFrame } = render(
       <PlayScreen
-        events={events}
+        turns={turns}
         initialState={initialState}
         warriorName="Olric"
         towerName="The Narrow Path"

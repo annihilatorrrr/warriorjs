@@ -6,6 +6,6 @@ vi.mock('./getLastEvent.js');
 
 test('returns the score of the warrior at the end of the play', () => {
   vi.mocked(getLastEvent).mockReturnValue({ warriorStatus: { score: 42 } });
-  expect(getWarriorScore([['events']] as unknown[][])).toBe(42);
-  expect(getLastEvent).toHaveBeenCalledWith([['events']]);
+  expect(getWarriorScore([['turn-events']] as unknown[][])).toBe(42);
+  expect(getLastEvent).toHaveBeenCalledWith([['turn-events']]);
 });

@@ -2,10 +2,10 @@ import { Text } from 'ink';
 import { render } from 'ink-testing-library';
 import { describe, expect, test } from 'vitest';
 
-import type { PlayEvent } from '../types.js';
+import type { TurnEvent } from '../types.js';
 import PlayLayout from './PlayLayout.js';
 
-function makeEvent(overrides: Partial<PlayEvent> = {}): PlayEvent {
+function makeEvent(overrides: Partial<TurnEvent> = {}): TurnEvent {
   return {
     message: 'test',
     unit: null,
@@ -17,10 +17,10 @@ function makeEvent(overrides: Partial<PlayEvent> = {}): PlayEvent {
 
 describe('PlayLayout', () => {
   test('renders header, floor map, divider, and children', () => {
-    const events = [[makeEvent()]];
+    const turns = [[makeEvent()]];
     const { lastFrame } = render(
       <PlayLayout
-        events={events}
+        turns={turns}
         warriorName="Olric"
         towerName="The Narrow Path"
         levelNumber={3}
@@ -38,10 +38,10 @@ describe('PlayLayout', () => {
     expect(output).toContain('─');
   });
 
-  test('renders without floor map when events are empty', () => {
+  test('renders without floor map when turns are empty', () => {
     const { lastFrame } = render(
       <PlayLayout
-        events={[]}
+        turns={[]}
         warriorName="Olric"
         towerName="The Narrow Path"
         levelNumber={1}

@@ -3,12 +3,12 @@ import getTurnCount from './getTurnCount.js';
 /**
  * Returns the remaining time bonus.
  *
- * @param events The events that happened during the play.
+ * @param turns The turns that happened during the play.
  * @param timeBonus The initial time bonus.
  * @returns The time bonus.
  */
-function getRemainingTimeBonus(events: unknown[][], timeBonus: number): number {
-  const turnCount = getTurnCount(events);
+function getRemainingTimeBonus(turns: unknown[][], timeBonus: number): number {
+  const turnCount = getTurnCount(turns);
   const remainingTimeBonus = timeBonus - turnCount;
   return Math.max(remainingTimeBonus, 0);
 }

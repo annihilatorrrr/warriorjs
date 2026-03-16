@@ -6,12 +6,12 @@ vi.mock('./getTurnCount.js');
 
 test('subtracts the number of turns played from the initial time bonus', () => {
   vi.mocked(getTurnCount).mockReturnValue(3);
-  expect(getRemainingTimeBonus([['events']] as unknown[][], 10)).toBe(7);
-  expect(getTurnCount).toHaveBeenCalledWith([['events']]);
+  expect(getRemainingTimeBonus([['turn-events']] as unknown[][], 10)).toBe(7);
+  expect(getTurnCount).toHaveBeenCalledWith([['turn-events']]);
 });
 
 test("doesn't go below zero", () => {
   vi.mocked(getTurnCount).mockReturnValue(11);
-  expect(getRemainingTimeBonus([['events']] as unknown[][], 10)).toBe(0);
-  expect(getTurnCount).toHaveBeenCalledWith([['events']]);
+  expect(getRemainingTimeBonus([['turn-events']] as unknown[][], 10)).toBe(0);
+  expect(getTurnCount).toHaveBeenCalledWith([['turn-events']]);
 });

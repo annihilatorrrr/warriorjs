@@ -4,7 +4,7 @@ import getWarriorScore from './getWarriorScore.js';
 
 interface LevelResult {
   passed: boolean;
-  events: unknown[][];
+  turns: unknown[][];
 }
 
 interface LevelConfig {
@@ -25,16 +25,16 @@ interface LevelScore {
  * @returns The score of the level, broken down into its components.
  */
 function getLevelScore(
-  { passed, events }: LevelResult,
+  { passed, turns }: LevelResult,
   { timeBonus }: LevelConfig,
 ): LevelScore | null {
   if (!passed) {
     return null;
   }
 
-  const warriorScore = getWarriorScore(events);
-  const remainingTimeBonus = getRemainingTimeBonus(events, timeBonus);
-  const clearBonus = getClearBonus(events, warriorScore, remainingTimeBonus);
+  const warriorScore = getWarriorScore(turns);
+  const remainingTimeBonus = getRemainingTimeBonus(turns, timeBonus);
+  const clearBonus = getClearBonus(turns, warriorScore, remainingTimeBonus);
   return {
     clearBonus,
     timeBonus: remainingTimeBonus,

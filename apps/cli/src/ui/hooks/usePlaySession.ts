@@ -57,7 +57,7 @@ function executeLevel(profile: Profile, levelNumber: number, context: GameContex
     const levelResult = rawResult as LevelResult;
 
     const levelRun: LevelRun = {
-      events: levelResult.events,
+      turns: levelResult.turns,
       initialState: levelResult.initialState,
       warriorName,
       towerName: tower.name,

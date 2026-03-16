@@ -4,13 +4,13 @@ import isFloorClear from './isFloorClear.js';
 /**
  * Returns the bonus for clearing the level.
  *
- * @param events The events that happened during the play.
+ * @param turns The turns that happened during the play.
  * @param warriorScore The score of the warrior.
  * @param timeBonus The time bonus.
  * @returns The clear bonus.
  */
-function getClearBonus(events: unknown[][], warriorScore: number, timeBonus: number): number {
-  const lastEvent = getLastEvent(events);
+function getClearBonus(turns: unknown[][], warriorScore: number, timeBonus: number): number {
+  const lastEvent = getLastEvent(turns);
   if (!isFloorClear(lastEvent.floorMap as { unit?: unknown }[][])) {
     return 0;
   }

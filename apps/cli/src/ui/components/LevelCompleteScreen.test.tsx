@@ -1,10 +1,8 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
-import { makeLevelReport, makeLevelRun } from '../testing.js';
+import { waitForRender, makeLevelReport, makeLevelRun } from '../testing.js';
 import LevelCompleteScreen from './LevelCompleteScreen.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 describe('LevelCompleteScreen', () => {
   test('shows passed menu with Next level when hasNextLevel', () => {
@@ -135,7 +133,7 @@ describe('LevelCompleteScreen', () => {
       />,
     );
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     expect(onSelect).toHaveBeenCalledWith('next-level');
   });
 });

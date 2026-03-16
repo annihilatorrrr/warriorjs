@@ -1,9 +1,8 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
+import { waitForRender } from '../testing.js';
 import SelectPrompt from './SelectPrompt.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 const items = [
   { label: 'Option A', value: 'a' },
@@ -40,7 +39,7 @@ describe('SelectPrompt', () => {
     const onSelect = vi.fn();
     const { stdin } = render(<SelectPrompt message="Pick:" items={items} onSelect={onSelect} />);
     stdin.write('\x1B[B'); // down arrow
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSelect).toHaveBeenCalledWith('b');
   });
@@ -49,7 +48,7 @@ describe('SelectPrompt', () => {
     const onSelect = vi.fn();
     const { stdin } = render(<SelectPrompt message="Pick:" items={items} onSelect={onSelect} />);
     stdin.write('\x1B[A'); // up arrow wraps to last
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSelect).toHaveBeenCalledWith('c');
   });
@@ -59,7 +58,7 @@ describe('SelectPrompt', () => {
       <SelectPrompt message="Pick:" items={items} onSelect={vi.fn()} />,
     );
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     const output = lastFrame()!;
     expect(output).toContain('Pick:');
     expect(output).toContain('Option A');
@@ -71,7 +70,7 @@ describe('SelectPrompt', () => {
       <SelectPrompt message="" items={items} onSelect={vi.fn()} />,
     );
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     const output = lastFrame()!;
     expect(output).toContain('Option A');
   });
@@ -82,7 +81,7 @@ describe('SelectPrompt', () => {
       <SelectPrompt message="Pick:" items={items} onSelect={vi.fn()} onCancel={onCancel} />,
     );
     stdin.write('\x1B');
-    await delay();
+    await waitForRender();
     expect(onCancel).toHaveBeenCalled();
   });
 
@@ -112,9 +111,9 @@ describe('SelectPrompt', () => {
     const onSelect = vi.fn();
     const { stdin } = render(<SelectPrompt message="Pick:" items={items} onSelect={onSelect} />);
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     stdin.write('\x1B[B');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSelect).toHaveBeenCalledTimes(1);
   });

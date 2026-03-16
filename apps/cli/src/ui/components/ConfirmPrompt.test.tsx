@@ -1,9 +1,8 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
+import { waitForRender } from '../testing.js';
 import ConfirmPrompt from './ConfirmPrompt.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 describe('ConfirmPrompt', () => {
   test('renders message with y/N hint by default', () => {
@@ -46,7 +45,7 @@ describe('ConfirmPrompt', () => {
   test('shows Yes in submitted state', async () => {
     const { stdin, lastFrame } = render(<ConfirmPrompt message="Continue?" onConfirm={vi.fn()} />);
     stdin.write('y');
-    await delay();
+    await waitForRender();
     const output = lastFrame()!;
     expect(output).toContain('Continue?');
     expect(output).toContain('Yes');
@@ -55,7 +54,7 @@ describe('ConfirmPrompt', () => {
   test('shows No in submitted state', async () => {
     const { stdin, lastFrame } = render(<ConfirmPrompt message="Continue?" onConfirm={vi.fn()} />);
     stdin.write('n');
-    await delay();
+    await waitForRender();
     const output = lastFrame()!;
     expect(output).toContain('No');
   });
@@ -64,7 +63,7 @@ describe('ConfirmPrompt', () => {
     const onConfirm = vi.fn();
     const { stdin } = render(<ConfirmPrompt message="Continue?" onConfirm={onConfirm} />);
     stdin.write('y');
-    await delay();
+    await waitForRender();
     stdin.write('n');
     expect(onConfirm).toHaveBeenCalledTimes(1);
   });

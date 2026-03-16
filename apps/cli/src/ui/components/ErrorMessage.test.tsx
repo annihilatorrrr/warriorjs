@@ -1,9 +1,8 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
+import { waitForRender } from '../testing.js';
 import ErrorMessage from './ErrorMessage.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 describe('ErrorMessage', () => {
   test('renders error message in output', () => {
@@ -25,7 +24,7 @@ describe('ErrorMessage', () => {
   test('renders null after dismissal', async () => {
     const { stdin, lastFrame } = render(<ErrorMessage message="Error" onDismiss={vi.fn()} />);
     stdin.write('x');
-    await delay();
+    await waitForRender();
     expect(lastFrame()!).toBe('');
   });
 
@@ -33,7 +32,7 @@ describe('ErrorMessage', () => {
     const onDismiss = vi.fn();
     const { stdin } = render(<ErrorMessage message="Error" onDismiss={onDismiss} />);
     stdin.write('x');
-    await delay();
+    await waitForRender();
     stdin.write('y');
     expect(onDismiss).toHaveBeenCalledTimes(1);
   });
@@ -48,7 +47,7 @@ describe('ErrorMessage', () => {
   test('does not respond to key presses when onDismiss is not provided', async () => {
     const { stdin, lastFrame } = render(<ErrorMessage message="Fatal error" />);
     stdin.write('x');
-    await delay();
+    await waitForRender();
     expect(lastFrame()!).toContain('Fatal error');
   });
 });

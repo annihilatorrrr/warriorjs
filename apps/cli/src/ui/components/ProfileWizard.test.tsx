@@ -4,9 +4,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import type Tower from '../../Tower.js';
+import { waitForRender } from '../testing.js';
 import ProfileWizard from './ProfileWizard.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 function createMockTower(name: string): Tower {
   return {
@@ -91,9 +90,9 @@ describe('ProfileWizard', () => {
       );
 
       // First item is selected by default, press enter.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       expect(lastFrame()!).toContain('Warrior1 - Tower1');
       expect(onComplete).toHaveBeenCalledWith(profile);
@@ -115,11 +114,11 @@ describe('ProfileWizard', () => {
       );
 
       // Move down past the profile and separator to "New profile".
-      await delay();
+      await waitForRender();
       stdin.write('\x1B[B');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Enter one for your warrior');
@@ -160,11 +159,11 @@ describe('ProfileWizard', () => {
         />,
       );
 
-      await delay();
+      await waitForRender();
       stdin.write('Braveheart');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose your language');
@@ -185,9 +184,9 @@ describe('ProfileWizard', () => {
         />,
       );
 
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose your language');
@@ -208,9 +207,9 @@ describe('ProfileWizard', () => {
         />,
       );
 
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('A warrior without a name is just a shadow');
@@ -230,9 +229,9 @@ describe('ProfileWizard', () => {
         />,
       );
 
-      await delay();
+      await waitForRender();
       stdin.write('\x1B');
-      await delay();
+      await waitForRender();
 
       expect(onCancel).toHaveBeenCalled();
     });
@@ -253,18 +252,18 @@ describe('ProfileWizard', () => {
       );
 
       // Navigate to "New profile" and select it.
-      await delay();
+      await waitForRender();
       stdin.write('\x1B[B');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Verify we transitioned to name step (history entry for the selection was added).
       expect(lastFrame()!).toContain('Enter one for your warrior');
 
       // Now we should be on the name step, press escape to go back.
       stdin.write('\x1B');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Which warrior answers the call?');
@@ -287,15 +286,15 @@ describe('ProfileWizard', () => {
       );
 
       // Submit empty name to trigger error.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       expect(lastFrame()!).toContain('A warrior without a name is just a shadow');
 
       // Press any key to dismiss.
       stdin.write(' ');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Enter one for your warrior');
@@ -318,9 +317,9 @@ describe('ProfileWizard', () => {
       );
 
       // Submit default name.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose your language');
@@ -343,13 +342,13 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Select TypeScript (default).
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose a tower');
@@ -371,15 +370,15 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Move to JavaScript and select.
       stdin.write('\x1B[B');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose a tower');
@@ -401,16 +400,16 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Verify history entry was added.
       expect(lastFrame()!).toContain('Hero');
 
       // Escape from language.
       stdin.write('\x1B');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Enter one for your warrior');
@@ -435,11 +434,11 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, then select language.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose a tower');
@@ -468,13 +467,13 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, select language, select tower.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       expect(context.onCreateProfile).toHaveBeenCalledWith('Hero', 'typescript', tower);
       expect(context.onIsExistingProfile).toHaveBeenCalledWith(mockProfile);
@@ -503,13 +502,13 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, select language, select tower.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('already climbing');
@@ -533,18 +532,18 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, select language.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Verify history entries exist.
       expect(lastFrame()!).toContain('TypeScript');
 
       // Escape from tower.
       stdin.write('\x1B');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose your language');
@@ -565,19 +564,19 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Select JavaScript (index ).
       stdin.write('\x1B[B');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Escape from tower to go back to language.
       stdin.write('\x1B');
-      await delay();
+      await waitForRender();
 
       const output = lastFrame()!;
       expect(output).toContain('Choose your language');
@@ -608,17 +607,17 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, select language, select tower.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Confirm replace with 'y'.
       stdin.write('y');
-      await delay();
+      await waitForRender();
 
       expect(context.onCreateProfile).toHaveBeenCalledTimes(2);
       expect(onComplete).toHaveBeenCalledWith(mockProfile);
@@ -645,17 +644,17 @@ describe('ProfileWizard', () => {
       );
 
       // Submit name, select language, select tower.
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Decline replace with 'n'.
       stdin.write('n');
-      await delay();
+      await waitForRender();
 
       expect(onComplete).not.toHaveBeenCalled();
       expect(onError).toHaveBeenCalledWith('Unable to continue without a profile.');
@@ -684,19 +683,19 @@ describe('ProfileWizard', () => {
       );
 
       // Type name.
-      await delay();
+      await waitForRender();
       stdin.write('Braveheart');
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Select TypeScript.
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       // Select tower.
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       expect(context.onCreateProfile).toHaveBeenCalledWith('Braveheart', 'typescript', tower);
       expect(mockProfile.makeProfileDirectory).toHaveBeenCalled();
@@ -723,9 +722,9 @@ describe('ProfileWizard', () => {
         />,
       );
 
-      await delay();
+      await waitForRender();
       stdin.write('\r');
-      await delay();
+      await waitForRender();
 
       expect(onComplete).toHaveBeenCalledWith(profile);
       // Verify history entry is rendered.

@@ -1,5 +1,15 @@
 import type { LevelReport, LevelRun } from './types.js';
 
+export const waitForRender = () => new Promise((resolve) => setTimeout(resolve, 50));
+
+/** Returns the last non-empty frame (exit() can write an empty frame after unmount). */
+export function getLastContentFrame(frames: string[]): string {
+  for (let i = frames.length - 1; i >= 0; i--) {
+    if (frames[i]!.trim()) return frames[i]!;
+  }
+  return '';
+}
+
 export function makeLevelRun(overrides: Partial<LevelRun> = {}): LevelRun {
   return {
     turns: [

@@ -4,13 +4,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import type Tower from '../../Tower.js';
+import { getLastContentFrame, waitForRender } from '../testing.js';
 import GameMenu from './GameMenu.js';
 
 vi.mock('../../utils/getWarriorNameSuggestions.js', () => ({
   default: () => ['TestHero'],
 }));
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 function createMockTower(name: string, overrides: Partial<Tower> = {}): Tower {
   return {
@@ -75,10 +74,10 @@ describe('GameMenu', () => {
       needsProfileSetup: false,
     });
 
-    const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    const { frames } = render(<GameMenu context={context} onStart={onStart} />);
+    await waitForRender();
 
-    const output = lastFrame()!;
+    const output = getLastContentFrame(frames);
     expect(output).toContain('Tower not found');
     expect(onStart).not.toHaveBeenCalled();
   });
@@ -91,7 +90,7 @@ describe('GameMenu', () => {
     });
 
     render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     expect(context.onProfileSelected).toHaveBeenCalledWith(profile);
     expect(onStart).toHaveBeenCalledWith(profile, 3);
@@ -104,10 +103,10 @@ describe('GameMenu', () => {
       needsProfileSetup: false,
     });
 
-    const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    const { frames } = render(<GameMenu context={context} onStart={onStart} />);
+    await waitForRender();
 
-    const output = lastFrame()!;
+    const output = getLastContentFrame(frames);
     expect(output).toContain('Level 1 is ready');
     expect(output).toContain('README.md');
     expect(context.onPrepareNextLevel).toHaveBeenCalled();
@@ -118,7 +117,7 @@ describe('GameMenu', () => {
     const context = createMockContext({ needsProfileSetup: true, profiles: [] });
 
     const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     const output = lastFrame()!;
     expect(output).toContain('A tower of enemies awaits');
@@ -130,11 +129,11 @@ describe('GameMenu', () => {
     const context = createMockContext({ needsProfileSetup: true, profiles: [] });
 
     const { stdin, lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     // Select "Venture forth" (first item, press enter).
     stdin.write('\r');
-    await delay();
+    await waitForRender();
 
     const output = lastFrame()!;
     expect(output).toContain('Venture forth');
@@ -144,16 +143,16 @@ describe('GameMenu', () => {
   test('selecting "Retreat" shows exit message', async () => {
     const context = createMockContext({ needsProfileSetup: true, profiles: [] });
 
-    const { stdin, lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    const { stdin, frames } = render(<GameMenu context={context} onStart={onStart} />);
+    await waitForRender();
 
     // Move down to "Retreat" and select.
     stdin.write('\x1B[B');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
-    await delay();
+    await waitForRender();
 
-    const output = lastFrame()!;
+    const output = getLastContentFrame(frames);
     expect(output).toContain('Even the bravest need a moment to prepare');
   });
 
@@ -165,7 +164,7 @@ describe('GameMenu', () => {
     });
 
     const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     const output = lastFrame()!;
     expect(output).toContain('Which warrior answers the call?');
@@ -180,10 +179,10 @@ describe('GameMenu', () => {
       practiceLevel: 1,
     });
 
-    const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    const { frames } = render(<GameMenu context={context} onStart={onStart} />);
+    await waitForRender();
 
-    const output = lastFrame()!;
+    const output = getLastContentFrame(frames);
     expect(output).toContain('The -l option is only available in epic mode');
     expect(onStart).not.toHaveBeenCalled();
   });
@@ -199,7 +198,7 @@ describe('GameMenu', () => {
     });
 
     render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     expect(onStart).toHaveBeenCalledWith(profile, 1);
   });
@@ -216,7 +215,7 @@ describe('GameMenu', () => {
     });
 
     render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    await waitForRender();
 
     expect(onStart).toHaveBeenCalledWith(profile, 2);
   });
@@ -237,10 +236,10 @@ describe('GameMenu', () => {
       practiceLevel: 10,
     });
 
-    const { lastFrame } = render(<GameMenu context={context} onStart={onStart} />);
-    await delay();
+    const { frames } = render(<GameMenu context={context} onStart={onStart} />);
+    await waitForRender();
 
-    const output = lastFrame()!;
+    const output = getLastContentFrame(frames);
     expect(output).toContain("Level 10 doesn't exist");
     expect(output).toContain('3 levels');
     expect(onStart).not.toHaveBeenCalled();

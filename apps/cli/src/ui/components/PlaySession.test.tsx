@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from 'vitest';
 import type { GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import { usePlaySession } from '../hooks/usePlaySession.js';
-import { makeLevelReport, makeLevelRun } from '../testing.js';
+import { getLastContentFrame, makeLevelReport, makeLevelRun, waitForRender } from '../testing.js';
 import type { PlaySessionState } from '../types.js';
 import PlaySession from './PlaySession.js';
 
@@ -13,8 +13,6 @@ vi.mock('../hooks/usePlaySession.js', () => ({
 }));
 
 const mockUsePlaySession = vi.mocked(usePlaySession);
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 const mockContext = {} as GameContext;
 const mockProfile = {
@@ -112,11 +110,11 @@ describe('PlaySession', () => {
       handleLevelCompleteChoice: vi.fn(),
     });
 
-    const { lastFrame } = render(
+    const { frames } = render(
       <PlaySession context={mockContext} profile={mockProfile} initialLevel={1} />,
     );
-    await delay();
-    const output = lastFrame()!;
+    await waitForRender();
+    const output = getLastContentFrame(frames);
     expect(output).toContain('path/to/README');
     expect(output).toContain('instructions');
   });

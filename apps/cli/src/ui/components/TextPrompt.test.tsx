@@ -1,9 +1,8 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
+import { waitForRender } from '../testing.js';
 import TextPrompt from './TextPrompt.js';
-
-const delay = () => new Promise((resolve) => setTimeout(resolve, 10));
 
 describe('TextPrompt', () => {
   test('renders message', () => {
@@ -22,7 +21,7 @@ describe('TextPrompt', () => {
     const onSubmit = vi.fn();
     const { stdin } = render(<TextPrompt message="Name:" onSubmit={onSubmit} />);
     stdin.write('Corwin');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSubmit).toHaveBeenCalledWith('Corwin');
   });
@@ -40,9 +39,9 @@ describe('TextPrompt', () => {
     const onSubmit = vi.fn();
     const { stdin } = render(<TextPrompt message="Name:" onSubmit={onSubmit} />);
     stdin.write('abc');
-    await delay();
+    await waitForRender();
     stdin.write('\x7F'); // backspace
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSubmit).toHaveBeenCalledWith('ab');
   });
@@ -50,9 +49,9 @@ describe('TextPrompt', () => {
   test('shows submitted state', async () => {
     const { stdin, lastFrame } = render(<TextPrompt message="Name:" onSubmit={vi.fn()} />);
     stdin.write('Corwin');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     const output = lastFrame()!;
     expect(output).toContain('Name:');
     expect(output).toContain('Corwin');
@@ -62,7 +61,7 @@ describe('TextPrompt', () => {
     const onCancel = vi.fn();
     const { stdin } = render(<TextPrompt message="Name:" onSubmit={vi.fn()} onCancel={onCancel} />);
     stdin.write('\x1B');
-    await delay();
+    await waitForRender();
     expect(onCancel).toHaveBeenCalled();
   });
 
@@ -70,11 +69,11 @@ describe('TextPrompt', () => {
     const onSubmit = vi.fn();
     const { stdin } = render(<TextPrompt message="Name:" onSubmit={onSubmit} />);
     stdin.write('a');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
-    await delay();
+    await waitForRender();
     stdin.write('b');
-    await delay();
+    await waitForRender();
     stdin.write('\r');
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });

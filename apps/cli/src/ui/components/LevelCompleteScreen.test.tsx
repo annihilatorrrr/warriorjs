@@ -1,7 +1,7 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
-import { waitForRender, makeLevelReport, makeLevelRun } from '../testing.js';
+import { makeLevelReport, makeLevelRun, waitForRender } from '../testing.js';
 import LevelCompleteScreen from './LevelCompleteScreen.js';
 
 describe('LevelCompleteScreen', () => {

@@ -46,6 +46,6 @@
     }
   },
   "files": {
-    "includes": ["libs/**", "!**/dist", "!**/templates"]
+    "includes": ["apps/**", "libs/**", "towers/**", "!apps/website", "!**/dist"]
   }
 }

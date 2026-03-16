@@ -103,7 +103,7 @@ class Unit {
     const revisedAmount =
       this.health + amount > this.maxHealth ? this.maxHealth - this.health : amount;
     this.health += revisedAmount;
-    this.log(`recovers ${amount} health, up to ${this.health} health`);
+    this.log(`recovers ${amount} HP, up to ${this.health} HP`);
   }
 
   takeDamage(amount: number): void {
@@ -113,7 +113,7 @@ class Unit {
 
     const revisedAmount = this.health - amount < 0 ? this.health : amount;
     this.health -= revisedAmount;
-    this.log(`takes ${amount} damage, ${this.health} health power left`);
+    this.log(`takes ${amount} damage, ${this.health} HP left`);
 
     if (this.health === 0) {
       this.vanish();

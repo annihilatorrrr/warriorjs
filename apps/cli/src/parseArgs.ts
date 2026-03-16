@@ -4,13 +4,9 @@ interface ParsedArgs {
   directory: string;
   level: number | undefined;
   silent: boolean;
-  time: number;
-  yes: boolean;
   d: string;
   l: number | undefined;
   s: boolean;
-  t: number;
-  y: boolean;
   [key: string]: unknown;
 }
 
@@ -41,26 +37,6 @@ function parseArgs(args: string[]): ParsedArgs {
         alias: 'silent',
         default: false,
         describe: 'Suppress play log',
-        type: 'boolean' as const,
-      },
-      t: {
-        alias: 'time',
-        coerce: (arg: string) => {
-          const parsed = Number.parseFloat(arg);
-          if (Number.isNaN(parsed)) {
-            throw new Error('Invalid argument: time must be a number');
-          }
-
-          return parsed;
-        },
-        default: 0.6,
-        describe: 'Delay each turn by seconds',
-        type: 'number' as const,
-      },
-      y: {
-        alias: 'yes',
-        default: false,
-        describe: 'Assume yes in non-destructive confirmation dialogs',
         type: 'boolean' as const,
       },
     })

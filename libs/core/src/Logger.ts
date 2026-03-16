@@ -1,10 +1,10 @@
 import type Floor from './Floor.js';
 import type Unit from './Unit.js';
 
-interface LogEvent {
+export interface LogEvent {
   message: string;
-  unit: any;
-  floorMap: any;
+  unit: { name: string; color: string } | null;
+  floorMap: { character: string; unit?: { color: string } }[][];
   warriorStatus: { health: number; score: number } | undefined;
 }
 
@@ -12,6 +12,7 @@ const Logger: {
   floor: Floor | null;
   events: LogEvent[][];
   lastTurn: LogEvent[] | null;
+  initialState: LogEvent | null;
   play(floor: Floor): void;
   turn(): void;
   unit(unit: Unit, message: string): void;
@@ -19,11 +20,18 @@ const Logger: {
   floor: null,
   events: [],
   lastTurn: null,
+  initialState: null,
 
   play(floor: Floor) {
     Logger.floor = floor;
     Logger.events = [];
     Logger.lastTurn = null;
+    Logger.initialState = {
+      message: '',
+      unit: null,
+      floorMap: JSON.parse(JSON.stringify(floor.getMap())),
+      warriorStatus: floor.warrior?.getStatus(),
+    };
   },
 
   turn() {

@@ -176,20 +176,20 @@ describe('Unit', () => {
       unit.health = 5;
       unit.heal(3);
       expect(unit.health).toBe(8);
-      expect(unit.log).toHaveBeenCalledWith('recovers 3 health, up to 8 health');
+      expect(unit.log).toHaveBeenCalledWith('recovers 3 HP, up to 8 HP');
     });
 
     test("doesn't go over max health", () => {
       unit.health = 19;
       unit.heal(2);
       expect(unit.health).toBe(20);
-      expect(unit.log).toHaveBeenCalledWith('recovers 2 health, up to 20 health');
+      expect(unit.log).toHaveBeenCalledWith('recovers 2 HP, up to 20 HP');
     });
 
     test("doesn't add health when at max", () => {
       unit.heal(1);
       expect(unit.health).toBe(20);
-      expect(unit.log).toHaveBeenCalledWith('recovers 1 health, up to 20 health');
+      expect(unit.log).toHaveBeenCalledWith('recovers 1 HP, up to 20 HP');
     });
   });
 
@@ -197,19 +197,19 @@ describe('Unit', () => {
     test('subtracts health', () => {
       unit.takeDamage(3);
       expect(unit.health).toBe(17);
-      expect(unit.log).toHaveBeenCalledWith('takes 3 damage, 17 health power left');
+      expect(unit.log).toHaveBeenCalledWith('takes 3 damage, 17 HP left');
     });
 
     test("doesn't go under zero health", () => {
       unit.takeDamage(21);
       expect(unit.health).toBe(0);
-      expect(unit.log).toHaveBeenCalledWith('takes 21 damage, 0 health power left');
+      expect(unit.log).toHaveBeenCalledWith('takes 21 damage, 0 HP left');
     });
 
     test('dies when running out of health', () => {
       unit.takeDamage(20);
       expect(unit.isAlive()).toBe(false);
-      expect(unit.log).toHaveBeenCalledWith('takes 20 damage, 0 health power left');
+      expect(unit.log).toHaveBeenCalledWith('takes 20 damage, 0 HP left');
       expect(unit.log).toHaveBeenCalledWith('dies');
     });
   });

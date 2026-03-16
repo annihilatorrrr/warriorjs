@@ -6,26 +6,24 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import Game from './Game.js';
 import GameError from './GameError.js';
+import loadTowers from './loadTowers.js';
 import Profile from './Profile.js';
 import ProfileGenerator from './ProfileGenerator.js';
-import printLine from './ui/printLine.js';
-import printSuccessLine from './ui/printSuccessLine.js';
-import requestConfirmation from './ui/requestConfirmation.js';
 
 vi.mock('@warriorjs/core');
 vi.mock('./ProfileGenerator.js', () => {
   const MockProfileGenerator = vi.fn(function (this: any) {});
   return { default: MockProfileGenerator, __esModule: true };
 });
-vi.mock('./ui/printLine.js');
-vi.mock('./ui/printSuccessLine.js');
-vi.mock('./ui/requestConfirmation.js');
+vi.mock('./loadTowers.js', () => ({
+  default: vi.fn(() => [{ id: 'tower1', name: 'Tower 1' }]),
+}));
 
 describe('Game', () => {
   let game: any;
 
   beforeEach(() => {
-    game = new Game('/path/to/game', undefined, false, 0, false);
+    game = new Game('/path/to/game', undefined, false);
   });
 
   test('has a run directory path', () => {
@@ -36,30 +34,64 @@ describe('Game', () => {
     expect(game.gameDirectoryPath).toBe(path.normalize('/path/to/game/warriorjs'));
   });
 
-  describe('when loading profile', () => {
-    const originalLoad = Profile.load;
-
+  describe('buildContext', () => {
     beforeEach(() => {
-      Profile.load = vi.fn() as any;
-      game.chooseProfile = vi.fn();
+      vi.spyOn(Profile, 'load').mockReturnValue(null);
+      game.getProfiles = vi.fn().mockReturnValue([]);
     });
 
     afterEach(() => {
-      Profile.load = originalLoad;
+      vi.restoreAllMocks();
     });
 
-    test('returns profile if in profile directory', async () => {
-      (Profile.load as any).mockReturnValue('profile');
-      const profile = await game.loadProfile();
-      expect(profile).toBe('profile');
+    test('loads towers', () => {
+      const context = game.buildContext();
+      expect(context.towers).toEqual([{ id: 'tower1', name: 'Tower 1' }]);
     });
 
-    test('gives the option to choose a profile', async () => {
-      (Profile.load as any).mockReturnValue(null);
-      game.chooseProfile.mockReturnValue('profile');
-      const profile = await game.loadProfile();
-      expect(profile).toBe('profile');
-      expect(game.chooseProfile).toHaveBeenCalled();
+    test('sets needsProfileSetup when no profile found', () => {
+      const context = game.buildContext();
+      expect(context.needsProfileSetup).toBe(true);
+      expect(context.profile).toBeNull();
+    });
+
+    test('sets profile when found', () => {
+      const mockProfile = { isEpic: () => false };
+      vi.spyOn(Profile, 'load').mockReturnValue(mockProfile as any);
+      const context = game.buildContext();
+      expect(context.needsProfileSetup).toBe(false);
+      expect(context.profile).toBe(mockProfile);
+    });
+
+    test('sets error when tower loading fails', () => {
+      vi.mocked(loadTowers).mockImplementationOnce(() => {
+        throw new GameError('Tower load failed');
+      });
+      const context = game.buildContext();
+      expect(context.error).toBe('Tower load failed');
+    });
+
+    test('provides callbacks', () => {
+      const context = game.buildContext();
+      expect(typeof context.onCreateProfile).toBe('function');
+      expect(typeof context.onIsExistingProfile).toBe('function');
+      expect(typeof context.onPrepareNextLevel).toBe('function');
+      expect(typeof context.onPrepareEpicMode).toBe('function');
+      expect(typeof context.onGenerateProfileFiles).toBe('function');
+      expect(typeof context.onProfileSelected).toBe('function');
+    });
+  });
+
+  describe('createProfile', () => {
+    test('creates a profile with the correct directory path', () => {
+      const tower = { id: 'the-narrow-path' };
+      const profile = game.createProfile('Olric', 'typescript', tower);
+      expect(profile).toBeInstanceOf(Profile);
+      expect(profile.warriorName).toBe('Olric');
+      expect(profile.language).toBe('typescript');
+      expect(profile.directoryPath).toBe(
+        path.normalize('/path/to/game/warriorjs/olric-the-narrow-path'),
+      );
     });
   });
 
@@ -137,176 +169,6 @@ describe('Game', () => {
         ),
       );
       mock.restore();
-    });
-  });
-
-  describe('when playing', () => {
-    beforeEach(() => {
-      game.playLevel = vi.fn();
-    });
-
-    describe('epic mode', () => {
-      beforeEach(() => {
-        game.profile = { updateEpicScore: vi.fn() };
-      });
-
-      test('plays level after level until level is failed or no more levels', async () => {
-        game.playLevel
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(false);
-        await game.playEpicMode();
-        expect(game.playLevel).toHaveBeenCalledTimes(3);
-        expect(game.playLevel).toHaveBeenCalledWith(1);
-        expect(game.playLevel).toHaveBeenCalledWith(2);
-        expect(game.playLevel).toHaveBeenCalledWith(3);
-        expect(game.profile.updateEpicScore).toHaveBeenCalled();
-      });
-
-      describe('with practice level', () => {
-        beforeEach(() => {
-          game.profile.tower = { hasLevel: vi.fn(), levels: [{}, {}, {}] };
-          game.practiceLevel = 2;
-        });
-
-        test('plays only practice level', async () => {
-          game.profile.tower.hasLevel.mockReturnValue(true);
-          await game.playEpicMode();
-          expect(game.profile.tower.hasLevel).toHaveBeenCalledWith(2);
-          expect(game.playLevel).toHaveBeenCalledWith(2);
-          expect(game.playLevel).toHaveBeenCalledTimes(1);
-        });
-
-        test("throws if tower doesn't have practice level", async () => {
-          game.profile.tower.hasLevel.mockReturnValue(false);
-          await expect(game.playEpicMode()).rejects.toThrow(
-            new GameError("Level 2 doesn't exist. This tower has 3 levels."),
-          );
-          expect(game.profile.tower.hasLevel).toHaveBeenCalledWith(2);
-        });
-      });
-    });
-
-    describe('normal mode', () => {
-      test('prepares first level if level number is zero', async () => {
-        game.profile = {
-          levelNumber: 0,
-          getReadmeFilePath: () => '/path/to/profile/readme',
-        };
-        game.prepareNextLevel = vi.fn();
-        await game.playNormalMode();
-        expect(game.prepareNextLevel).toHaveBeenCalled();
-        expect(printSuccessLine).toHaveBeenCalledWith(
-          'Level 1 is ready. See /path/to/profile/readme for instructions.',
-        );
-        expect(game.playLevel).not.toHaveBeenCalled();
-      });
-
-      test('plays level if level number is greater than zero', async () => {
-        game.profile = { levelNumber: 1 };
-        await game.playNormalMode();
-        expect(game.playLevel).toHaveBeenCalled();
-      });
-
-      test('throws if practice level', async () => {
-        game.practiceLevel = 2;
-        await expect(game.playNormalMode()).rejects.toThrow(
-          new GameError(
-            'The -l option is only available in epic mode. Remove it to play normally.',
-          ),
-        );
-      });
-    });
-  });
-
-  describe('when requesting next level', () => {
-    beforeEach(() => {
-      game.profile = {
-        tower: { hasLevel: vi.fn() },
-        levelNumber: 1,
-        getReadmeFilePath: () => '/path/to/profile/readme',
-      };
-      game.prepareNextLevel = vi.fn();
-      game.prepareEpicMode = vi.fn();
-    });
-
-    test('checks if tower has next level', async () => {
-      await game.requestNextLevel();
-      expect(game.profile.tower.hasLevel).toHaveBeenCalledWith(2);
-    });
-
-    describe('with next level', () => {
-      beforeEach(() => {
-        game.profile.tower.hasLevel.mockReturnValue(true);
-      });
-
-      test('requests confirmation from the player to continue on to next level', async () => {
-        (requestConfirmation as any).mockResolvedValue(false);
-        await game.requestNextLevel();
-        expect(requestConfirmation).toHaveBeenCalledWith(
-          'Would you like to continue on to the next level?',
-          true,
-        );
-      });
-
-      test('prepares next level if player confirms', async () => {
-        (requestConfirmation as any).mockResolvedValue(true);
-        await game.requestNextLevel();
-        expect(game.prepareNextLevel).toHaveBeenCalled();
-        expect(printSuccessLine).toHaveBeenCalledWith(
-          'See /path/to/profile/readme for updated instructions.',
-        );
-      });
-
-      test('prepares next level if assume yes', async () => {
-        game.assumeYes = true;
-        await game.requestNextLevel();
-        expect(requestConfirmation).not.toHaveBeenCalled();
-        expect(game.prepareNextLevel).toHaveBeenCalled();
-        expect(printSuccessLine).toHaveBeenCalledWith(
-          'See /path/to/profile/readme for updated instructions.',
-        );
-      });
-
-      test("stays in current level if player doesn't confirm", async () => {
-        (requestConfirmation as any).mockResolvedValue(false);
-        await game.requestNextLevel();
-        expect(printLine).toHaveBeenCalledWith(
-          'You stayed on the current level. Aim for more points next time.',
-        );
-        expect(game.prepareNextLevel).not.toHaveBeenCalled();
-        expect(game.prepareEpicMode).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('without next level', () => {
-      beforeEach(() => {
-        game.profile.tower.hasLevel.mockReturnValue(false);
-      });
-
-      test('requests confirmation from the player to continue to epic mode', async () => {
-        (requestConfirmation as any).mockResolvedValue(false);
-        await game.requestNextLevel();
-        expect(requestConfirmation).toHaveBeenCalledWith(
-          'Would you like to continue on to epic mode?',
-          true,
-        );
-      });
-
-      test('prepares epic mode if player confirms', async () => {
-        (requestConfirmation as any).mockResolvedValue(true);
-        await game.requestNextLevel();
-        expect(game.prepareEpicMode).toHaveBeenCalled();
-        expect(printSuccessLine).toHaveBeenCalledWith('Run warriorjs again to play epic mode.');
-      });
-
-      test('prepares epic mode if assume yes', async () => {
-        game.assumeYes = true;
-        await game.requestNextLevel();
-        expect(requestConfirmation).not.toHaveBeenCalled();
-        expect(game.prepareEpicMode).toHaveBeenCalled();
-        expect(printSuccessLine).toHaveBeenCalledWith('Run warriorjs again to play epic mode.');
-      });
     });
   });
 

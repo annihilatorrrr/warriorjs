@@ -1,5 +1,5 @@
 import type Floor from './Floor.js';
-import Logger from './Logger.js';
+import Logger, { type LogEvent } from './Logger.js';
 
 const maxTurns = 200;
 
@@ -19,7 +19,11 @@ class Level {
     this.floor = floor;
   }
 
-  play(turns: number = maxTurns): { passed: boolean; events: any[][] } {
+  play(turns: number = maxTurns): {
+    passed: boolean;
+    events: LogEvent[][];
+    initialState: LogEvent | null;
+  } {
     Logger.play(this.floor);
 
     for (let n = 0; n < turns; n += 1) {
@@ -38,6 +42,7 @@ class Level {
     return {
       passed,
       events: Logger.events,
+      initialState: Logger.initialState,
     };
   }
 

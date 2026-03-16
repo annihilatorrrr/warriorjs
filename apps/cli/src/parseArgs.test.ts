@@ -46,6 +46,22 @@ describe('-l', () => {
   });
 });
 
+test('exits with error on unknown option', () => {
+  const originalExit = process.exit;
+  const originalError = console.error;
+  process.exit = vi.fn() as any;
+  console.error = vi.fn();
+  try {
+    parseArgs(['--unknown']);
+  } catch {
+    // yargs may throw after calling process.exit in test environments
+  }
+  expect(process.exit).toHaveBeenCalledWith(1);
+  expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Unknown'));
+  process.exit = originalExit;
+  console.error = originalError;
+});
+
 describe('-s', () => {
   test('parses correctly', () => {
     expect(parseArgs(['-s']).s).toBe(true);
@@ -57,49 +73,5 @@ describe('-s', () => {
 
   test('defaults to false', () => {
     expect(parseArgs([]).s).toBe(false);
-  });
-});
-
-describe('-t', () => {
-  test('parses correctly', () => {
-    expect(parseArgs(['-t', '0.3']).t).toBe(0.3);
-  });
-
-  test('has alias --time', () => {
-    expect(parseArgs(['--time', '0.3']).time).toBe(0.3);
-  });
-
-  test('defaults to 0.6', () => {
-    expect(parseArgs([]).t).toBe(0.6);
-  });
-
-  test('exits with error if not a number', () => {
-    const originalExit = process.exit;
-    const originalError = console.error;
-    process.exit = vi.fn() as any;
-    console.error = vi.fn();
-    try {
-      parseArgs(['-t', 'invalid']);
-    } catch {
-      // yargs may throw after calling process.exit in test environments
-    }
-    expect(process.exit).toHaveBeenCalledWith(1);
-    expect(console.error).toHaveBeenCalledWith('Invalid argument: time must be a number');
-    process.exit = originalExit;
-    console.error = originalError;
-  });
-});
-
-describe('-y', () => {
-  test('parses correctly', () => {
-    expect(parseArgs(['-y']).y).toBe(true);
-  });
-
-  test('has alias --yes', () => {
-    expect(parseArgs(['--yes']).yes).toBe(true);
-  });
-
-  test('defaults to false', () => {
-    expect(parseArgs([]).y).toBe(false);
   });
 });

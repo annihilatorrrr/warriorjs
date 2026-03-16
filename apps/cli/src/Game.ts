@@ -1,7 +1,7 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
-import { getLevel, getLevelConfig, runLevel } from '@warriorjs/core';
-import { getLevelScore } from '@warriorjs/scoring';
+import { getLevelConfig } from '@warriorjs/core';
 import { globbySync } from 'globby';
 
 import GameError from './GameError.js';
@@ -9,150 +9,103 @@ import loadTowers from './loadTowers.js';
 import Profile from './Profile.js';
 import ProfileGenerator from './ProfileGenerator.js';
 import type Tower from './Tower.js';
-import printFailureLine from './ui/printFailureLine.js';
-import printLevel from './ui/printLevel.js';
-import printLevelReport from './ui/printLevelReport.js';
-import printLine from './ui/printLine.js';
-import printPlay from './ui/printPlay.js';
-import printSeparator from './ui/printSeparator.js';
-import printSuccessLine from './ui/printSuccessLine.js';
-import printTowerReport from './ui/printTowerReport.js';
-import printWarningLine from './ui/printWarningLine.js';
-import printWelcomeHeader from './ui/printWelcomeHeader.js';
-import requestChoice, { SEPARATOR } from './ui/requestChoice.js';
-import requestConfirmation from './ui/requestConfirmation.js';
-import requestInput from './ui/requestInput.js';
-import getWarriorNameSuggestions from './utils/getWarriorNameSuggestions.js';
+
+const require = createRequire(import.meta.url);
+const { version: cliVersion } = require('../package.json');
 
 const gameDirectory = 'warriorjs';
+
+export interface GameContext {
+  version: string;
+  runDirectoryPath: string;
+  practiceLevel: number | undefined;
+  silencePlay: boolean;
+  towers: Tower[];
+  profile: Profile | null;
+  profiles: Profile[];
+  needsProfileSetup: boolean;
+  error?: string;
+  onCreateProfile: (
+    warriorName: string,
+    language: 'javascript' | 'typescript',
+    tower: Tower,
+  ) => Profile;
+  onIsExistingProfile: (profile: Profile) => boolean;
+  onPrepareNextLevel: () => void;
+  onPrepareEpicMode: () => void;
+  onGenerateProfileFiles: () => void;
+  onProfileSelected: (profile: Profile) => void;
+}
 
 /** Class representing a game. */
 class Game {
   runDirectoryPath: string;
   practiceLevel: number | undefined;
   silencePlay: boolean;
-  delay: number;
-  assumeYes: boolean;
   gameDirectoryPath: string;
-  towers!: Tower[];
-  profile!: Profile;
+  towers: Tower[] = [];
+  profile: Profile | null = null;
 
-  constructor(
-    runDirectoryPath: string,
-    practiceLevel: number | undefined,
-    silencePlay: boolean,
-    delay: number,
-    assumeYes: boolean,
-  ) {
+  constructor(runDirectoryPath: string, practiceLevel: number | undefined, silencePlay: boolean) {
     this.runDirectoryPath = runDirectoryPath;
     this.practiceLevel = practiceLevel;
     this.silencePlay = silencePlay;
-    this.delay = delay * 1000;
-    this.assumeYes = assumeYes;
     this.gameDirectoryPath = path.join(this.runDirectoryPath, gameDirectory);
   }
 
-  async start(): Promise<void> {
-    printWelcomeHeader();
+  buildContext(): GameContext {
+    let error: string | undefined;
 
     try {
       this.towers = loadTowers();
-
-      this.profile = await this.loadProfile();
-
-      if (this.profile.isEpic()) {
-        await this.playEpicMode();
-      } else {
-        await this.playNormalMode();
-      }
     } catch (err: any) {
-      if (err instanceof GameError || err.code === 'InvalidPlayerCode') {
-        printFailureLine(err.message);
-      } else {
-        throw err;
-      }
-    }
-  }
-
-  async loadProfile(): Promise<Profile> {
-    const profile = Profile.load(this.runDirectoryPath, this.towers);
-    if (profile) {
-      return profile;
+      error =
+        err instanceof GameError || err.code === 'InvalidPlayerCode' ? err.message : String(err);
     }
 
-    return this.chooseProfile();
-  }
+    let profiles: Profile[] = [];
+    let needsProfileSetup = false;
 
-  async chooseProfile(): Promise<Profile> {
-    const profiles = this.getProfiles();
-    if (profiles.length) {
-      const newProfileChoice = 'New profile';
-      const profileChoices = [...profiles, SEPARATOR, newProfileChoice];
-      const profile = await requestChoice('Choose a profile:', profileChoices);
-      if (profile !== newProfileChoice) {
-        return profile as Profile;
+    if (!error) {
+      this.profile = Profile.load(this.runDirectoryPath, this.towers);
+      if (!this.profile) {
+        try {
+          profiles = this.getProfiles();
+          needsProfileSetup = true;
+        } catch (err: any) {
+          error = err instanceof GameError ? err.message : String(err);
+        }
       }
     }
 
-    return this.createProfile();
+    return {
+      version: `v${cliVersion}`,
+      runDirectoryPath: this.runDirectoryPath,
+      practiceLevel: this.practiceLevel,
+      silencePlay: this.silencePlay,
+      towers: this.towers,
+      profile: this.profile,
+      profiles,
+      needsProfileSetup,
+      error,
+      onCreateProfile: (warriorName, language, tower) =>
+        this.createProfile(warriorName, language, tower),
+      onIsExistingProfile: (profile) => this.isExistingProfile(profile),
+      onPrepareNextLevel: () => this.prepareNextLevel(),
+      onPrepareEpicMode: () => this.prepareEpicMode(),
+      onGenerateProfileFiles: () => this.generateProfileFiles(),
+      onProfileSelected: (profile) => {
+        this.profile = profile;
+      },
+    };
   }
 
-  getProfiles(): Profile[] {
-    const profileDirectoriesPaths = this.getProfileDirectoriesPaths();
-    return profileDirectoriesPaths.map((profileDirectoryPath) =>
-      Profile.load(profileDirectoryPath, this.towers),
-    ) as Profile[];
-  }
-
-  async createProfile(): Promise<Profile> {
-    const warriorNameSuggestions = getWarriorNameSuggestions();
-    const warriorName = await requestInput(
-      'Enter a name for your warrior:',
-      warriorNameSuggestions,
-    );
-    if (!warriorName) {
-      throw new GameError('Every legend needs a name! Enter one for your warrior.');
-    }
-
-    const languageChoices = ['TypeScript (recommended)', 'JavaScript'];
-    const languageChoice = (await requestChoice(
-      'Choose your language:',
-      languageChoices,
-    )) as string;
-    const language = languageChoice.startsWith('TypeScript') ? 'typescript' : 'javascript';
-
-    const towerChoices = this.towers;
-    const tower = (await requestChoice('Choose a tower:', towerChoices)) as Tower;
-
+  createProfile(warriorName: string, language: 'javascript' | 'typescript', tower: Tower): Profile {
     const profileDirectoryPath = path.join(
       this.gameDirectoryPath,
       `${warriorName}-${tower.id}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     );
-
-    const profile = new Profile(
-      warriorName,
-      tower,
-      profileDirectoryPath,
-      language as 'javascript' | 'typescript',
-    );
-
-    if (this.isExistingProfile(profile)) {
-      printWarningLine(
-        `There's already a warrior named ${warriorName} climbing the ${tower} tower.`,
-      );
-      const replaceExisting = await requestConfirmation(
-        'Do you want to replace your existing profile for this tower?',
-      );
-      if (!replaceExisting) {
-        throw new GameError('Unable to continue without a profile.');
-      }
-
-      printLine('Replacing existing profile...');
-    } else {
-      profile.makeProfileDirectory();
-    }
-
-    return profile;
+    return new Profile(warriorName, tower, profileDirectoryPath, language);
   }
 
   isExistingProfile(profile: Profile): boolean {
@@ -160,6 +113,13 @@ class Game {
     return profileDirectoriesPaths.some(
       (profileDirectoryPath) => profileDirectoryPath === profile.directoryPath,
     );
+  }
+
+  getProfiles(): Profile[] {
+    const profileDirectoriesPaths = this.getProfileDirectoriesPaths();
+    return profileDirectoriesPaths
+      .map((profileDirectoryPath) => Profile.load(profileDirectoryPath, this.towers))
+      .filter((p): p is Profile => p !== null);
   }
 
   getProfileDirectoriesPaths(): string[] {
@@ -184,146 +144,19 @@ class Game {
     }
   }
 
-  async playEpicMode(): Promise<void> {
-    this.delay /= 2;
-
-    if (this.practiceLevel) {
-      const hasPracticeLevel = this.profile.tower.hasLevel(this.practiceLevel);
-      if (!hasPracticeLevel) {
-        throw new GameError(
-          `Level ${this.practiceLevel} doesn't exist. This tower has ${this.profile.tower.levels.length} levels.`,
-        );
-      }
-
-      await this.playLevel(this.practiceLevel);
-    } else {
-      let levelNumber = 0;
-      let playing = true;
-      while (playing) {
-        levelNumber += 1;
-        playing = await this.playLevel(levelNumber);
-      }
-
-      this.profile.updateEpicScore();
-    }
-  }
-
-  async playNormalMode(): Promise<void> {
-    if (this.practiceLevel) {
-      throw new GameError(
-        'The -l option is only available in epic mode. Remove it to play normally.',
-      );
-    }
-
-    if (this.profile.levelNumber === 0) {
-      this.prepareNextLevel();
-      printSuccessLine(
-        `Level 1 is ready. See ${this.profile.getReadmeFilePath()} for instructions.`,
-      );
-    } else {
-      await this.playLevel(this.profile.levelNumber);
-    }
-  }
-
-  async playLevel(levelNumber: number): Promise<boolean> {
-    const { tower, warriorName, epic } = this.profile;
-    const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
-
-    const level = getLevel(levelConfig!);
-    printLevel(level);
-
-    const playerCode = this.profile.readPlayerCode();
-    const language = this.profile.language || 'javascript';
-    const levelResult = runLevel(levelConfig!, playerCode!, language);
-
-    if (!this.silencePlay) {
-      await printPlay(levelResult.events, this.delay);
-    }
-
-    printSeparator();
-
-    if (!levelResult.passed) {
-      printFailureLine(`You failed level ${levelNumber}. Update your code and try again.`);
-
-      if (levelConfig!.clue && !this.profile.isShowingClue()) {
-        const showClue =
-          this.assumeYes ||
-          (await requestConfirmation(
-            'Would you like to read the additional clues for this level?',
-          ));
-        if (showClue) {
-          this.profile.requestClue();
-          this.generateProfileFiles();
-          printSuccessLine(`See ${this.profile.getReadmeFilePath()} for the clues.`);
-        }
-      }
-
-      return false;
-    }
-
-    const hasNextLevel = this.profile.tower.hasLevel(levelNumber + 1);
-
-    if (hasNextLevel) {
-      printSuccessLine('Success! You have found the stairs.');
-    } else {
-      printSuccessLine('CONGRATULATIONS! You have climbed to the top of the tower.');
-    }
-
-    const scoreParts = getLevelScore(levelResult, levelConfig as any);
-    const totalScore = Object.values(scoreParts as unknown as Record<string, number>).reduce(
-      (sum: number, value: number) => sum + value,
-      0,
-    );
-    const grade = (totalScore * 1.0) / (levelConfig!.aceScore ?? 0);
-    printLevelReport(this.profile, scoreParts as any, totalScore, grade);
-    this.profile.tallyPoints(levelNumber, totalScore, grade);
-
-    if (this.profile.isEpic()) {
-      if (!hasNextLevel && !this.practiceLevel) {
-        printTowerReport(this.profile);
-      }
-    } else {
-      await this.requestNextLevel();
-    }
-
-    return hasNextLevel;
-  }
-
-  async requestNextLevel(): Promise<void> {
-    if (this.profile.tower.hasLevel(this.profile.levelNumber + 1)) {
-      const continueToNextLevel =
-        this.assumeYes ||
-        (await requestConfirmation('Would you like to continue on to the next level?', true));
-      if (continueToNextLevel) {
-        this.prepareNextLevel();
-        printSuccessLine(`See ${this.profile.getReadmeFilePath()} for updated instructions.`);
-      } else {
-        printLine('You stayed on the current level. Aim for more points next time.');
-      }
-    } else {
-      const continueToEpicMode =
-        this.assumeYes ||
-        (await requestConfirmation('Would you like to continue on to epic mode?', true));
-      if (continueToEpicMode) {
-        this.prepareEpicMode();
-        printSuccessLine('Run warriorjs again to play epic mode.');
-      }
-    }
-  }
-
   prepareNextLevel(): void {
-    this.profile.goToNextLevel();
+    this.profile!.goToNextLevel();
     this.generateProfileFiles();
   }
 
   generateProfileFiles(): void {
-    const { tower, levelNumber, warriorName, epic } = this.profile;
+    const { tower, levelNumber, warriorName, epic } = this.profile!;
     const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
-    new ProfileGenerator(this.profile, levelConfig!).generate();
+    new ProfileGenerator(this.profile!, levelConfig!).generate();
   }
 
   prepareEpicMode(): void {
-    this.profile.enableEpicMode();
+    this.profile!.enableEpicMode();
   }
 }
 

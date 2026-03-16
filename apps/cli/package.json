@@ -50,20 +50,20 @@
     "postinstall": "node -e \"console.log('\\u001b[35m\\u001b[1mLove WarriorJS? You can now donate to our open collective:\\u001b[22m\\u001b[39m\\n> \\u001b[34mhttps://opencollective.com/warriorjs/donate\\u001b[0m')\""
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
+    "ink-testing-library": "^4.0.0",
     "mock-fs": "^5.5.0"
   },
   "dependencies": {
-    "@inquirer/prompts": "^7.0.0",
     "@warriorjs/core": "workspace:^",
     "@warriorjs/scoring": "workspace:^",
     "@warriorjs/tower-the-narrow-path": "workspace:^",
-    "ansi-escapes": "^7.0.0",
     "array-shuffle": "^3.0.0",
-    "chalk": "^5.4.0",
-    "delay": "^6.0.0",
     "find-up": "^7.0.0",
     "globby": "^14.0.0",
-    "string-width": "^7.0.0",
+    "ink": "^6.8.0",
+    "ink-link": "^5.0.0",
+    "react": "^19.2.4",
     "yargs": "^17.0.0"
   }
 }

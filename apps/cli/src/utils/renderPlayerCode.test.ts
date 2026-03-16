@@ -15,6 +15,8 @@ describe('renderPlayerCode', () => {
     // Decide what your warrior should do.
   }
 }
+
+export default Player;
 `,
     );
   });
@@ -29,6 +31,8 @@ class Player {
     // Decide what your warrior should do.
   }
 }
+
+export default Player;
 `,
     );
   });

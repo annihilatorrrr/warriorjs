@@ -24,9 +24,6 @@ test('throws if invalid syntax', () => {
   expect(() => {
     loadPlayer(playerCode);
   }).toThrow('Check your syntax and try again!');
-  expect(() => {
-    loadPlayer(playerCode);
-  }).toThrow('SyntaxError: Unexpected end of input');
 });
 
 test('throws if Player class is not defined', () => {
@@ -56,6 +53,40 @@ test("throws when playing turn if there's something wrong", () => {
   expect(() => {
     playTurn(warrior);
   }).toThrow('warrior.walk is not a function');
+});
+
+test('strips export default Player in JavaScript code', () => {
+  const playerCode = `
+    class Player {
+      playTurn(warrior) {
+        warrior.walk();
+      }
+    }
+
+    export default Player;
+  `;
+  const warrior = { walk: vi.fn() };
+  const playTurn = loadPlayer(playerCode);
+  playTurn(warrior);
+  expect(warrior.walk).toHaveBeenCalled();
+});
+
+test('strips export default Player in TypeScript code', () => {
+  const tsCode = `
+    import type { Warrior } from './types.js';
+
+    class Player {
+      playTurn(warrior: Warrior): void {
+        warrior.walk();
+      }
+    }
+
+    export default Player;
+  `;
+  const warrior = { walk: vi.fn() };
+  const playTurn = loadPlayer(tsCode, 'typescript');
+  playTurn(warrior);
+  expect(warrior.walk).toHaveBeenCalled();
 });
 
 describe('TypeScript support', () => {

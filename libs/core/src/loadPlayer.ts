@@ -8,18 +8,22 @@ function loadPlayer(
   playerCode: string,
   language: 'javascript' | 'typescript' = 'javascript',
 ): (turn: any) => void {
-  let code = playerCode;
   const playerCodeFilename = language === 'typescript' ? 'Player.ts' : 'Player.js';
+  const loader = language === 'typescript' ? 'ts' : 'js';
 
-  if (language === 'typescript') {
-    const result = transformSync(code, {
-      loader: 'ts',
-      format: 'cjs',
-    });
-    code = result.code;
+  let code: string;
+  try {
+    ({ code } = transformSync(playerCode, { loader, format: 'cjs' }));
+  } catch (err: any) {
+    const error: any = new Error(`Check your syntax and try again!\n\n${err.message}`);
+    error.code = 'InvalidPlayerCode';
+    throw error;
   }
 
-  const sandbox = vm.createContext();
+  const sandbox = vm.createContext({
+    module: { exports: {} },
+    exports: {},
+  });
 
   // Do not collect stack frames for errors in the player code.
   vm.runInContext('Error.stackTraceLimit = 0;', sandbox);

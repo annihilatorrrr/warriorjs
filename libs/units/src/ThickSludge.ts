@@ -1,11 +1,16 @@
-import Sludge from './Sludge.js';
+import { Attack, Feel } from '@warriorjs/abilities';
 
-const ThickSludge = {
-  ...Sludge,
-  name: 'Thick Sludge',
-  character: 'S',
-  color: '#bf616a',
-  maxHealth: 24,
-};
+import MeleeUnit from './MeleeUnit.js';
+
+class ThickSludge extends MeleeUnit {
+  static declaredAbilities = {
+    attack: Attack.with({ power: 3 }),
+    feel: Feel,
+  };
+
+  constructor() {
+    super('Thick Sludge', 'S', '#bf616a', 24);
+  }
+}
 
 export default ThickSludge;

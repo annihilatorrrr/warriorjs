@@ -1,26 +1,27 @@
+import type Ability from './Ability.js';
+import type { AbilityEntry } from './Ability.js';
+import Action from './Action.js';
+import type Effect from './Effect.js';
 import Logger from './Logger.js';
 import type Position from './Position.js';
 import type { SensedSpace, SensedUnit } from './Space.js';
 import Space from './Space.js';
 
-interface Ability {
-  action?: boolean;
-  description?: string;
-  perform(...args: any[]): any;
-}
+export type Turn = Record<string, (...args: any[]) => any>;
 
-interface Effect {
-  passTurn(): void;
-  trigger(): void;
-}
-
-interface Turn {
+interface TurnState {
   action: [string, any[]] | null;
   [key: string]: any;
 }
 
+export interface UnitClass {
+  new (): Unit;
+  declaredAbilities?: Record<string, AbilityEntry>;
+}
+
 /** Class representing a unit. */
 class Unit {
+  static declaredAbilities?: Record<string, AbilityEntry>;
   name: string;
   character: string;
   color: string;
@@ -33,8 +34,7 @@ class Unit {
   score: number;
   abilities: Map<string, Ability>;
   effects: Map<string, Effect>;
-  turn: Turn | Record<string, never>;
-  playTurn: (turn: any) => void;
+  turn: TurnState | null;
 
   constructor(
     name?: string,
@@ -57,14 +57,13 @@ class Unit {
     this.score = 0;
     this.abilities = new Map();
     this.effects = new Map();
-    this.turn = {};
-    this.playTurn = () => {};
+    this.turn = null;
   }
 
-  getNextTurn(): Turn {
-    const turn: Turn = { action: null };
+  getNextTurn(): TurnState {
+    const turn: TurnState = { action: null };
     this.abilities.forEach((ability, name) => {
-      if (ability.action) {
+      if (ability instanceof Action) {
         Object.defineProperty(turn, name, {
           value: (...args: any[]) => {
             if (turn.action) {
@@ -83,6 +82,8 @@ class Unit {
     return turn;
   }
 
+  playTurn(_turn: Turn): void {}
+
   prepareTurn(): void {
     this.turn = this.getNextTurn();
     this.playTurn(this.turn);
@@ -91,9 +92,8 @@ class Unit {
   performTurn(): void {
     if (this.isAlive()) {
       this.effects.forEach((effect) => effect.passTurn());
-      const turn = this.turn as Turn;
-      if (turn.action && !this.isBound()) {
-        const [name, args] = turn.action;
+      if (this.turn?.action && !this.isBound()) {
+        const [name, args] = this.turn.action;
         this.abilities.get(name)?.perform(...args);
       }
     }

@@ -1,4 +1,4 @@
-import type { LevelConfig } from '@warriorjs/core';
+import { type Ability, type AbilityEntry, Action, type LevelConfig } from '@warriorjs/core';
 import type Profile from '../Profile.js';
 
 interface MethodEntry {
@@ -56,19 +56,25 @@ function renderWarriorInterface(methods: MethodEntry[]): string {
   return `export interface Warrior {\n${body}\n}`;
 }
 
+function instantiateAbility(entry: AbilityEntry): Ability {
+  if (Array.isArray(entry)) {
+    const [AbilityClass, config] = entry;
+    return new AbilityClass({} as any, config);
+  }
+  const AbilityClass = entry;
+  return new AbilityClass({} as any);
+}
+
 function renderTypes(_profile: Profile, levelConfig: LevelConfig): string {
   const abilities = levelConfig.floor.warrior.abilities ?? {};
 
   const methods: MethodEntry[] = [];
   let needsSpace = false;
 
-  for (const [name, creator] of Object.entries(abilities)) {
-    const ability = creator({} as any);
-    if (!ability.meta) {
-      continue;
-    }
+  for (const [name, entry] of Object.entries(abilities)) {
+    const ability = instantiateAbility(entry);
 
-    const { meta } = ability;
+    const { description, meta } = ability;
 
     const params: string[] = meta.params.map((param: any) => {
       const tsType = param.type;
@@ -91,8 +97,8 @@ function renderTypes(_profile: Profile, levelConfig: LevelConfig): string {
 
     methods.push({
       name,
-      action: !!ability.action,
-      description: ability.description,
+      description,
+      action: ability instanceof Action,
       signature: `${name}(${params.join(', ')}): ${returnType}`,
     });
   }

@@ -1,34 +1,34 @@
+import { type AbilityMeta, Action, Sense } from '@warriorjs/core';
 import { describe, expect, test } from 'vitest';
 
 import renderTypes from './renderTypes.js';
 
-const mockAbilities = {
-  walk: () => ({
-    action: true,
-    description: 'Walks forward',
-    perform() {},
-    meta: {
-      params: [{ name: 'direction', type: 'Direction' as const, optional: true }],
-      returns: 'void' as const,
-    },
-  }),
-  feel: () => ({
-    description: 'Feels the space ahead',
-    perform() {},
-    meta: {
-      params: [{ name: 'direction', type: 'Direction' as const, optional: true }],
-      returns: 'Space' as const,
-    },
-  }),
-  health: () => ({
-    description: 'Returns current health',
-    perform() {},
-    meta: {
-      params: [] as any[],
-      returns: 'number' as const,
-    },
-  }),
-};
+class MockWalk extends Action {
+  readonly description = 'Walks forward';
+  readonly meta: AbilityMeta = {
+    params: [{ name: 'direction', type: 'Direction', optional: true }],
+    returns: 'void',
+  };
+  perform() {}
+}
+
+class MockFeel extends Sense {
+  readonly description = 'Feels the space ahead';
+  readonly meta: AbilityMeta = {
+    params: [{ name: 'direction', type: 'Direction', optional: true }],
+    returns: 'Space',
+  };
+  perform() {}
+}
+
+class MockHealth extends Sense {
+  readonly description = 'Returns current health';
+  readonly meta: AbilityMeta = {
+    params: [],
+    returns: 'number',
+  };
+  perform() {}
+}
 
 const profile: any = { language: 'typescript' };
 
@@ -38,7 +38,7 @@ function makeLevelConfig(abilities: Record<string, any>): any {
 
 describe('renderTypes', () => {
   test('renders types with a single action', () => {
-    expect(renderTypes(profile, makeLevelConfig({ walk: mockAbilities.walk }))).toBe(
+    expect(renderTypes(profile, makeLevelConfig({ walk: MockWalk }))).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -58,9 +58,9 @@ describe('renderTypes', () => {
       renderTypes(
         profile,
         makeLevelConfig({
-          health: mockAbilities.health,
-          walk: mockAbilities.walk,
-          feel: mockAbilities.feel,
+          health: MockHealth,
+          walk: MockWalk,
+          feel: MockFeel,
         }),
       ),
     ).toBe(
@@ -107,12 +107,7 @@ describe('renderTypes', () => {
   });
 
   test('omits Space and Unit interfaces when no abilities use Space', () => {
-    expect(
-      renderTypes(
-        profile,
-        makeLevelConfig({ walk: mockAbilities.walk, health: mockAbilities.health }),
-      ),
-    ).toBe(
+    expect(renderTypes(profile, makeLevelConfig({ walk: MockWalk, health: MockHealth }))).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -129,39 +124,16 @@ describe('renderTypes', () => {
     );
   });
 
-  test('skips abilities without meta', () => {
-    const noMetaAbility = () => ({
-      description: 'No meta',
-      perform() {},
-    });
-    expect(
-      renderTypes(profile, makeLevelConfig({ walk: mockAbilities.walk, legacy: noMetaAbility })),
-    ).toBe(
-      [
-        '// @generated — Auto-generated each level. Do not edit.',
-        '',
-        "export type Direction = 'forward' | 'right' | 'backward' | 'left';",
-        '',
-        'export interface Warrior {',
-        '  /** Walks forward */',
-        '  walk(direction?: Direction): void;',
-        '}',
-        '',
-      ].join('\n'),
-    );
-  });
-
   test('handles rest parameters', () => {
-    const restAbility = () => ({
-      action: true,
-      description: 'Does something with rest params',
-      perform() {},
-      meta: {
-        params: [{ name: 'targets', type: 'string', rest: true }],
-        returns: 'void' as const,
-      },
-    });
-    expect(renderTypes(profile, makeLevelConfig({ multi: restAbility }))).toBe(
+    class RestAction extends Action {
+      readonly description = 'Does something with rest params';
+      readonly meta: AbilityMeta = {
+        params: [{ name: 'targets', type: 'any', rest: true }],
+        returns: 'void',
+      };
+      perform() {}
+    }
+    expect(renderTypes(profile, makeLevelConfig({ multi: RestAction }))).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -169,7 +141,7 @@ describe('renderTypes', () => {
         '',
         'export interface Warrior {',
         '  /** Does something with rest params */',
-        '  multi(...targets: string[]): void;',
+        '  multi(...targets: any[]): void;',
         '}',
         '',
       ].join('\n'),

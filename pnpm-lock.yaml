@@ -32,6 +32,9 @@ importers:
 
   apps/cli:
     dependencies:
+      '@warriorjs/abilities':
+        specifier: workspace:^
+        version: link:../../libs/abilities
       '@warriorjs/core':
         specifier: workspace:^
         version: link:../../libs/core
@@ -85,6 +88,9 @@ importers:
 
   libs/abilities:
     dependencies:
+      '@warriorjs/core':
+        specifier: workspace:^
+        version: link:../core
       '@warriorjs/spatial':
         specifier: workspace:^
         version: link:../spatial
@@ -98,7 +104,11 @@ importers:
         specifier: ^0.27.3
         version: 0.27.3
 
-  libs/effects: {}
+  libs/effects:
+    dependencies:
+      '@warriorjs/core':
+        specifier: workspace:^
+        version: link:../core
 
   libs/scoring: {}
 
@@ -109,6 +119,9 @@ importers:
       '@warriorjs/abilities':
         specifier: workspace:^
         version: link:../abilities
+      '@warriorjs/core':
+        specifier: workspace:^
+        version: link:../core
       '@warriorjs/spatial':
         specifier: workspace:^
         version: link:../spatial

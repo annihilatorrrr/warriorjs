@@ -1,28 +1,33 @@
 import {
-  attack,
-  bind,
-  detonate,
-  directionOf,
-  directionOfStairs,
-  distanceOf,
-  feel,
-  health,
-  listen,
-  look,
-  maxHealth,
-  rescue,
-  rest,
-  think,
-  walk,
+  Attack,
+  Bind,
+  Detonate,
+  DirectionOf,
+  DirectionOfStairs,
+  DistanceOf,
+  Feel,
+  Health,
+  Listen,
+  Look,
+  MaxHealth,
+  Rescue,
+  Rest,
+  Think,
+  Walk,
 } from '@warriorjs/abilities';
 import type { TowerDefinition } from '@warriorjs/core';
-import { ticking } from '@warriorjs/effects';
+import { Ticking } from '@warriorjs/effects';
 import { EAST, NORTH, SOUTH, WEST } from '@warriorjs/spatial';
-import { Captive, Sludge, ThickSludge, Warrior } from '@warriorjs/units';
+import { Captive, Sludge, ThickSludge } from '@warriorjs/units';
 
 const tower: TowerDefinition = {
   name: 'The Powder Keep',
   description: 'An old fortress where something ticks beneath the floor',
+  warrior: {
+    character: '@',
+    color: '#8fbcbb',
+    maxHealth: 20,
+  },
   levels: [
     {
       description:
@@ -40,11 +45,10 @@ const tower: TowerDefinition = {
           y: 3,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            directionOfStairs: directionOfStairs(),
-            think: think(),
-            walk: walk(),
+            directionOfStairs: DirectionOfStairs,
+            think: Think,
+            walk: Walk,
           },
           position: {
             x: 0,
@@ -72,13 +76,12 @@ const tower: TowerDefinition = {
           y: 1,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            attack: attack({ power: 5 }),
-            feel: feel(),
-            health: health(),
-            maxHealth: maxHealth(),
-            rest: rest({ healthGain: 0.1 }),
+            attack: Attack.with({ power: 5 }),
+            feel: Feel,
+            health: Health,
+            maxHealth: MaxHealth,
+            rest: Rest.with({ healthGain: 0.1 }),
           },
           position: {
             x: 0,
@@ -88,7 +91,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 0,
@@ -96,7 +99,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 2,
               y: 1,
@@ -104,7 +107,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 1,
@@ -130,20 +133,19 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 1,
             y: 1,
             facing: EAST,
           },
           abilities: {
-            bind: bind(),
-            rescue: rescue(),
+            bind: Bind,
+            rescue: Rescue,
           },
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 0,
@@ -151,7 +153,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 1,
               y: 2,
@@ -159,7 +161,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 0,
               y: 1,
@@ -167,7 +169,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 2,
               y: 1,
@@ -194,20 +196,19 @@ const tower: TowerDefinition = {
           y: 2,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 1,
             y: 1,
             facing: EAST,
           },
           abilities: {
-            directionOf: directionOf(),
-            listen: listen(),
+            directionOf: DirectionOf,
+            listen: Listen,
           },
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 0,
               y: 0,
@@ -215,7 +216,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 0,
               y: 2,
@@ -223,7 +224,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 2,
               y: 0,
@@ -231,7 +232,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 3,
               y: 1,
@@ -239,7 +240,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 2,
               y: 2,
@@ -266,7 +267,6 @@ const tower: TowerDefinition = {
           y: 1,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 1,
@@ -275,7 +275,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 4,
               y: 0,
@@ -283,7 +283,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 3,
               y: 1,
@@ -291,7 +291,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 4,
               y: 1,
@@ -318,7 +318,6 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 1,
@@ -327,7 +326,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 0,
@@ -335,7 +334,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 3,
               y: 1,
@@ -343,7 +342,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 0,
               y: 0,
@@ -351,9 +350,9 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             effects: {
-              ticking: ticking({ time: 7 }),
+              ticking: Ticking.with({ time: 7 }),
             },
             position: {
               x: 4,
@@ -381,7 +380,6 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 1,
@@ -390,7 +388,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 0,
@@ -398,7 +396,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 2,
@@ -406,7 +404,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 2,
               y: 1,
@@ -414,9 +412,9 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             effects: {
-              ticking: ticking({ time: 10 }),
+              ticking: Ticking.with({ time: 10 }),
             },
             position: {
               x: 4,
@@ -425,7 +423,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 2,
               y: 0,
@@ -452,22 +450,21 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 0,
             facing: EAST,
           },
           abilities: {
-            detonate: detonate({ targetPower: 8, surroundingPower: 4 }),
-            look: look({ range: 3 }),
+            detonate: Detonate.with({ targetPower: 8, surroundingPower: 4 }),
+            look: Look.with({ range: 3 }),
           },
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             effects: {
-              ticking: ticking({ time: 9 }),
+              ticking: Ticking.with({ time: 9 }),
             },
             position: {
               x: 5,
@@ -476,7 +473,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 2,
               y: 0,
@@ -484,7 +481,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 3,
               y: 0,
@@ -511,21 +508,20 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 1,
             facing: EAST,
           },
           abilities: {
-            distanceOf: distanceOf(),
+            distanceOf: DistanceOf,
           },
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             effects: {
-              ticking: ticking({ time: 20 }),
+              ticking: Ticking.with({ time: 20 }),
             },
             position: {
               x: 2,
@@ -534,7 +530,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 2,
               y: 2,
@@ -542,7 +538,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 0,
               y: 0,
@@ -550,7 +546,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 0,
@@ -558,7 +554,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 1,
@@ -566,7 +562,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 2,
               y: 1,
@@ -574,7 +570,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 3,
               y: 1,
@@ -582,7 +578,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 0,
               y: 2,
@@ -590,7 +586,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 1,
               y: 2,

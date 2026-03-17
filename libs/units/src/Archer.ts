@@ -1,32 +1,16 @@
-import { look, shoot } from '@warriorjs/abilities';
-import { RELATIVE_DIRECTIONS } from '@warriorjs/spatial';
+import { Look, Shoot } from '@warriorjs/abilities';
 
-export interface UnitTurn {
-  look(direction: string): Array<{
-    isUnit(): boolean;
-    getUnit(): { isEnemy(): boolean; isBound(): boolean };
-  }>;
-  shoot(direction: string): void;
+import RangedUnit from './RangedUnit.js';
+
+class Archer extends RangedUnit {
+  static declaredAbilities = {
+    look: Look.with({ range: 3 }),
+    shoot: Shoot.with({ range: 3, power: 3 }),
+  };
+
+  constructor() {
+    super('Archer', 'a', '#ebcb8b', 7);
+  }
 }
-
-const Archer = {
-  name: 'Archer',
-  character: 'a',
-  color: '#ebcb8b',
-  maxHealth: 7,
-  abilities: {
-    look: look({ range: 3 }),
-    shoot: shoot({ range: 3, power: 3 }),
-  },
-  playTurn(archer: UnitTurn) {
-    const threatDirection = RELATIVE_DIRECTIONS.find((direction) => {
-      const spaceWithUnit = archer.look(direction).find((space) => space.isUnit());
-      return spaceWithUnit?.getUnit().isEnemy() && !spaceWithUnit.getUnit().isBound();
-    });
-    if (threatDirection) {
-      archer.shoot(threatDirection);
-    }
-  },
-};
 
 export default Archer;

@@ -1,58 +1,56 @@
+import type { AbilityEntry } from './Ability.js';
+import type { EffectEntry } from './Effect.js';
 import Floor from './Floor.js';
 import Level from './Level.js';
 import loadPlayer from './loadPlayer.js';
 import type { LevelConfig, UnitConfig } from './types.js';
-import Unit from './Unit.js';
+import type Unit from './Unit.js';
 import Warrior from './Warrior.js';
 
-function loadAbilities(unit: Unit, abilities: Record<string, (unit: Unit) => any> = {}): void {
-  Object.entries(abilities).forEach(([abilityName, abilityCreator]) => {
-    const ability = abilityCreator(unit);
-    unit.addAbility(abilityName, ability);
-  });
+function loadAbilities(unit: Unit, abilities: Record<string, AbilityEntry> = {}): void {
+  for (const [name, entry] of Object.entries(abilities)) {
+    if (Array.isArray(entry)) {
+      const [AbilityClass, config] = entry;
+      unit.addAbility(name, new AbilityClass(unit, config));
+    } else {
+      const AbilityClass = entry;
+      unit.addAbility(name, new AbilityClass(unit));
+    }
+  }
 }
 
-function loadEffects(unit: Unit, effects: Record<string, (unit: Unit) => any> = {}): void {
-  Object.entries(effects).forEach(([effectName, effectCreator]) => {
-    const effect = effectCreator(unit);
-    unit.addEffect(effectName, effect);
-  });
+function loadEffects(unit: Unit, effects: Record<string, EffectEntry> = {}): void {
+  for (const [name, entry] of Object.entries(effects)) {
+    if (Array.isArray(entry)) {
+      const [EffectClass, config] = entry;
+      unit.addEffect(name, new EffectClass(unit, config));
+    } else {
+      const EffectClass = entry;
+      unit.addEffect(name, new EffectClass(unit));
+    }
+  }
 }
 
 function loadWarrior(
-  { name, character, color, maxHealth, abilities, effects, position }: UnitConfig,
+  warrior: LevelConfig['floor']['warrior'],
   floor: Floor,
   playerCode?: string,
   language: 'javascript' | 'typescript' = 'javascript',
 ): void {
-  const warrior = new Warrior(name, character, color, maxHealth);
-  loadAbilities(warrior, abilities);
-  loadEffects(warrior, effects);
-  warrior.playTurn = playerCode ? loadPlayer(playerCode, language) : () => {};
-  floor.addWarrior(warrior, position);
+  const { name, character, color, maxHealth, abilities, position } = warrior;
+  const unit = new Warrior(name, character, color, maxHealth);
+  loadAbilities(unit, abilities);
+  unit.playTurn = playerCode ? loadPlayer(playerCode, language) : () => {};
+  floor.addWarrior(unit, position);
 }
 
-function loadUnit(
-  {
-    name,
-    character,
-    color,
-    maxHealth,
-    reward,
-    enemy,
-    bound,
-    abilities,
-    effects,
-    playTurn,
-    position,
-  }: UnitConfig,
-  floor: Floor,
-): void {
-  const unit = new Unit(name, character, color, maxHealth, reward, enemy, bound);
-  loadAbilities(unit, abilities);
-  loadEffects(unit, effects);
-  if (playTurn) {
-    unit.playTurn = playTurn;
+function loadUnit({ unit: UnitClass, effects, position }: UnitConfig, floor: Floor): void {
+  const unit = new UnitClass();
+  if (UnitClass.declaredAbilities) {
+    loadAbilities(unit, UnitClass.declaredAbilities);
+  }
+  if (effects) {
+    loadEffects(unit, effects);
   }
   floor.addUnit(unit, position);
 }
@@ -67,7 +65,9 @@ function loadLevel(
   const floor = new Floor(width, height, stairsLocation);
 
   loadWarrior(warrior, floor, playerCode, language);
-  units.forEach((unit) => loadUnit(unit, floor));
+  for (const entry of units) {
+    loadUnit(entry as UnitConfig, floor);
+  }
 
   return new Level(number!, description!, tip!, clue!, floor);
 }

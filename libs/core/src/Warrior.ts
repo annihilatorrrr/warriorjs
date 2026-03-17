@@ -1,8 +1,9 @@
+import Action from './Action.js';
 import Unit from './Unit.js';
 
 interface AbilityInfo {
   name: string;
-  action?: boolean;
+  isAction: boolean;
   description?: string;
 }
 
@@ -31,21 +32,21 @@ class Warrior extends Unit {
   }
 
   getAbilities(): {
-    actions: Omit<AbilityInfo, 'action'>[];
-    senses: Omit<AbilityInfo, 'action'>[];
+    actions: Omit<AbilityInfo, 'isAction'>[];
+    senses: Omit<AbilityInfo, 'isAction'>[];
   } {
-    const abilities: AbilityInfo[] = [...this.abilities].map(([name, { action, description }]) => ({
+    const abilities: AbilityInfo[] = [...this.abilities].map(([name, ability]) => ({
       name,
-      action,
-      description,
+      isAction: ability instanceof Action,
+      description: ability.description,
     }));
     const sortedAbilities = abilities.sort((a, b) => (a.name > b.name ? 1 : -1));
     const actions = sortedAbilities
-      .filter((ability) => ability.action)
-      .map(({ action, ...rest }) => rest);
+      .filter((ability) => ability.isAction)
+      .map(({ isAction, ...rest }) => rest);
     const senses = sortedAbilities
-      .filter((ability) => !ability.action)
-      .map(({ action, ...rest }) => rest);
+      .filter((ability) => !ability.isAction)
+      .map(({ isAction, ...rest }) => rest);
     return {
       actions,
       senses,

@@ -1,31 +1,16 @@
-import { attack, feel } from '@warriorjs/abilities';
-import { RELATIVE_DIRECTIONS } from '@warriorjs/spatial';
+import { Attack, Feel } from '@warriorjs/abilities';
 
-export interface UnitTurn {
-  feel(direction: string): {
-    getUnit(): { isEnemy(): boolean; isBound(): boolean } | undefined;
+import MeleeUnit from './MeleeUnit.js';
+
+class Sludge extends MeleeUnit {
+  static declaredAbilities = {
+    attack: Attack.with({ power: 3 }),
+    feel: Feel,
   };
-  attack(direction: string): void;
-}
 
-const Sludge = {
-  name: 'Sludge',
-  character: 's',
-  color: '#d08770',
-  maxHealth: 12,
-  abilities: {
-    attack: attack({ power: 3 }),
-    feel: feel(),
-  },
-  playTurn(sludge: UnitTurn) {
-    const threatDirection = RELATIVE_DIRECTIONS.find((direction) => {
-      const unit = sludge.feel(direction).getUnit();
-      return unit?.isEnemy() && !unit.isBound();
-    });
-    if (threatDirection) {
-      sludge.attack(threatDirection);
-    }
-  },
-};
+  constructor() {
+    super('Sludge', 's', '#d08770', 12);
+  }
+}
 
 export default Sludge;

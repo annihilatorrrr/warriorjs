@@ -1,8 +1,21 @@
 import { BACKWARD, FORWARD, LEFT, NORTH, RIGHT, SOUTH } from '@warriorjs/spatial';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-
+import Action from './Action.js';
 import Floor from './Floor.js';
+import Sense from './Sense.js';
 import Unit from './Unit.js';
+
+class MockAction extends Action {
+  readonly description = 'mock action';
+  readonly meta = { params: [], returns: 'void' as const };
+  perform = vi.fn();
+}
+
+class MockSense extends Sense {
+  readonly description = 'mock sense';
+  readonly meta = { params: [], returns: 'void' as const };
+  perform = vi.fn();
+}
 
 describe('Unit', () => {
   let unit: Unit;
@@ -77,21 +90,18 @@ describe('Unit', () => {
     expect(unit.effects.size).toBe(0);
   });
 
-  test('has a turn which starts as an empty object', () => {
-    expect(unit.turn).toEqual({});
+  test('has a turn which starts as null', () => {
+    expect(unit.turn).toBeNull();
   });
 
   describe('next turn', () => {
     let turn: any;
-    let feel: any;
-    let walk: any;
+    let feel: MockSense;
+    let walk: MockAction;
 
     beforeEach(() => {
-      feel = { perform: vi.fn() };
-      walk = {
-        action: true,
-        perform: vi.fn(),
-      };
+      feel = new MockSense(unit);
+      walk = new MockAction(unit);
       unit.addAbility('feel', feel);
       unit.addAbility('walk', walk);
       turn = unit.getNextTurn();

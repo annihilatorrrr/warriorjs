@@ -1,11 +1,7 @@
-import type { LevelConfig } from './types.js';
-
-interface Tower {
-  levels: LevelConfig[];
-}
+import type { LevelConfig, TowerDefinition } from './types.js';
 
 function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
+  if (obj === null || typeof obj !== 'object' || obj.constructor !== Object) {
     return obj;
   }
 
@@ -31,7 +27,7 @@ function deepClone<T>(obj: T): T {
  * @returns The level config.
  */
 function getLevelConfig(
-  tower: Tower,
+  tower: TowerDefinition,
   levelNumber: number,
   warriorName: string,
   epic: boolean,
@@ -41,7 +37,7 @@ function getLevelConfig(
     return null;
   }
 
-  const levelConfig = deepClone(level);
+  const levelConfig = deepClone(level) as unknown as LevelConfig;
 
   const levels = epic ? tower.levels : tower.levels.slice(0, levelNumber);
   const warriorAbilities = Object.assign(
@@ -56,8 +52,12 @@ function getLevelConfig(
   );
 
   levelConfig.number = levelNumber;
-  levelConfig.floor.warrior.name = warriorName;
-  levelConfig.floor.warrior.abilities = warriorAbilities;
+  levelConfig.floor.warrior = {
+    ...tower.warrior,
+    ...levelConfig.floor.warrior,
+    name: warriorName,
+    abilities: warriorAbilities,
+  };
   return levelConfig;
 }
 

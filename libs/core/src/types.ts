@@ -1,15 +1,20 @@
+import type { AbilityEntry } from './Ability.js';
+import type { EffectEntry } from './Effect.js';
+import type { UnitClass } from './Unit.js';
+
 export interface UnitConfig {
-  name: string;
+  unit: UnitClass;
+  position: { x: number; y: number; facing: string };
+  effects?: Record<string, EffectEntry>;
+}
+
+export interface WarriorConfig {
+  name?: string;
   character: string;
   color: string;
   maxHealth: number;
-  reward?: number;
-  enemy?: boolean;
-  bound?: boolean;
-  abilities?: Record<string, (unit: any) => any>;
-  effects?: Record<string, (unit: any) => any>;
-  playTurn?: (turn: any) => void;
   position: { x: number; y: number; facing: string };
+  abilities?: Record<string, AbilityEntry>;
 }
 
 export interface LevelConfig {
@@ -22,17 +27,24 @@ export interface LevelConfig {
   floor: {
     size: { width: number; height: number };
     stairs: { x: number; y: number };
-    warrior: UnitConfig;
+    warrior: WarriorConfig;
     units?: UnitConfig[];
   };
 }
 
-export interface TowerFloorUnit {
-  [key: string]: unknown;
-  position: { x: number; y: number; facing?: string };
+export interface WarriorDefinition {
+  character: string;
+  color: string;
+  maxHealth: number;
 }
 
-export interface TowerLevel {
+export interface WarriorOverrides {
+  position: { x: number; y: number; facing: string };
+  abilities?: Record<string, AbilityEntry>;
+  maxHealth?: number;
+}
+
+export interface LevelDefinition {
   description: string;
   tip: string;
   clue?: string;
@@ -41,13 +53,14 @@ export interface TowerLevel {
   floor: {
     size: { width: number; height: number };
     stairs: { x: number; y: number };
-    warrior: TowerFloorUnit;
-    units: TowerFloorUnit[];
+    warrior: WarriorOverrides;
+    units: UnitConfig[];
   };
 }
 
 export interface TowerDefinition {
   name: string;
   description: string;
-  levels: TowerLevel[];
+  warrior: WarriorDefinition;
+  levels: LevelDefinition[];
 }

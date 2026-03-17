@@ -1,23 +1,28 @@
 import {
-  attack,
-  feel,
-  health,
-  look,
-  maxHealth,
-  pivot,
-  rescue,
-  rest,
-  shoot,
-  think,
-  walk,
+  Attack,
+  Feel,
+  Health,
+  Look,
+  MaxHealth,
+  Pivot,
+  Rescue,
+  Rest,
+  Shoot,
+  Think,
+  Walk,
 } from '@warriorjs/abilities';
 import type { TowerDefinition } from '@warriorjs/core';
 import { EAST, WEST } from '@warriorjs/spatial';
-import { Archer, Captive, Sludge, ThickSludge, Warrior, Wizard } from '@warriorjs/units';
+import { Archer, Captive, Sludge, ThickSludge, Wizard } from '@warriorjs/units';
 
 const tower: TowerDefinition = {
   name: 'The Narrow Path',
   description: 'A corridor of stone where the only way out is forward',
+  warrior: {
+    character: '@',
+    color: '#8fbcbb',
+    maxHealth: 20,
+  },
   levels: [
     {
       description:
@@ -35,10 +40,9 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            think: think(),
-            walk: walk(),
+            think: Think,
+            walk: Walk,
           },
           position: {
             x: 0,
@@ -66,10 +70,9 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            attack: attack({ power: 5 }),
-            feel: feel(),
+            attack: Attack.with({ power: 5 }),
+            feel: Feel,
           },
           position: {
             x: 0,
@@ -79,7 +82,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 4,
               y: 0,
@@ -106,11 +109,10 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            health: health(),
-            maxHealth: maxHealth(),
-            rest: rest({ healthGain: 0.1 }),
+            health: Health,
+            maxHealth: MaxHealth,
+            rest: Rest.with({ healthGain: 0.1 }),
           },
           position: {
             x: 0,
@@ -120,7 +122,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 2,
               y: 0,
@@ -128,7 +130,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 4,
               y: 0,
@@ -136,7 +138,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 5,
               y: 0,
@@ -144,7 +146,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Sludge,
+            unit: Sludge,
             position: {
               x: 7,
               y: 0,
@@ -171,7 +173,6 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 0,
             y: 0,
@@ -180,7 +181,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 2,
               y: 0,
@@ -188,7 +189,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 3,
               y: 0,
@@ -196,7 +197,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 5,
               y: 0,
@@ -222,9 +223,8 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            rescue: rescue(),
+            rescue: Rescue,
           },
           position: {
             x: 0,
@@ -234,7 +234,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 2,
               y: 0,
@@ -242,7 +242,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 3,
               y: 0,
@@ -250,7 +250,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 4,
               y: 0,
@@ -258,7 +258,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 5,
               y: 0,
@@ -266,7 +266,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 6,
               y: 0,
@@ -293,7 +293,6 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 2,
             y: 0,
@@ -302,7 +301,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 0,
               y: 0,
@@ -310,7 +309,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 4,
               y: 0,
@@ -318,7 +317,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 6,
               y: 0,
@@ -326,7 +325,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 7,
               y: 0,
@@ -352,9 +351,8 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           abilities: {
-            pivot: pivot(),
+            pivot: Pivot,
           },
           position: {
             x: 5,
@@ -364,7 +362,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 1,
               y: 0,
@@ -372,7 +370,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 3,
               y: 0,
@@ -399,20 +397,19 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
+          abilities: {
+            look: Look.with({ range: 3 }),
+            shoot: Shoot.with({ power: 3, range: 3 }),
+          },
           position: {
             x: 0,
             y: 0,
             facing: EAST,
           },
-          abilities: {
-            look: look({ range: 3 }),
-            shoot: shoot({ power: 3, range: 3 }),
-          },
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 2,
               y: 0,
@@ -420,7 +417,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Wizard,
+            unit: Wizard,
             position: {
               x: 3,
               y: 0,
@@ -428,7 +425,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Wizard,
+            unit: Wizard,
             position: {
               x: 4,
               y: 0,
@@ -455,7 +452,6 @@ const tower: TowerDefinition = {
           y: 0,
         },
         warrior: {
-          ...Warrior,
           position: {
             x: 5,
             y: 0,
@@ -464,7 +460,7 @@ const tower: TowerDefinition = {
         },
         units: [
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 1,
               y: 0,
@@ -472,7 +468,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Archer,
+            unit: Archer,
             position: {
               x: 2,
               y: 0,
@@ -480,7 +476,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...ThickSludge,
+            unit: ThickSludge,
             position: {
               x: 7,
               y: 0,
@@ -488,7 +484,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Wizard,
+            unit: Wizard,
             position: {
               x: 9,
               y: 0,
@@ -496,7 +492,7 @@ const tower: TowerDefinition = {
             },
           },
           {
-            ...Captive,
+            unit: Captive,
             position: {
               x: 10,
               y: 0,

@@ -3,7 +3,6 @@ import Logger, { type TurnEvent } from './Logger.js';
 
 const maxTurns = 200;
 
-/** Class representing a level. */
 class Level {
   number: number;
   description: string;

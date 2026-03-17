@@ -1,10 +1,10 @@
-import type { AbsoluteDirection, RelativeDirection } from '@warriorjs/spatial';
+import type { AbsoluteDirection, Location, RelativeDirection } from '@warriorjs/spatial';
 
 export interface Space {
   getUnit(): Unit | null;
   isEmpty(): boolean;
   isWall(): boolean;
-  location: [number, number];
+  location: Location;
   toString(): string;
 }
 
@@ -16,7 +16,7 @@ export interface Unit {
   health: number;
   maxHealth: number;
   position: {
-    location: [number, number];
+    location: Location;
     orientation: AbsoluteDirection;
   };
   getSpaceAt(direction: RelativeDirection, forward?: number, right?: number): Space;
@@ -24,8 +24,8 @@ export interface Unit {
   getDirectionOf(space: unknown): RelativeDirection;
   getDirectionOfStairs(): RelativeDirection;
   getDistanceOf(space: unknown): number;
-  getOtherUnits(): Array<{ getSpace(): { location: [number, number] } }>;
-  getSpace(): { location: [number, number] };
+  getOtherUnits(): Array<{ getSpace(): { location: Location } }>;
+  getSpace(): { location: Location };
   move(direction: RelativeDirection): void;
   rotate(direction: RelativeDirection): void;
   damage(receiver: unknown, amount: number): void;

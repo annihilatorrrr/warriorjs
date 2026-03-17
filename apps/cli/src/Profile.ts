@@ -10,7 +10,6 @@ const playerCodeFileJs = 'Player.js';
 const playerCodeFileTs = 'Player.ts';
 const readmeFile = 'README.md';
 
-/** Class representing a profile. */
 class Profile {
   warriorName: string;
   tower: Tower;

@@ -1,6 +1,5 @@
 import type { LevelDefinition, WarriorDefinition } from '@warriorjs/core';
 
-/** Class representing a tower. */
 class Tower {
   id: string;
   name: string;

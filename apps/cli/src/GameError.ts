@@ -1,4 +1,3 @@
-/** Class representing a game error. */
 class GameError extends Error {
   constructor(message: string) {
     super(message);

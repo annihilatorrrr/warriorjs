@@ -6,7 +6,6 @@ import renderPlayerCode from './utils/renderPlayerCode.js';
 import renderReadme from './utils/renderReadme.js';
 import renderTypes from './utils/renderTypes.js';
 
-/** Class representing a profile generator. */
 class ProfileGenerator {
   profile: Profile;
   levelConfig: LevelConfig;

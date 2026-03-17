@@ -61,8 +61,7 @@ function loadLevel(
   language: 'javascript' | 'typescript' = 'javascript',
 ): Level {
   const { width, height } = size;
-  const stairsLocation: [number, number] = [stairs.x, stairs.y];
-  const floor = new Floor(width, height, stairsLocation);
+  const floor = new Floor(width, height, [stairs.x, stairs.y]);
 
   loadWarrior(warrior, floor, playerCode, language);
   for (const entry of units) {

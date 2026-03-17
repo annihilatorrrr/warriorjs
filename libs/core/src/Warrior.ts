@@ -7,7 +7,6 @@ interface AbilityInfo {
   description?: string;
 }
 
-/** Class representing a warrior. */
 class Warrior extends Unit {
   constructor(name?: string, character?: string, color?: string, maxHealth?: number) {
     super(name, character, color, maxHealth, null, false);

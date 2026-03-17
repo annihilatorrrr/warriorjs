@@ -37,7 +37,6 @@ export interface GameContext {
   onProfileSelected: (profile: Profile) => void;
 }
 
-/** Class representing a game. */
 class Game {
   runDirectoryPath: string;
   practiceLevel: number | undefined;

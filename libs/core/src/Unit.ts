@@ -1,3 +1,5 @@
+import type { RelativeDirection } from '@warriorjs/spatial';
+
 import type Ability from './Ability.js';
 import type { AbilityEntry } from './Ability.js';
 import Action from './Action.js';
@@ -19,7 +21,6 @@ export interface UnitClass {
   declaredAbilities?: Record<string, AbilityEntry>;
 }
 
-/** Class representing a unit. */
 class Unit {
   static declaredAbilities?: Record<string, AbilityEntry>;
   name: string;
@@ -195,19 +196,23 @@ class Unit {
     return this.position!.getSpace();
   }
 
-  getSensedSpaceAt(direction: string, forward: number = 1, right: number = 0): SensedSpace {
+  getSensedSpaceAt(
+    direction: RelativeDirection,
+    forward: number = 1,
+    right: number = 0,
+  ): SensedSpace {
     return this.getSpaceAt(direction, forward, right).as(this);
   }
 
-  getSpaceAt(direction: string, forward: number = 1, right: number = 0): Space {
+  getSpaceAt(direction: RelativeDirection, forward: number = 1, right: number = 0): Space {
     return this.position!.getRelativeSpace(direction, [forward, right]);
   }
 
-  getDirectionOfStairs(): string {
+  getDirectionOfStairs(): RelativeDirection {
     return this.position!.getRelativeDirectionOf(this.position!.floor.getStairsSpace());
   }
 
-  getDirectionOf(sensedSpace: SensedSpace): string {
+  getDirectionOf(sensedSpace: SensedSpace): RelativeDirection {
     const space = Space.from(sensedSpace, this);
     return this.position!.getRelativeDirectionOf(space);
   }
@@ -217,11 +222,11 @@ class Unit {
     return this.position!.getDistanceOf(space);
   }
 
-  move(direction: string, forward: number = 1, right: number = 0): void {
+  move(direction: RelativeDirection, forward: number = 1, right: number = 0): void {
     this.position!.move(direction, [forward, right]);
   }
 
-  rotate(direction: string): void {
+  rotate(direction: RelativeDirection): void {
     this.position?.rotate(direction);
   }
 

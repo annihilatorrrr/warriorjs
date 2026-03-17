@@ -1,10 +1,21 @@
+import type { AbsoluteDirection } from '@warriorjs/spatial';
+
 import type { AbilityEntry } from './Ability.js';
 import type { EffectEntry } from './Effect.js';
 import type { UnitClass } from './Unit.js';
 
+/** Dimensions. */
+export type Size = { width: number; height: number };
+
+/** A location as an object with named coordinates. */
+export type LocationConfig = { x: number; y: number };
+
+/** A position (location + facing direction). */
+export type PositionConfig = LocationConfig & { facing: AbsoluteDirection };
+
 export interface UnitConfig {
   unit: UnitClass;
-  position: { x: number; y: number; facing: string };
+  position: PositionConfig;
   effects?: Record<string, EffectEntry>;
 }
 
@@ -13,7 +24,7 @@ export interface WarriorConfig {
   character: string;
   color: string;
   maxHealth: number;
-  position: { x: number; y: number; facing: string };
+  position: PositionConfig;
   abilities?: Record<string, AbilityEntry>;
 }
 
@@ -25,8 +36,8 @@ export interface LevelConfig {
   timeBonus?: number;
   aceScore?: number;
   floor: {
-    size: { width: number; height: number };
-    stairs: { x: number; y: number };
+    size: Size;
+    stairs: LocationConfig;
     warrior: WarriorConfig;
     units?: UnitConfig[];
   };
@@ -39,7 +50,7 @@ export interface WarriorDefinition {
 }
 
 export interface WarriorOverrides {
-  position: { x: number; y: number; facing: string };
+  position: PositionConfig;
   abilities?: Record<string, AbilityEntry>;
   maxHealth?: number;
 }
@@ -51,8 +62,8 @@ export interface LevelDefinition {
   timeBonus: number;
   aceScore: number;
   floor: {
-    size: { width: number; height: number };
-    stairs: { x: number; y: number };
+    size: Size;
+    stairs: LocationConfig;
     warrior: WarriorOverrides;
     units: UnitConfig[];
   };

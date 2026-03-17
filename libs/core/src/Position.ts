@@ -1,9 +1,13 @@
 import {
+  type AbsoluteDirection,
   getAbsoluteDirection,
   getAbsoluteOffset,
   getDirectionOfLocation,
   getDistanceOfLocation,
   getRelativeDirection,
+  type Location,
+  type RelativeDirection,
+  type RelativeOffset,
   rotateRelativeOffset,
   translateLocation,
   verifyAbsoluteDirection,
@@ -12,20 +16,19 @@ import {
 import type Floor from './Floor.js';
 import type Space from './Space.js';
 
-/** Class representing a position. */
 class Position {
   floor: Floor;
-  location: [number, number];
-  orientation: string;
+  location: Location;
+  orientation: AbsoluteDirection;
 
-  constructor(floor: Floor, location: [number, number], orientation: string) {
+  constructor(floor: Floor, location: Location, orientation: string) {
     verifyAbsoluteDirection(orientation);
     this.floor = floor;
     this.location = location;
     this.orientation = orientation;
   }
 
-  isAt([x, y]: [number, number]): boolean {
+  isAt([x, y]: Location): boolean {
     const [locationX, locationY] = this.location;
     return locationX === x && locationY === y;
   }
@@ -34,12 +37,12 @@ class Position {
     return this.floor.getSpaceAt(this.location);
   }
 
-  getRelativeSpace(direction: string, relativeOffset: [number, number]): Space {
+  getRelativeSpace(direction: RelativeDirection, relativeOffset: RelativeOffset): Space {
     const offset = getAbsoluteOffset(
       rotateRelativeOffset(relativeOffset, direction),
       this.orientation,
     );
-    const spaceLocation = translateLocation(this.location, offset) as [number, number];
+    const spaceLocation = translateLocation(this.location, offset);
     return this.floor.getSpaceAt(spaceLocation);
   }
 
@@ -47,22 +50,22 @@ class Position {
     return getDistanceOfLocation(space.location, this.location);
   }
 
-  getRelativeDirectionOf(space: Space): string {
+  getRelativeDirectionOf(space: Space): RelativeDirection {
     return getRelativeDirection(
       getDirectionOfLocation(space.location, this.location),
       this.orientation,
     );
   }
 
-  move(direction: string, relativeOffset: [number, number]): void {
+  move(direction: RelativeDirection, relativeOffset: RelativeOffset): void {
     const offset = getAbsoluteOffset(
       rotateRelativeOffset(relativeOffset, direction),
       this.orientation,
     );
-    this.location = translateLocation(this.location, offset) as [number, number];
+    this.location = translateLocation(this.location, offset);
   }
 
-  rotate(direction: string): void {
+  rotate(direction: RelativeDirection): void {
     this.orientation = getAbsoluteDirection(direction, this.orientation);
   }
 }

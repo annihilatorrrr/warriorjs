@@ -1,4 +1,10 @@
-import { getAbsoluteOffset, getRelativeOffset, translateLocation } from '@warriorjs/spatial';
+import {
+  getAbsoluteOffset,
+  getRelativeOffset,
+  type Location,
+  type RelativeOffset,
+  translateLocation,
+} from '@warriorjs/spatial';
 
 import type Floor from './Floor.js';
 import type Unit from './Unit.js';
@@ -13,7 +19,7 @@ const emptyCharacter = ' ';
 const stairsCharacter = '>';
 
 export interface SensedSpace {
-  getLocation(): [number, number];
+  getLocation(): RelativeOffset;
   getUnit(): SensedUnit | null;
   isEmpty(): boolean;
   isStairs(): boolean;
@@ -27,19 +33,18 @@ export interface SensedUnit {
   isUnderEffect(name: string): boolean;
 }
 
-/** Class representing a space in the floor. */
 class Space {
   floor: Floor;
-  location: [number, number];
+  location: Location;
 
   static from(sensedSpace: SensedSpace, unit: Unit): Space {
     const { floor, location, orientation } = unit.position!;
     const offset = getAbsoluteOffset(sensedSpace.getLocation(), orientation);
-    const spaceLocation = translateLocation(location, offset) as [number, number];
+    const spaceLocation = translateLocation(location, offset);
     return new Space(floor, spaceLocation);
   }
 
-  constructor(floor: Floor, location: [number, number]) {
+  constructor(floor: Floor, location: Location) {
     this.floor = floor;
     this.location = location;
   }
@@ -108,10 +113,7 @@ class Space {
   as(unit: Unit): SensedSpace {
     return {
       getLocation: () =>
-        getRelativeOffset(this.location, unit.position!.location, unit.position!.orientation) as [
-          number,
-          number,
-        ],
+        getRelativeOffset(this.location, unit.position!.location, unit.position!.orientation),
       getUnit: () => {
         const spaceUnit = this.getUnit.call(this);
         return spaceUnit ? spaceUnit.as(unit) : null;

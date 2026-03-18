@@ -1,6 +1,30 @@
 import { type LevelConfig, type TowerDefinition } from './types.js';
 
 /**
+ * Deep clones a value, passing through functions and class constructors
+ * as-is since they are not structurally cloneable.
+ */
+function deepClone<T>(value: T): T {
+  if (value === null || typeof value !== 'object') {
+    return value;
+  }
+
+  if (Object.getPrototypeOf(value) !== Object.prototype) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => deepClone(item)) as T;
+  }
+
+  const result: Record<string, unknown> = {};
+  for (const [key, val] of Object.entries(value)) {
+    result[key] = typeof val === 'function' ? val : deepClone(val);
+  }
+  return result as T;
+}
+
+/**
  * Returns the config for the level with the given number.
  *
  * @param tower The tower.
@@ -41,15 +65,15 @@ function getLevelConfig(
     timeBonus: level.timeBonus,
     aceScore: level.aceScore,
     floor: {
-      size: structuredClone(level.floor.size),
-      stairs: structuredClone(level.floor.stairs),
+      size: deepClone(level.floor.size),
+      stairs: deepClone(level.floor.stairs),
       warrior: {
-        ...structuredClone(tower.warrior),
-        ...structuredClone(level.floor.warrior),
+        ...deepClone(tower.warrior),
+        ...deepClone(level.floor.warrior),
         name: warriorName,
         abilities: warriorAbilities,
       },
-      units: level.floor.units ? structuredClone(level.floor.units) : undefined,
+      units: level.floor.units ? deepClone(level.floor.units) : undefined,
     },
   };
 }

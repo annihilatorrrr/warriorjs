@@ -79,3 +79,35 @@ test('does not mutate original tower config', () => {
   expect(tower.warrior).not.toHaveProperty('name');
   expect(tower.levels[0].floor.warrior).not.toHaveProperty('name');
 });
+
+test('handles class references in abilities and units', () => {
+  class FakeAbility {}
+  class FakeUnit {}
+  const towerWithClasses = {
+    name: 'Bar',
+    description: 'A tower with classes',
+    warrior: { character: '@', color: '#fff', maxHealth: 20 },
+    levels: [
+      {
+        floor: {
+          warrior: {
+            abilities: { walk: FakeAbility },
+            position: { x: 0, y: 0, facing: 'east' },
+          },
+          size: { width: 3, height: 1 },
+          stairs: { x: 2, y: 0 },
+          units: [
+            {
+              unit: FakeUnit,
+              position: { x: 1, y: 0, facing: 'west' },
+            },
+          ],
+        },
+      },
+    ],
+  } as any;
+  const config = getLevelConfig(towerWithClasses, 1, 'Joe', false);
+  expect(config).not.toBeNull();
+  expect(config!.floor.warrior.abilities?.walk).toBe(FakeAbility);
+  expect(config!.floor.units?.[0].unit).toBe(FakeUnit);
+});

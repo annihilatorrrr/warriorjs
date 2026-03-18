@@ -6,8 +6,9 @@ import type Profile from '../../../Profile.js';
 import { usePlaySession } from '../../hooks/usePlaySession.js';
 import {
   getLastContentFrame,
+  makeLevelContext,
+  makeLevelReplay,
   makeLevelReport,
-  makeLevelRun,
   waitForRender,
 } from '../../testing.js';
 import { type PlaySessionState } from '../../types.js';
@@ -27,9 +28,8 @@ const mockProfile = {
 
 describe('PlaySession', () => {
   test('renders PlayScreen when state is playing', () => {
-    const levelRun = makeLevelRun();
     mockUsePlaySession.mockReturnValue({
-      state: { type: 'playing', levelRun },
+      state: { type: 'playing', replay: makeLevelReplay(), context: makeLevelContext() },
       handlePlayComplete: vi.fn(),
       handleLevelCompleteChoice: vi.fn(),
     });
@@ -43,10 +43,14 @@ describe('PlaySession', () => {
   });
 
   test('renders LevelCompleteScreen when state is levelComplete with prompt action', () => {
-    const levelRun = makeLevelRun();
-    const levelReport = makeLevelReport({ passed: true, hasNextLevel: true });
     mockUsePlaySession.mockReturnValue({
-      state: { type: 'levelComplete', levelRun, levelReport, action: { type: 'prompt' } },
+      state: {
+        type: 'levelComplete',
+        replay: makeLevelReplay(),
+        context: makeLevelContext(),
+        report: makeLevelReport({ passed: true, hasNextLevel: true }),
+        action: { type: 'prompt' },
+      },
       handlePlayComplete: vi.fn(),
       handleLevelCompleteChoice: vi.fn(),
     });
@@ -102,13 +106,12 @@ describe('PlaySession', () => {
   });
 
   test('renders LevelCompleteScreen for terminal actions', async () => {
-    const levelRun = makeLevelRun();
-    const levelReport = makeLevelReport();
     mockUsePlaySession.mockReturnValue({
       state: {
         type: 'levelComplete',
-        levelRun,
-        levelReport,
+        replay: makeLevelReplay(),
+        context: makeLevelContext(),
+        report: makeLevelReport(),
         action: { type: 'next-level', readmePath: 'path/to/README' },
       },
       handlePlayComplete: vi.fn(),

@@ -17,15 +17,16 @@ function makeEvent(overrides: Partial<TurnEvent> = {}): TurnEvent {
 
 describe('LevelLayout', () => {
   test('renders header, floor map, divider, and children', () => {
-    const turns = [[makeEvent()]];
+    const replay = { turns: [[makeEvent()]], initialState: makeEvent() };
+    const context = {
+      warriorName: 'Olric',
+      towerName: 'The Narrow Path',
+      levelNumber: 3,
+      totalScore: 42,
+      maxHealth: 20,
+    };
     const { lastFrame } = render(
-      <LevelLayout
-        turns={turns}
-        warriorName="Olric"
-        towerName="The Narrow Path"
-        levelNumber={3}
-        totalScore={42}
-      >
+      <LevelLayout replay={replay} context={context}>
         <Text>child content</Text>
       </LevelLayout>,
     );
@@ -39,14 +40,16 @@ describe('LevelLayout', () => {
   });
 
   test('renders without floor map when turns are empty', () => {
+    const replay = { turns: [] as TurnEvent[][], initialState: makeEvent() };
+    const context = {
+      warriorName: 'Olric',
+      towerName: 'The Narrow Path',
+      levelNumber: 1,
+      totalScore: 0,
+      maxHealth: 20,
+    };
     const { lastFrame } = render(
-      <LevelLayout
-        turns={[]}
-        warriorName="Olric"
-        towerName="The Narrow Path"
-        levelNumber={1}
-        totalScore={0}
-      >
+      <LevelLayout replay={replay} context={context}>
         <Text>content</Text>
       </LevelLayout>,
     );

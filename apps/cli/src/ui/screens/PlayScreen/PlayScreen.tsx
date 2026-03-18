@@ -9,32 +9,25 @@ import LogArea from '../../components/LogArea/index.js';
 import Scrubber from '../../components/Scrubber/index.js';
 import WarriorStatus from '../../components/WarriorStatus/index.js';
 import { usePlayback } from '../../hooks/usePlayback.js';
-import { type TurnEvent } from '../../types.js';
+import { type LevelContext, type LevelReplay } from '../../types.js';
 
 interface PlayScreenProps {
-  turns: TurnEvent[][];
-  initialState: TurnEvent;
-  warriorName: string;
-  towerName: string;
-  levelNumber: number;
-  totalScore: number;
-  maxHealth: number;
+  replay: LevelReplay;
+  context: LevelContext;
   reviewMode?: boolean;
   onPlaybackComplete: () => void;
 }
 
 export default function PlayScreen({
-  turns,
-  initialState,
-  warriorName,
-  towerName,
-  levelNumber,
-  totalScore,
-  maxHealth,
+  replay,
+  context,
   reviewMode,
   onPlaybackComplete,
 }: PlayScreenProps): React.ReactElement {
-  const turnsWithInitial = useMemo(() => [[initialState], ...turns], [initialState, turns]);
+  const turnsWithInitial = useMemo(
+    () => [[replay.initialState], ...replay.turns],
+    [replay.initialState, replay.turns],
+  );
   const { state } = usePlayback(turnsWithInitial.length, onPlaybackComplete, reviewMode);
   const currentTurnEvents = turnsWithInitial[state.currentTurn];
   const lastEvent = currentTurnEvents?.[currentTurnEvents.length - 1];
@@ -42,20 +35,22 @@ export default function PlayScreen({
   return (
     <Box flexDirection="column" width="100%">
       <Header
-        warriorName={warriorName}
-        towerName={towerName}
-        levelNumber={levelNumber}
-        score={totalScore}
+        warriorName={context.warriorName}
+        towerName={context.towerName}
+        levelNumber={context.levelNumber}
+        score={context.totalScore}
       />
       <Box flexDirection="column">
         {lastEvent && (
           <>
             <FloorMap floorMap={lastEvent.floorMap} />
-            <WarriorStatus
-              health={lastEvent.warriorStatus.health}
-              maxHealth={maxHealth}
-              score={lastEvent.warriorStatus.score}
-            />
+            {lastEvent.warriorStatus && (
+              <WarriorStatus
+                health={lastEvent.warriorStatus.health}
+                maxHealth={context.maxHealth}
+                score={lastEvent.warriorStatus.score}
+              />
+            )}
           </>
         )}
       </Box>

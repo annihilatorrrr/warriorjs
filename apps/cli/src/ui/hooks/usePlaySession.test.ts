@@ -8,7 +8,6 @@ import {
   type LevelCompleteChoice,
   type LevelConfig,
   type LevelReport,
-  type LevelResult,
   type PlaySessionState,
 } from '../types.js';
 
@@ -79,14 +78,15 @@ function createMockContext(overrides: Partial<GameContext> = {}): GameContext {
   };
 }
 
-const defaultLevelConfig: LevelConfig = {
+const defaultLevelConfig = {
+  number: 1,
   clue: 'Try walking',
   timeBonus: 10,
   aceScore: 30,
   floor: { warrior: { maxHealth: 20 } },
-};
+} as unknown as LevelConfig;
 
-const defaultLevelResult: LevelResult = {
+const defaultLevelResult = {
   passed: true,
   turns: [
     [
@@ -297,9 +297,9 @@ describe('usePlaySession', () => {
       expect(ref.current!.state).toEqual(expect.objectContaining({ type: 'playing' }));
       const playingState = ref.current!.state as {
         type: 'playing';
-        levelRun: { totalScore: number };
+        context: { totalScore: number };
       };
-      expect(playingState.levelRun.totalScore).toBe(42);
+      expect(playingState.context.totalScore).toBe(42);
     });
 
     test('uses profile.score for non-epic profiles in levelRun', () => {
@@ -312,9 +312,9 @@ describe('usePlaySession', () => {
 
       const playingState = ref.current!.state as {
         type: 'playing';
-        levelRun: { totalScore: number };
+        context: { totalScore: number };
       };
-      expect(playingState.levelRun.totalScore).toBe(100);
+      expect(playingState.context.totalScore).toBe(100);
     });
   });
 

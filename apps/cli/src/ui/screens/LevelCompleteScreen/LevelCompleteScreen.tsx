@@ -11,54 +11,32 @@ import SelectPrompt from '../../components/SelectPrompt/index.js';
 import {
   type LevelCompleteAction,
   type LevelCompleteChoice,
+  type LevelContext,
+  type LevelReplay,
   type LevelReport,
-  type LevelRun,
 } from '../../types.js';
-
-function buildMenuItems(levelReport: LevelReport): { label: string; value: LevelCompleteChoice }[] {
-  if (levelReport.passed) {
-    return [
-      levelReport.hasNextLevel
-        ? { label: 'Next level', value: 'next-level' }
-        : { label: 'Enter epic mode', value: 'epic-mode' },
-      { label: 'Review turns', value: 'review' },
-      { label: 'Stay and hone', value: 'stay' },
-    ];
-  }
-
-  return [
-    { label: 'Try again', value: 'try-again' },
-    { label: 'Review turns', value: 'review' },
-    ...(levelReport.hasClue && !levelReport.isShowingClue
-      ? [{ label: 'Reveal clues', value: 'clue' as const }]
-      : []),
-  ];
-}
+import buildMenuItems from './utils/buildMenuItems.js';
 
 interface LevelCompleteScreenProps {
-  levelReport: LevelReport;
-  levelRun: LevelRun;
+  replay: LevelReplay;
+  context: LevelContext;
+  report: LevelReport;
   action: LevelCompleteAction;
   onSelect: (value: LevelCompleteChoice) => void;
 }
 
 export default function LevelCompleteScreen({
-  levelReport,
-  levelRun,
+  replay,
+  context,
+  report,
   action,
   onSelect,
 }: LevelCompleteScreenProps): React.ReactElement {
-  const menuItems = useMemo(() => buildMenuItems(levelReport), [levelReport]);
+  const menuItems = useMemo(() => buildMenuItems(report), [report]);
 
   return (
-    <LevelLayout
-      turns={levelRun.turns}
-      warriorName={levelRun.warriorName}
-      towerName={levelRun.towerName}
-      levelNumber={levelRun.levelNumber}
-      totalScore={levelRun.totalScore}
-    >
-      <ResultScreen {...levelReport} />
+    <LevelLayout replay={replay} context={context}>
+      <ResultScreen {...report} />
       <Divider />
       {action.type === 'prompt' && (
         <SelectPrompt message="" items={menuItems} onSelect={onSelect} />

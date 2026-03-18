@@ -1,9 +1,9 @@
 import { getLevelScore } from '@warriorjs/scoring';
 
-import { type LevelConfig, type LevelReport, type LevelResult } from '../types.js';
+import { type LevelConfig, type LevelReport, type TurnEvent } from '../types.js';
 
 interface BuildLevelReportParams {
-  levelResult: LevelResult;
+  levelResult: { passed: boolean; turns: TurnEvent[][] };
   levelConfig: LevelConfig;
   levelNumber: number;
   hasNextLevel: boolean;

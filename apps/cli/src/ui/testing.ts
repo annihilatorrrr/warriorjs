@@ -1,4 +1,4 @@
-import { type LevelReport, type LevelRun } from './types.js';
+import { type LevelContext, type LevelReplay, type LevelReport } from './types.js';
 
 export const waitForRender = () => new Promise((resolve) => setTimeout(resolve, 50));
 
@@ -10,7 +10,7 @@ export function getLastContentFrame(frames: string[]): string {
   return '';
 }
 
-export function makeLevelRun(overrides: Partial<LevelRun> = {}): LevelRun {
+export function makeLevelReplay(overrides: Partial<LevelReplay> = {}): LevelReplay {
   return {
     turns: [
       [
@@ -28,6 +28,12 @@ export function makeLevelRun(overrides: Partial<LevelRun> = {}): LevelRun {
       floorMap: [[{ character: '@' }]],
       warriorStatus: { health: 20, score: 0 },
     },
+    ...overrides,
+  };
+}
+
+export function makeLevelContext(overrides: Partial<LevelContext> = {}): LevelContext {
+  return {
     warriorName: 'Olric',
     towerName: 'The Narrow Path',
     levelNumber: 1,

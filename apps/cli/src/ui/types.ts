@@ -1,32 +1,15 @@
+import { type LevelConfig, type TurnEvent } from '@warriorjs/core';
+
+export type { LevelConfig, LevelResult, TurnEvent } from '@warriorjs/core';
+
 import type Profile from '../Profile.js';
 
-// UI-specific narrowings of @warriorjs/core types.
-// These pick only the fields the UI layer needs, keeping a clean boundary
-// between core engine types and rendering concerns.
-
-export interface LevelConfig {
-  clue?: string;
-  timeBonus?: number;
-  aceScore?: number;
-  floor: { warrior: { maxHealth: number } };
-}
-
-export interface TurnEvent {
-  message: string;
-  unit: { name: string; color: string } | null;
-  floorMap: { character: string; unit?: { color: string } }[][];
-  warriorStatus: { health: number; score: number };
-}
-
-export interface LevelResult {
-  passed: boolean;
+export interface LevelReplay {
   turns: TurnEvent[][];
   initialState: TurnEvent;
 }
 
-export interface LevelRun {
-  turns: TurnEvent[][];
-  initialState: TurnEvent;
+export interface LevelContext {
   warriorName: string;
   towerName: string;
   levelNumber: number;
@@ -47,12 +30,16 @@ export interface LevelReport {
   isShowingClue: boolean;
 }
 
-export interface LevelEvaluation {
+export interface LevelOutcome {
   profile: Profile;
-  levelNumber: number;
-  levelResult: LevelResult;
   levelConfig: LevelConfig;
-  levelRun: LevelRun;
+  levelResult: { passed: boolean; turns: TurnEvent[][]; initialState: TurnEvent };
+}
+
+export interface CompletedLevel {
+  replay: LevelReplay;
+  context: LevelContext;
+  report: LevelReport;
 }
 
 export type LevelCompleteChoice =
@@ -70,12 +57,25 @@ export type LevelCompleteAction =
   | { type: 'epic-mode' }
   | { type: 'clue'; readmePath: string };
 
+export type SessionPhase =
+  | { phase: 'playing'; replay: LevelReplay; context: LevelContext; outcome: LevelOutcome }
+  | { phase: 'reviewing'; replay: LevelReplay; context: LevelContext; returnTo: CompletedLevel }
+  | { phase: 'levelComplete'; completedLevel: CompletedLevel; action: LevelCompleteAction }
+  | { phase: 'towerComplete' }
+  | { phase: 'error'; message: string };
+
 export type PlaySessionState =
-  | { type: 'playing'; levelRun: LevelRun; reviewMode?: boolean }
+  | {
+      type: 'playing';
+      replay: LevelReplay;
+      context: LevelContext;
+      reviewMode?: boolean;
+    }
   | {
       type: 'levelComplete';
-      levelReport: LevelReport;
-      levelRun: LevelRun;
+      replay: LevelReplay;
+      context: LevelContext;
+      report: LevelReport;
       action: LevelCompleteAction;
     }
   | { type: 'towerComplete' }

@@ -1,16 +1,16 @@
 import { getLevelConfig, runLevel } from '@warriorjs/core';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import {
+  type LevelCompleteAction,
   type LevelCompleteChoice,
-  type LevelConfig,
-  type LevelEvaluation,
-  type LevelReport,
-  type LevelResult,
-  type LevelRun,
+  type LevelContext,
+  type LevelOutcome,
+  type LevelReplay,
   type PlaySessionState,
+  type SessionPhase,
 } from '../types.js';
 import { buildLevelReport } from '../utils/buildLevelReport.js';
 
@@ -27,83 +27,68 @@ interface UsePlaySessionReturn {
   handleLevelCompleteChoice: (value: LevelCompleteChoice) => void;
 }
 
-interface LevelOutcome {
-  state: PlaySessionState;
-  evaluation: LevelEvaluation | null;
-  currentReport: { levelReport: LevelReport; levelRun: LevelRun } | null;
-}
+function runPlayerLevel(
+  profile: Profile,
+  levelNumber: number,
+): {
+  replay: LevelReplay;
+  context: LevelContext;
+  outcome: LevelOutcome;
+} {
+  const { tower, warriorName, epic } = profile;
 
-function executeLevel(profile: Profile, levelNumber: number, context: GameContext): LevelOutcome {
-  try {
-    const { tower, warriorName, epic } = profile;
-    const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
-    if (!levelConfig) {
-      return {
-        state: { type: 'error', message: `Level ${levelNumber} not found.` },
-        evaluation: null,
-        currentReport: null,
-      };
-    }
-    const playerCode = profile.readPlayerCode();
-    if (!playerCode) {
-      return {
-        state: { type: 'error', message: 'No player code found. Check your profile directory.' },
-        evaluation: null,
-        currentReport: null,
-      };
-    }
-    const language = profile.language || 'javascript';
-    const rawResult = runLevel(levelConfig, playerCode, language);
-    if (!rawResult.initialState) {
-      return {
-        state: { type: 'error', message: 'Level produced no initial state.' },
-        evaluation: null,
-        currentReport: null,
-      };
-    }
-    const levelResult: LevelResult = {
-      passed: rawResult.passed,
-      turns: rawResult.turns as LevelResult['turns'],
-      initialState: rawResult.initialState as LevelResult['initialState'],
-    };
-
-    const levelRun: LevelRun = {
-      turns: levelResult.turns,
-      initialState: levelResult.initialState,
-      warriorName,
-      towerName: tower.name,
-      levelNumber,
-      totalScore: profile.isEpic() ? profile.currentEpicScore : profile.score,
-      maxHealth: levelConfig.floor.warrior.maxHealth,
-    };
-
-    if (context.silencePlay) {
-      return evaluateLevel(profile, levelNumber, levelResult, levelConfig, levelRun, context);
-    }
-
-    return {
-      state: { type: 'playing', levelRun },
-      evaluation: { profile, levelNumber, levelResult, levelConfig, levelRun },
-      currentReport: null,
-    };
-  } catch (err: unknown) {
-    return {
-      state: { type: 'error', message: err instanceof Error ? err.message : String(err) },
-      evaluation: null,
-      currentReport: null,
-    };
+  const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
+  if (!levelConfig) {
+    throw new Error(`Level ${levelNumber} not found.`);
   }
+
+  const playerCode = profile.readPlayerCode();
+  if (!playerCode) {
+    throw new Error('No player code found. Check your profile directory.');
+  }
+
+  const language = profile.language || 'javascript';
+  const rawResult = runLevel(levelConfig, playerCode, language);
+  if (!rawResult.initialState) {
+    throw new Error('Level produced no initial state.');
+  }
+
+  const replay: LevelReplay = {
+    turns: rawResult.turns,
+    initialState: rawResult.initialState,
+  };
+
+  const context: LevelContext = {
+    warriorName,
+    towerName: tower.name,
+    levelNumber,
+    totalScore: profile.isEpic() ? profile.currentEpicScore : profile.score,
+    maxHealth: levelConfig.floor.warrior.maxHealth,
+  };
+
+  const outcome: LevelOutcome = {
+    profile,
+    levelConfig,
+    levelResult: {
+      passed: rawResult.passed,
+      turns: rawResult.turns,
+      initialState: rawResult.initialState,
+    },
+  };
+
+  return { replay, context, outcome };
 }
 
 function evaluateLevel(
-  profile: Profile,
-  levelNumber: number,
-  levelResult: LevelResult,
-  levelConfig: LevelConfig,
-  levelRun: LevelRun,
-  context: GameContext,
-): LevelOutcome {
-  const levelReport = buildLevelReport({
+  pending: LevelOutcome,
+  replay: LevelReplay,
+  context: LevelContext,
+  gameContext: GameContext,
+): SessionPhase {
+  const { profile, levelConfig, levelResult } = pending;
+  const levelNumber = levelConfig.number;
+
+  const report = buildLevelReport({
     levelResult,
     levelConfig,
     levelNumber,
@@ -113,162 +98,144 @@ function evaluateLevel(
     isShowingClue: levelResult.passed ? false : profile.isShowingClue(),
   });
 
-  if (levelReport.passed) {
-    profile.tallyPoints(levelNumber, levelReport.totalScore, levelReport.grade);
+  if (report.passed) {
+    profile.tallyPoints(levelNumber, report.totalScore, report.grade);
   }
 
-  // Epic auto-advance: skip result screen and play next level.
-  if (
-    levelReport.passed &&
-    levelReport.isEpic &&
-    levelReport.hasNextLevel &&
-    !context.practiceLevel
-  ) {
-    return executeLevel(profile, levelNumber + 1, context);
+  if (report.passed && report.isEpic && report.hasNextLevel && !gameContext.practiceLevel) {
+    return startLevel(profile, levelNumber + 1, gameContext);
   }
 
-  // Epic tower complete: update score and show tower-complete screen.
-  if (
-    levelReport.passed &&
-    levelReport.isEpic &&
-    !levelReport.hasNextLevel &&
-    !context.practiceLevel
-  ) {
+  if (report.passed && report.isEpic && !report.hasNextLevel && !gameContext.practiceLevel) {
     profile.updateEpicScore();
-    return {
-      state: { type: 'towerComplete' },
-      evaluation: null,
-      currentReport: null,
-    };
+    return { phase: 'towerComplete' };
   }
 
   return {
-    state: { type: 'levelComplete', levelRun, levelReport, action: { type: 'prompt' } },
-    evaluation: null,
-    currentReport: { levelReport, levelRun },
+    phase: 'levelComplete',
+    completedLevel: { replay, context, report },
+    action: { type: 'prompt' },
   };
 }
 
+function startLevel(profile: Profile, levelNumber: number, gameContext: GameContext): SessionPhase {
+  try {
+    const { replay, context, outcome } = runPlayerLevel(profile, levelNumber);
+
+    if (gameContext.silencePlay) {
+      return evaluateLevel(outcome, replay, context, gameContext);
+    }
+
+    return { phase: 'playing', replay, context, outcome };
+  } catch (err: unknown) {
+    return { phase: 'error', message: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+function toPlaySessionState(session: SessionPhase): PlaySessionState {
+  switch (session.phase) {
+    case 'playing':
+      return { type: 'playing', replay: session.replay, context: session.context };
+    case 'reviewing':
+      return {
+        type: 'playing',
+        replay: session.replay,
+        context: session.context,
+        reviewMode: true,
+      };
+    case 'levelComplete':
+      return {
+        type: 'levelComplete',
+        replay: session.completedLevel.replay,
+        context: session.completedLevel.context,
+        report: session.completedLevel.report,
+        action: session.action,
+      };
+    case 'towerComplete':
+      return { type: 'towerComplete' };
+    case 'error':
+      return { type: 'error', message: session.message };
+  }
+}
+
 export function usePlaySession({
-  context,
+  context: gameContext,
   profile,
   initialLevel,
   exit,
 }: UsePlaySessionParams): UsePlaySessionReturn {
-  const evaluationRef = useRef<LevelEvaluation | null>(null);
-  const reviewReturnRef = useRef<{ levelReport: LevelReport; levelRun: LevelRun } | null>(null);
-  const currentReportRef = useRef<{ levelReport: LevelReport; levelRun: LevelRun } | null>(null);
-
-  const [state, setState] = useState<PlaySessionState>(() => {
-    const outcome = executeLevel(profile, initialLevel, context);
-    evaluationRef.current = outcome.evaluation;
-    if (outcome.currentReport) {
-      currentReportRef.current = outcome.currentReport;
-    }
-    return outcome.state;
-  });
-
-  const playLevel = useCallback(
-    (levelNumber: number) => {
-      const outcome = executeLevel(profile, levelNumber, context);
-      evaluationRef.current = outcome.evaluation;
-      if (outcome.currentReport) {
-        currentReportRef.current = outcome.currentReport;
-      }
-      setState(outcome.state);
-    },
-    [profile, context],
+  const [session, setSession] = useState<SessionPhase>(() =>
+    startLevel(profile, initialLevel, gameContext),
   );
 
   const handlePlayComplete = useCallback(() => {
-    const pending = evaluationRef.current;
-    if (pending) {
-      const outcome = evaluateLevel(
-        profile,
-        pending.levelNumber,
-        pending.levelResult,
-        pending.levelConfig,
-        pending.levelRun,
-        context,
-      );
-      evaluationRef.current = outcome.evaluation;
-      if (outcome.currentReport) {
-        currentReportRef.current = outcome.currentReport;
+    setSession((prev) => {
+      if (prev.phase === 'playing') {
+        return evaluateLevel(prev.outcome, prev.replay, prev.context, gameContext);
       }
-      setState(outcome.state);
-    } else if (reviewReturnRef.current) {
-      const { levelReport, levelRun } = reviewReturnRef.current;
-      reviewReturnRef.current = null;
-      setState({ type: 'levelComplete', levelReport, levelRun, action: { type: 'prompt' } });
-    } else {
+      if (prev.phase === 'reviewing') {
+        return {
+          phase: 'levelComplete',
+          completedLevel: prev.returnTo,
+          action: { type: 'prompt' },
+        };
+      }
       exit();
-    }
-  }, [profile, context, exit]);
+      return prev;
+    });
+  }, [gameContext, exit]);
 
   const handleLevelCompleteChoice = useCallback(
     (value: LevelCompleteChoice) => {
-      const current = currentReportRef.current;
-      if (!current) {
-        return;
+      if (value === 'next-level') {
+        gameContext.onPrepareNextLevel();
+      } else if (value === 'epic-mode') {
+        gameContext.onPrepareEpicMode();
+      } else if (value === 'clue') {
+        profile.requestClue();
+        gameContext.onGenerateProfileFiles();
       }
 
-      const { levelReport, levelRun } = current;
+      setSession((prev) => {
+        if (prev.phase !== 'levelComplete') {
+          return prev;
+        }
 
-      switch (value) {
-        case 'review':
-          reviewReturnRef.current = { levelReport, levelRun };
-          setState({ type: 'playing', levelRun, reviewMode: true });
-          evaluationRef.current = null;
-          break;
-        case 'stay':
-          setState({
-            type: 'levelComplete',
-            levelReport,
-            levelRun,
-            action: { type: 'stay' },
-          });
-          break;
-        case 'next-level':
-          context.onPrepareNextLevel();
-          setState({
-            type: 'levelComplete',
-            levelReport,
-            levelRun,
-            action: {
-              type: 'next-level',
-              readmePath: profile.getReadmeFilePath(),
-            },
-          });
-          break;
-        case 'epic-mode':
-          context.onPrepareEpicMode();
-          setState({
-            type: 'levelComplete',
-            levelReport,
-            levelRun,
-            action: { type: 'epic-mode' },
-          });
-          break;
-        case 'clue':
-          profile.requestClue();
-          context.onGenerateProfileFiles();
-          setState({
-            type: 'levelComplete',
-            levelReport,
-            levelRun,
-            action: {
-              type: 'clue',
-              readmePath: profile.getReadmeFilePath(),
-            },
-          });
-          break;
-        case 'try-again':
-          playLevel(levelReport.levelNumber);
-          break;
-      }
+        const { completedLevel } = prev;
+        const { replay, context, report } = completedLevel;
+
+        switch (value) {
+          case 'review':
+            return { phase: 'reviewing', replay, context, returnTo: completedLevel };
+          case 'try-again':
+            return startLevel(profile, report.levelNumber, gameContext);
+          case 'stay':
+            return { ...prev, action: { type: 'stay' } };
+          case 'next-level':
+            return {
+              ...prev,
+              action: {
+                type: 'next-level',
+                readmePath: profile.getReadmeFilePath(),
+              } as LevelCompleteAction,
+            };
+          case 'epic-mode':
+            return { ...prev, action: { type: 'epic-mode' } };
+          case 'clue':
+            return {
+              ...prev,
+              action: {
+                type: 'clue',
+                readmePath: profile.getReadmeFilePath(),
+              } as LevelCompleteAction,
+            };
+        }
+      });
     },
-    [profile, context, playLevel],
+    [profile, gameContext],
   );
+
+  const state = toPlaySessionState(session);
 
   return { state, handlePlayComplete, handleLevelCompleteChoice };
 }

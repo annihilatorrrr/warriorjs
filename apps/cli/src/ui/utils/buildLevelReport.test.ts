@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { type LevelConfig, type LevelResult, type TurnEvent } from '../types.js';
+import { type LevelConfig, type TurnEvent } from '../types.js';
 import { buildLevelReport } from './buildLevelReport.js';
 
 function makeEvent(score: number, floorMap: { unit?: unknown }[][] = [[]]): TurnEvent {
@@ -10,8 +10,8 @@ function makeEvent(score: number, floorMap: { unit?: unknown }[][] = [[]]): Turn
 describe('buildLevelReport', () => {
   test('returns failure result when level not passed', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, turns: [] } as unknown as LevelResult,
-      levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 } as LevelConfig,
+      levelResult: { passed: false, turns: [] },
+      levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 } as unknown as LevelConfig,
       levelNumber: 2,
       hasNextLevel: true,
       isEpic: false,
@@ -35,8 +35,8 @@ describe('buildLevelReport', () => {
 
   test('returns failure result with isShowingClue when clue already requested', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, turns: [] } as unknown as LevelResult,
-      levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 } as LevelConfig,
+      levelResult: { passed: false, turns: [] },
+      levelConfig: { clue: 'Try walking', timeBonus: 10, aceScore: 30 } as unknown as LevelConfig,
       levelNumber: 2,
       hasNextLevel: true,
       isEpic: false,
@@ -50,8 +50,8 @@ describe('buildLevelReport', () => {
 
   test('returns failure result with hasClue false when no clue exists', () => {
     const result = buildLevelReport({
-      levelResult: { passed: false, turns: [] } as unknown as LevelResult,
-      levelConfig: { timeBonus: 10, aceScore: 30 } as LevelConfig,
+      levelResult: { passed: false, turns: [] },
+      levelConfig: { timeBonus: 10, aceScore: 30 } as unknown as LevelConfig,
       levelNumber: 1,
       hasNextLevel: true,
       isEpic: false,
@@ -67,8 +67,8 @@ describe('buildLevelReport', () => {
       levelResult: {
         passed: true,
         turns: [[makeEvent(5), makeEvent(10)], [makeEvent(15)]],
-      } as unknown as LevelResult,
-      levelConfig: { timeBonus: 10, aceScore: 30 } as LevelConfig,
+      },
+      levelConfig: { timeBonus: 10, aceScore: 30 } as unknown as LevelConfig,
       levelNumber: 3,
       hasNextLevel: true,
       isEpic: false,
@@ -92,8 +92,8 @@ describe('buildLevelReport', () => {
       levelResult: {
         passed: true,
         turns: [[makeEvent(20)]],
-      } as unknown as LevelResult,
-      levelConfig: { timeBonus: 0, aceScore: 100 } as LevelConfig,
+      },
+      levelConfig: { timeBonus: 0, aceScore: 100 } as unknown as LevelConfig,
       levelNumber: 1,
       hasNextLevel: true,
       isEpic: true,
@@ -109,8 +109,8 @@ describe('buildLevelReport', () => {
       levelResult: {
         passed: true,
         turns: [[makeEvent(20)]],
-      } as unknown as LevelResult,
-      levelConfig: { timeBonus: 0 } as LevelConfig,
+      },
+      levelConfig: { timeBonus: 0 } as unknown as LevelConfig,
       levelNumber: 1,
       hasNextLevel: true,
       isEpic: false,
@@ -126,8 +126,8 @@ describe('buildLevelReport', () => {
       levelResult: {
         passed: true,
         turns: [[makeEvent(10)]],
-      } as unknown as LevelResult,
-      levelConfig: { aceScore: 100 } as LevelConfig,
+      },
+      levelConfig: { aceScore: 100 } as unknown as LevelConfig,
       levelNumber: 1,
       hasNextLevel: false,
       isEpic: false,

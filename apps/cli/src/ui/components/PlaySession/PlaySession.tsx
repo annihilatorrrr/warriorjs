@@ -29,7 +29,6 @@ export default function PlaySession({
     exit,
   });
 
-  // Exit when a terminal level-complete action is selected.
   useEffect(() => {
     if (state?.type === 'levelComplete' && state.action.type !== 'prompt') {
       exit();
@@ -42,7 +41,8 @@ export default function PlaySession({
     case 'playing':
       return (
         <PlayScreen
-          {...state.levelRun}
+          replay={state.replay}
+          context={state.context}
           reviewMode={state.reviewMode}
           onPlaybackComplete={handlePlayComplete}
         />
@@ -50,8 +50,9 @@ export default function PlaySession({
     case 'levelComplete':
       return (
         <LevelCompleteScreen
-          levelReport={state.levelReport}
-          levelRun={state.levelRun}
+          replay={state.replay}
+          context={state.context}
+          report={state.report}
           action={state.action}
           onSelect={handleLevelCompleteChoice}
         />

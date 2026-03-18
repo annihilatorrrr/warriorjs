@@ -1,57 +1,40 @@
-import yargs from 'yargs';
+import { parseArgs as cittyParseArgs } from 'citty';
 
 interface ParsedArgs {
   directory: string;
   level: number | undefined;
   silent: boolean;
-  d: string;
-  l: number | undefined;
-  s: boolean;
-  [key: string]: unknown;
 }
 
-function parseArgs(args: string[]): ParsedArgs {
-  return yargs(args)
-    .usage('Usage: $0 [options]')
-    .options({
-      d: {
-        alias: 'directory',
-        default: '.',
-        describe: 'Run under given directory',
-        type: 'string' as const,
-      },
-      l: {
-        alias: 'level',
-        coerce: (arg: string) => {
-          const parsed = Number.parseInt(arg, 10);
-          if (Number.isNaN(parsed)) {
-            throw new Error('Invalid argument: level must be a number');
-          }
+const argsDef = {
+  directory: {
+    type: 'string' as const,
+    alias: 'd',
+    default: '.',
+    description: 'Run under given directory',
+  },
+  level: {
+    type: 'string' as const,
+    alias: 'l',
+    description: 'Practice level (epic mode only)',
+  },
+  silent: {
+    type: 'boolean' as const,
+    alias: 's',
+    default: false,
+    description: 'Suppress play log',
+  },
+};
 
-          return parsed;
-        },
-        describe: 'Practice level (epic mode only)',
-        type: 'number' as const,
-      },
-      s: {
-        alias: 'silent',
-        default: false,
-        describe: 'Suppress play log',
-        type: 'boolean' as const,
-      },
-    })
-    .version()
-    .help()
-    .strict()
-    .fail((msg: string, err: Error | undefined) => {
-      if (err) {
-        console.error(err.message);
-      } else if (msg) {
-        console.error(msg);
-      }
-      process.exit(1);
-    })
-    .parseSync() as unknown as ParsedArgs;
+function parseArgs(args: string[]): ParsedArgs {
+  const parsed = cittyParseArgs(args, argsDef);
+
+  const level = parsed.level !== undefined ? Number.parseInt(parsed.level, 10) : undefined;
+  if (level !== undefined && Number.isNaN(level)) {
+    throw new Error('Invalid argument: level must be a number');
+  }
+
+  return { directory: parsed.directory, level, silent: parsed.silent };
 }
 
 export default parseArgs;

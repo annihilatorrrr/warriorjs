@@ -60,11 +60,11 @@
     "@warriorjs/scoring": "workspace:^",
     "@warriorjs/tower-the-narrow-path": "workspace:^",
     "array-shuffle": "^3.0.0",
+    "citty": "^0.2.1",
     "find-up": "^7.0.0",
     "globby": "^14.0.0",
     "ink": "^6.8.0",
     "ink-link": "^5.0.0",
-    "react": "^19.2.4",
-    "yargs": "^17.0.0"
+    "react": "^19.2.4"
   }
 }

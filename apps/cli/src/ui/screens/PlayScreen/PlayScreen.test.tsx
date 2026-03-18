@@ -50,4 +50,49 @@ describe('PlayScreen', () => {
     expect(output).toContain('❤');
     expect(output).toContain('Turn 0/1');
   });
+
+  test('passes turn event counts to usePlayback', () => {
+    const multiEventReplay = {
+      initialState: replay.initialState,
+      turns: [
+        [
+          {
+            message: 'attacks forward',
+            unit: { name: 'Warrior', color: '#ffffff' },
+            floorMap: [
+              [{ character: '╔' }, { character: '═' }, { character: '╗' }],
+              [
+                { character: '║' },
+                { character: '@', unit: { color: '#ffffff' } },
+                { character: '║' },
+              ],
+              [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+            ],
+            warriorStatus: { health: 20, score: 5 },
+          },
+          {
+            message: 'takes 3 damage',
+            unit: { name: 'Sludge', color: '#00ff00' },
+            floorMap: [
+              [{ character: '╔' }, { character: '═' }, { character: '╗' }],
+              [
+                { character: '║' },
+                { character: '@', unit: { color: '#ffffff' } },
+                { character: '║' },
+              ],
+              [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+            ],
+            warriorStatus: { health: 17, score: 5 },
+          },
+        ],
+      ],
+    };
+
+    const { lastFrame } = render(
+      <PlayScreen replay={multiEventReplay} context={context} onPlaybackComplete={vi.fn()} />,
+    );
+    const output = lastFrame()!;
+    expect(output).toContain('@');
+    expect(output).toContain('Turn 0/1');
+  });
 });

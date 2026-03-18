@@ -28,9 +28,9 @@ export default function PlayScreen({
     () => [[replay.initialState], ...replay.turns],
     [replay.initialState, replay.turns],
   );
-  const { state } = usePlayback(turnsWithInitial.length, onPlaybackComplete, reviewMode);
-  const currentTurnEvents = turnsWithInitial[state.currentTurn];
-  const lastEvent = currentTurnEvents?.[currentTurnEvents.length - 1];
+  const { state } = usePlayback(turnsWithInitial, onPlaybackComplete, reviewMode);
+  const { cursor } = state;
+  const currentEvent = turnsWithInitial[cursor.turn]?.[cursor.event];
 
   return (
     <Box flexDirection="column" width="100%">
@@ -41,14 +41,14 @@ export default function PlayScreen({
         score={context.totalScore}
       />
       <Box flexDirection="column">
-        {lastEvent && (
+        {currentEvent && (
           <>
-            <FloorMap floorMap={lastEvent.floorMap} />
-            {lastEvent.warriorStatus && (
+            <FloorMap floorMap={currentEvent.floorMap} />
+            {currentEvent.warriorStatus && (
               <WarriorStatus
-                health={lastEvent.warriorStatus.health}
+                health={currentEvent.warriorStatus.health}
                 maxHealth={context.maxHealth}
-                score={lastEvent.warriorStatus.score}
+                score={currentEvent.warriorStatus.score}
               />
             )}
           </>
@@ -56,11 +56,11 @@ export default function PlayScreen({
       </Box>
       <Divider />
       <Box flexDirection="column" height={10}>
-        <LogArea turns={turnsWithInitial} currentTurn={state.currentTurn} />
+        <LogArea turns={turnsWithInitial} currentTurn={cursor.turn} />
       </Box>
       <Divider />
       <Scrubber
-        currentTurn={state.currentTurn}
+        currentTurn={cursor.turn}
         totalTurns={turnsWithInitial.length}
         speed={state.speed}
         mode={state.mode}

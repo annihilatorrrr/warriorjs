@@ -1,9 +1,15 @@
 import { useInput } from 'ink';
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useMemo, useReducer, useRef } from 'react';
+
+export interface PlaybackCursor {
+  turn: number;
+  event: number;
+}
 
 export interface PlaybackState {
-  currentTurn: number;
+  cursor: PlaybackCursor;
   totalTurns: number;
+  turnEventCounts: number[];
   isPlaying: boolean;
   speed: number;
   mode: 'playback' | 'review';
@@ -14,12 +20,39 @@ export type PlaybackAction =
   | { type: 'CYCLE_SPEED' }
   | { type: 'CYCLE_SPEED_BACK' }
   | { type: 'SKIP' }
-  | { type: 'ADVANCE_TURN' }
+  | { type: 'ADVANCE' }
   | { type: 'STEP_FORWARD' }
   | { type: 'STEP_BACK' }
   | { type: 'RESTART' };
 
 const SPEEDS = [1, 2, 4];
+
+function stepForward(cursor: PlaybackCursor, counts: number[]): PlaybackCursor | null {
+  const maxEvent = counts[cursor.turn]! - 1;
+  if (cursor.event < maxEvent) {
+    return { turn: cursor.turn, event: cursor.event + 1 };
+  }
+  if (cursor.turn < counts.length - 1) {
+    return { turn: cursor.turn + 1, event: 0 };
+  }
+  return null;
+}
+
+function stepBack(cursor: PlaybackCursor, counts: number[]): PlaybackCursor | null {
+  if (cursor.event > 0) {
+    return { turn: cursor.turn, event: cursor.event - 1 };
+  }
+  if (cursor.turn > 0) {
+    const prevTurn = cursor.turn - 1;
+    return { turn: prevTurn, event: counts[prevTurn]! - 1 };
+  }
+  return null;
+}
+
+function lastCursor(counts: number[]): PlaybackCursor {
+  const lastTurn = counts.length - 1;
+  return { turn: lastTurn, event: counts[lastTurn]! - 1 };
+}
 
 export function playbackReducer(state: PlaybackState, action: PlaybackAction): PlaybackState {
   switch (action.type) {
@@ -42,31 +75,34 @@ export function playbackReducer(state: PlaybackState, action: PlaybackAction): P
     case 'SKIP': {
       return {
         ...state,
-        currentTurn: state.totalTurns - 1,
+        cursor: lastCursor(state.turnEventCounts),
         isPlaying: false,
         mode: 'review',
       };
     }
-    case 'ADVANCE_TURN': {
-      if (state.currentTurn >= state.totalTurns - 1) {
+    case 'ADVANCE': {
+      const next = stepForward(state.cursor, state.turnEventCounts);
+      if (!next) {
         return { ...state, isPlaying: false, mode: 'review' };
       }
-      return { ...state, currentTurn: state.currentTurn + 1 };
+      return { ...state, cursor: next };
     }
     case 'STEP_FORWARD': {
       if (state.mode !== 'review') return state;
-      if (state.currentTurn >= state.totalTurns - 1) return state;
-      return { ...state, currentTurn: state.currentTurn + 1 };
+      const next = stepForward(state.cursor, state.turnEventCounts);
+      if (!next) return state;
+      return { ...state, cursor: next };
     }
     case 'STEP_BACK': {
       if (state.mode !== 'review') return state;
-      if (state.currentTurn <= 0) return state;
-      return { ...state, currentTurn: state.currentTurn - 1 };
+      const prev = stepBack(state.cursor, state.turnEventCounts);
+      if (!prev) return state;
+      return { ...state, cursor: prev };
     }
     case 'RESTART': {
       return {
         ...state,
-        currentTurn: 0,
+        cursor: { turn: 0, event: 0 },
         isPlaying: true,
         mode: 'playback',
         speed: 1,
@@ -77,14 +113,27 @@ export function playbackReducer(state: PlaybackState, action: PlaybackAction): P
   }
 }
 
+export function nextStepCrossesTurn(cursor: PlaybackCursor, turnEventCounts: number[]): boolean {
+  const maxEvent = turnEventCounts[cursor.turn]! - 1;
+  return cursor.event >= maxEvent;
+}
+
+const INTRA_TURN_DELAY = 600;
+const INTER_TURN_DELAY = 720;
+
 export function usePlayback(
-  totalTurns: number,
+  turns: unknown[][],
   onPlaybackComplete: () => void,
   startInReview = false,
 ): { state: PlaybackState; dispatch: React.Dispatch<PlaybackAction> } {
+  const turnEventCounts = useMemo(() => turns.map((t) => t.length), [turns]);
+  const totalTurns = turns.length;
+  const last = lastCursor(turnEventCounts);
+
   const [state, dispatch] = useReducer(playbackReducer, {
-    currentTurn: startInReview ? totalTurns - 1 : 0,
+    cursor: startInReview ? last : { turn: 0, event: 0 },
     totalTurns,
+    turnEventCounts,
     isPlaying: !startInReview,
     speed: 1,
     mode: startInReview ? 'review' : 'playback',
@@ -94,9 +143,11 @@ export function usePlayback(
 
   useEffect(() => {
     if (!state.isPlaying) return;
-    const interval = setInterval(() => dispatch({ type: 'ADVANCE_TURN' }), 600 / state.speed);
-    return () => clearInterval(interval);
-  }, [state.isPlaying, state.speed]);
+    const crossesTurn = nextStepCrossesTurn(state.cursor, state.turnEventCounts);
+    const delay = (crossesTurn ? INTER_TURN_DELAY : INTRA_TURN_DELAY) / state.speed;
+    const timer = setTimeout(() => dispatch({ type: 'ADVANCE' }), delay);
+    return () => clearTimeout(timer);
+  }, [state.isPlaying, state.speed, state.cursor, state.turnEventCounts]);
 
   useEffect(() => {
     if (state.mode === 'review' && !hasFiredComplete.current) {

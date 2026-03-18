@@ -162,7 +162,7 @@ describe('Unit', () => {
 
   test('calls passTurn once on effects when calling perform on turn', () => {
     const ticking = { passTurn: vi.fn(), trigger: vi.fn() };
-    unit.addEffect('ticking', ticking);
+    unit.addEffect('ticking', ticking as any);
     unit.turn = { action: null };
     unit.performTurn();
     expect(ticking.passTurn).toHaveBeenCalledTimes(1);
@@ -170,7 +170,7 @@ describe('Unit', () => {
 
   test('performs action when calling perform on turn', () => {
     const walk = { perform: vi.fn() };
-    unit.addAbility('walk', walk);
+    unit.addAbility('walk', walk as any);
     unit.turn = { action: ['walk', ['backward']] };
     unit.performTurn();
     expect(walk.perform).toHaveBeenCalledWith('backward');
@@ -231,7 +231,7 @@ describe('Unit', () => {
 
     test("doesn't perform any action", () => {
       const walk = { perform: vi.fn() };
-      unit.addAbility('walk', walk);
+      unit.addAbility('walk', walk as any);
       unit.turn = { action: ['walk', []] };
       unit.performTurn();
       expect(walk.perform).not.toHaveBeenCalled();
@@ -360,7 +360,7 @@ describe('Unit', () => {
 
     test("doesn't perform any action", () => {
       const walk = { perform: vi.fn() };
-      unit.addAbility('walk', walk);
+      unit.addAbility('walk', walk as any);
       unit.turn = { action: ['walk', []] };
       unit.performTurn();
       expect(walk.perform).not.toHaveBeenCalled();
@@ -408,7 +408,7 @@ describe('Unit', () => {
 
   test('can trigger a given effect when it has such effect', () => {
     const ticking = { trigger: vi.fn(), passTurn: vi.fn() };
-    unit.addEffect('ticking', ticking);
+    unit.addEffect('ticking', ticking as any);
     const itching = { trigger: vi.fn(), passTurn: vi.fn() };
     unit.triggerEffect('ticking');
     unit.triggerEffect('itching');

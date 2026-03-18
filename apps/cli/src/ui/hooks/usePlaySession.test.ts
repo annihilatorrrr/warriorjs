@@ -129,7 +129,7 @@ function renderHook(params: {
   context: GameContext;
   profile: Profile;
   initialLevel: number;
-  exit: ReturnType<typeof vi.fn>;
+  exit: () => void;
 }) {
   const ref = React.createRef<HookRef>();
 
@@ -146,7 +146,7 @@ function renderHook(params: {
 // --- Tests ---
 
 describe('usePlaySession', () => {
-  let exit: ReturnType<typeof vi.fn>;
+  let exit: ReturnType<typeof vi.fn<() => void>>;
   let context: GameContext;
   let mockProfile: Profile;
 

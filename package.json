@@ -12,6 +12,7 @@
     "clean": "rm -rf libs/*/lib",
     "lint": "biome check",
     "lint:fix": "biome check --write",
+    "typecheck": "turbo run typecheck --filter='!warriorjs-website'",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",

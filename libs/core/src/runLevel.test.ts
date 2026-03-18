@@ -5,6 +5,7 @@ import type { AbilityMeta } from './Ability.js';
 import Action from './Action.js';
 import runLevel from './runLevel.js';
 import Sense from './Sense.js';
+import type { LevelConfig } from './types.js';
 import Unit from './Unit.js';
 
 class TestWalk extends Action {
@@ -105,7 +106,7 @@ const levelConfig = {
       },
     ],
   },
-};
+} satisfies LevelConfig;
 
 test('passes level with a winner player code', () => {
   const playerCode = `

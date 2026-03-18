@@ -32,7 +32,7 @@ describe('DirectionOf', () => {
   describe('performing', () => {
     test('returns direction of specified space', () => {
       unit.getDirectionOf.mockReturnValue(RIGHT);
-      expect(directionOf.perform()).toBe(RIGHT);
+      expect(directionOf.perform({} as any)).toBe(RIGHT);
     });
   });
 });

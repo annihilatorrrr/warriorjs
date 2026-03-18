@@ -31,7 +31,7 @@ describe('DistanceOf', () => {
   describe('performing', () => {
     test('returns distance of specified space', () => {
       unit.getDistanceOf.mockReturnValue(3);
-      expect(distanceOf.perform()).toBe(3);
+      expect(distanceOf.perform({} as any)).toBe(3);
     });
   });
 });

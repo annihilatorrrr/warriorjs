@@ -209,7 +209,7 @@ const tower: TowerDefinition = {
     },
     {
       description: 'Muffled cries echo through the stone. Someone is alive down here — and bound.',
-      tip: 'Not every figure in the dark is a foe. Use `warrior.feel().getUnit().isEnemy()` and `warrior.feel().getUnit().isBound()` to identify captives, and `warrior.rescue()` to free them.',
+      tip: 'Not every figure in the dark is a foe. Use `warrior.feel().getUnit()?.isEnemy()` and `warrior.feel().getUnit()?.isBound()` to identify captives, and `warrior.rescue()` to free them.',
       clue: "Don't forget to constantly check if you are being attacked. Rest until your health is full if you're not taking damage.",
       timeBonus: 45,
       aceScore: 123,

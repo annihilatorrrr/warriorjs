@@ -63,7 +63,7 @@ const tower: TowerDefinition = {
       description:
         'The next chamber is not empty. Shapes shift in the darkness on all sides, between you and the stairs.',
       tip: 'Threats can come from any direction now. You can attack and feel forward, left, right, and backward.',
-      clue: "Call `warrior.feel().isUnit()` and `warrior.feel().getUnit().isEnemy()` in each direction to make sure there isn't an enemy beside you (attack if there is). Call `warrior.rest()` if you're low in health when there are no enemies around.",
+      clue: "Call `warrior.feel().getUnit()?.isEnemy()` in each direction to make sure there isn't an enemy beside you (attack if there is). Call `warrior.rest()` if you're low in health when there are no enemies around.",
       timeBonus: 40,
       aceScore: 84,
       floor: {

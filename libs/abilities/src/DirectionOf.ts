@@ -1,3 +1,4 @@
+import type { SensedSpace } from '@warriorjs/core';
 import { Sense } from '@warriorjs/core';
 import { BACKWARD, FORWARD, LEFT, RIGHT } from '@warriorjs/spatial';
 import type { AbilityMeta } from './types.js';
@@ -10,7 +11,7 @@ class DirectionOf extends Sense {
     returns: 'Direction',
   };
 
-  perform(space: unknown) {
+  perform(space: SensedSpace) {
     return this.unit.getDirectionOf(space);
   }
 }

@@ -1,3 +1,4 @@
+import type { SensedSpace } from '@warriorjs/core';
 import { Sense } from '@warriorjs/core';
 import type { AbilityMeta } from './types.js';
 
@@ -8,7 +9,7 @@ class DistanceOf extends Sense {
     returns: 'number',
   };
 
-  perform(space: unknown) {
+  perform(space: SensedSpace) {
     return this.unit.getDistanceOf(space);
   }
 }

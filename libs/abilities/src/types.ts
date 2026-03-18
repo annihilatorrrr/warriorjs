@@ -1,14 +1,12 @@
+import type { SensedSpace } from '@warriorjs/core';
 import type { AbsoluteDirection, Location, RelativeDirection } from '@warriorjs/spatial';
 
 export interface Space {
+  location: Location;
   getUnit(): Unit | null;
   isEmpty(): boolean;
-  isWall(): boolean;
-  location: Location;
-  toString(): string;
-}
-
-export interface SensedSpace {
+  isStairs(): boolean;
+  isUnit(): boolean;
   isWall(): boolean;
 }
 
@@ -21,22 +19,21 @@ export interface Unit {
   };
   getSpaceAt(direction: RelativeDirection, forward?: number, right?: number): Space;
   getSensedSpaceAt(direction: RelativeDirection, forward?: number, right?: number): SensedSpace;
-  getDirectionOf(space: unknown): RelativeDirection;
+  getDirectionOf(space: SensedSpace): RelativeDirection;
   getDirectionOfStairs(): RelativeDirection;
-  getDistanceOf(space: unknown): number;
+  getDistanceOf(space: SensedSpace): number;
   getOtherUnits(): Array<{ getSpace(): { location: Location } }>;
   getSpace(): { location: Location };
   move(direction: RelativeDirection): void;
   rotate(direction: RelativeDirection): void;
-  damage(receiver: unknown, amount: number): void;
+  damage(receiver: Unit, amount: number): void;
   heal(amount: number): void;
-  release(receiver: unknown): void;
+  release(receiver: Unit): void;
   bind(): void;
   isBound(): boolean;
   isUnderEffect(effect: string): boolean;
   triggerEffect(effect: string): void;
   log(message: string): void;
-  toString(): string;
 }
 
 export interface AbilityParam {

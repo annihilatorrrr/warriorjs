@@ -1,4 +1,4 @@
-import type { LevelDefinition, WarriorDefinition } from '@warriorjs/core';
+import { type LevelDefinition, type WarriorDefinition } from '@warriorjs/core';
 
 class Tower {
   id: string;

@@ -1,11 +1,15 @@
 import path from 'node:path';
-
 import { Text } from 'ink';
 import Link from 'ink-link';
 import type React from 'react';
 import { useMemo } from 'react';
 
-import type { LevelCompleteAction, LevelCompleteChoice, LevelReport, LevelRun } from '../types.js';
+import {
+  type LevelCompleteAction,
+  type LevelCompleteChoice,
+  type LevelReport,
+  type LevelRun,
+} from '../types.js';
 import Divider from './Divider.js';
 import PlayLayout from './PlayLayout.js';
 import ResultScreen from './ResultScreen.js';

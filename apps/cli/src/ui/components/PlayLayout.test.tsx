@@ -2,7 +2,7 @@ import { Text } from 'ink';
 import { render } from 'ink-testing-library';
 import { describe, expect, test } from 'vitest';
 
-import type { TurnEvent } from '../types.js';
+import { type TurnEvent } from '../types.js';
 import PlayLayout from './PlayLayout.js';
 
 function makeEvent(overrides: Partial<TurnEvent> = {}): TurnEvent {

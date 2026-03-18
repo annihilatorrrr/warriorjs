@@ -1,11 +1,11 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import { usePlaySession } from '../hooks/usePlaySession.js';
 import { getLastContentFrame, makeLevelReport, makeLevelRun, waitForRender } from '../testing.js';
-import type { PlaySessionState } from '../types.js';
+import { type PlaySessionState } from '../types.js';
 import PlaySession from './PlaySession.js';
 
 vi.mock('../hooks/usePlaySession.js', () => ({

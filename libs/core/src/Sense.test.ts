@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
-import type { AbilityMeta } from './Ability.js';
-import Ability from './Ability.js';
+
+import Ability, { type AbilityMeta } from './Ability.js';
 import Action from './Action.js';
 import Sense from './Sense.js';
 

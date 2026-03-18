@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import GameMenu from './GameMenu.js';
 import PlaySession from './PlaySession.js';

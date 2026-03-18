@@ -3,7 +3,7 @@ import type React from 'react';
 import { useMemo } from 'react';
 
 import { usePlayback } from '../hooks/usePlayback.js';
-import type { TurnEvent } from '../types.js';
+import { type TurnEvent } from '../types.js';
 import Divider from './Divider.js';
 import FloorMap from './FloorMap.js';
 import Header from './Header.js';

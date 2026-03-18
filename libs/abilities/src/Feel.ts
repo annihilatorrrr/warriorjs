@@ -1,6 +1,7 @@
 import { Sense } from '@warriorjs/core';
 import { FORWARD, type RelativeDirection } from '@warriorjs/spatial';
-import type { AbilityMeta } from './types.js';
+
+import { type AbilityMeta } from './types.js';
 
 const defaultDirection = FORWARD;
 

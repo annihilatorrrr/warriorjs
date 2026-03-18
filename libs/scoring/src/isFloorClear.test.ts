@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+
 import isFloorClear from './isFloorClear.js';
 
 test('considers clear when there are no units other than the warrior', () => {

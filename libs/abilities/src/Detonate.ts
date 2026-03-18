@@ -1,8 +1,7 @@
-import type { AbilityBinding } from '@warriorjs/core';
-
-import { Action } from '@warriorjs/core';
+import { type AbilityBinding, Action } from '@warriorjs/core';
 import { FORWARD, type RelativeDirection, type RelativeOffset } from '@warriorjs/spatial';
-import type { AbilityMeta, Space, Unit } from './types.js';
+
+import { type AbilityMeta, type Space, type Unit } from './types.js';
 
 const defaultDirection = FORWARD;
 const surroundingOffsets: RelativeOffset[] = [

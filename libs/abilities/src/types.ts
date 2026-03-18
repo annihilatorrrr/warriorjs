@@ -1,5 +1,5 @@
-import type { SensedSpace } from '@warriorjs/core';
-import type { AbsoluteDirection, Location, RelativeDirection } from '@warriorjs/spatial';
+import { type SensedSpace } from '@warriorjs/core';
+import { type AbsoluteDirection, type Location, type RelativeDirection } from '@warriorjs/spatial';
 
 export interface Space {
   location: Location;

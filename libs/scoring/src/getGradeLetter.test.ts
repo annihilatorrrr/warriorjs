@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+
 import getGradeLetter from './getGradeLetter.js';
 
 test('returns letter based on grade', () => {

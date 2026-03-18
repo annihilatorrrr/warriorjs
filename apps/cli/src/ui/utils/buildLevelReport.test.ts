@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import type { LevelConfig, LevelResult, TurnEvent } from '../types.js';
+import { type LevelConfig, type LevelResult, type TurnEvent } from '../types.js';
 import { buildLevelReport } from './buildLevelReport.js';
 
 function makeEvent(score: number, floorMap: { unit?: unknown }[][] = [[]]): TurnEvent {

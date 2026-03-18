@@ -1,5 +1,4 @@
-import type { AbsoluteDirection } from './absoluteDirections.js';
-import { EAST, NORTH, SOUTH, WEST } from './absoluteDirections.js';
+import { type AbsoluteDirection, EAST, NORTH, SOUTH, WEST } from './absoluteDirections.js';
 
 /** A location as [x, y]. */
 export type Location = [number, number];

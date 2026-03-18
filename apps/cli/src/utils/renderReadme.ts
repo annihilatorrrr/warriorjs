@@ -1,4 +1,5 @@
 import { getLevel, type LevelConfig } from '@warriorjs/core';
+
 import type Profile from '../Profile.js';
 import getFloorMap from './getFloorMap.js';
 import getFloorMapKey from './getFloorMapKey.js';

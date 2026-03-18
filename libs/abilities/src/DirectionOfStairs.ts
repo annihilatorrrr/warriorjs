@@ -1,6 +1,7 @@
 import { Sense } from '@warriorjs/core';
 import { BACKWARD, FORWARD, LEFT, RIGHT } from '@warriorjs/spatial';
-import type { AbilityMeta } from './types.js';
+
+import { type AbilityMeta } from './types.js';
 
 class DirectionOfStairs extends Sense {
   readonly description =

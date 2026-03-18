@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import Action from './Action.js';
 import Sense from './Sense.js';
-
 import Warrior from './Warrior.js';
 
 class MockAction extends Action {

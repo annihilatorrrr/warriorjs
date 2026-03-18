@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { LevelConfig } from '@warriorjs/core';
+import { type LevelConfig } from '@warriorjs/core';
+
 import type Profile from './Profile.js';
 import renderPlayerCode from './utils/renderPlayerCode.js';
 import renderReadme from './utils/renderReadme.js';

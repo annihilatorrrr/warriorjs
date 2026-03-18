@@ -1,6 +1,6 @@
 import { getLevelScore } from '@warriorjs/scoring';
 
-import type { LevelConfig, LevelReport, LevelResult } from '../types.js';
+import { type LevelConfig, type LevelReport, type LevelResult } from '../types.js';
 
 interface BuildLevelReportParams {
   levelResult: LevelResult;

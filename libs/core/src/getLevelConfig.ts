@@ -1,4 +1,4 @@
-import type { LevelConfig, TowerDefinition } from './types.js';
+import { type LevelConfig, type TowerDefinition } from './types.js';
 
 function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object' || obj.constructor !== Object) {

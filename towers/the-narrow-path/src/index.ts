@@ -11,7 +11,7 @@ import {
   Think,
   Walk,
 } from '@warriorjs/abilities';
-import type { TowerDefinition } from '@warriorjs/core';
+import { type TowerDefinition } from '@warriorjs/core';
 import { EAST, WEST } from '@warriorjs/spatial';
 import { Archer, Captive, Sludge, ThickSludge, Wizard } from '@warriorjs/units';
 

@@ -2,14 +2,14 @@ import { render } from 'ink-testing-library';
 import React, { act } from 'react';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
-import type {
-  LevelCompleteChoice,
-  LevelConfig,
-  LevelReport,
-  LevelResult,
-  PlaySessionState,
+import {
+  type LevelCompleteChoice,
+  type LevelConfig,
+  type LevelReport,
+  type LevelResult,
+  type PlaySessionState,
 } from '../types.js';
 
 vi.mock('@warriorjs/core', () => ({

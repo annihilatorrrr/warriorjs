@@ -2,7 +2,7 @@ import { Box, Text } from 'ink';
 import type React from 'react';
 import { useMemo } from 'react';
 
-import type { TurnEvent } from '../types.js';
+import { type TurnEvent } from '../types.js';
 
 interface LogAreaProps {
   turns: TurnEvent[][];

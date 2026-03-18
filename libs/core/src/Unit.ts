@@ -1,13 +1,12 @@
-import type { RelativeDirection } from '@warriorjs/spatial';
+import { type RelativeDirection } from '@warriorjs/spatial';
 
 import type Ability from './Ability.js';
-import type { AbilityEntry } from './Ability.js';
+import { type AbilityEntry } from './Ability.js';
 import Action from './Action.js';
 import type Effect from './Effect.js';
 import Logger from './Logger.js';
 import type Position from './Position.js';
-import type { SensedSpace, SensedUnit } from './Space.js';
-import Space from './Space.js';
+import Space, { type SensedSpace, type SensedUnit } from './Space.js';
 
 export type Turn = Record<string, (...args: any[]) => any>;
 

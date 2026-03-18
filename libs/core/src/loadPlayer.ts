@@ -1,7 +1,8 @@
 import assert from 'node:assert';
 import vm from 'node:vm';
 import { transformSync } from 'esbuild';
-import type { Turn } from './Unit.js';
+
+import { type Turn } from './Unit.js';
 
 const playerCodeTimeout = 3000;
 

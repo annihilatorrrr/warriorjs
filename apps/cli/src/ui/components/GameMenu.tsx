@@ -1,14 +1,13 @@
 import path from 'node:path';
-
 import { Box, Text, useApp } from 'ink';
 import Link from 'ink-link';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import getWarriorNameSuggestions from '../../utils/getWarriorNameSuggestions.js';
-import type { GameMenuStep } from '../types.js';
+import { type GameMenuStep } from '../types.js';
 import Divider from './Divider.js';
 import ErrorMessage from './ErrorMessage.js';
 import ProfileWizard from './ProfileWizard.js';

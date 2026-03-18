@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+
 import getLastEvent from './getLastEvent.js';
 
 test('returns the last event of the play', () => {

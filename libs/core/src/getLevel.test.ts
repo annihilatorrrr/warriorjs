@@ -1,11 +1,11 @@
 import { EAST, RELATIVE_DIRECTIONS, WEST } from '@warriorjs/spatial';
 import { expect, test } from 'vitest';
 
-import type { AbilityMeta } from './Ability.js';
+import { type AbilityMeta } from './Ability.js';
 import Action from './Action.js';
 import getLevel from './getLevel.js';
 import Sense from './Sense.js';
-import type { LevelConfig } from './types.js';
+import { type LevelConfig } from './types.js';
 import Unit from './Unit.js';
 
 class TestWalk extends Action {

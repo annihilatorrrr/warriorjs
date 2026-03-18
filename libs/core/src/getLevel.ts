@@ -1,5 +1,5 @@
 import loadLevel from './loadLevel.js';
-import type { LevelConfig } from './types.js';
+import { type LevelConfig } from './types.js';
 
 function getLevel(levelConfig: LevelConfig): any {
   const level = loadLevel(levelConfig);

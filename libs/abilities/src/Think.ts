@@ -1,7 +1,7 @@
 import util from 'node:util';
-
 import { Sense } from '@warriorjs/core';
-import type { AbilityMeta } from './types.js';
+
+import { type AbilityMeta } from './types.js';
 
 class Think extends Sense {
   readonly description = 'Thinks out loud (`console.log` replacement).';

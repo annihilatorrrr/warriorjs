@@ -1,4 +1,5 @@
 import { expect, test, vi } from 'vitest';
+
 import { run } from './cli.js';
 import Game from './Game.js';
 

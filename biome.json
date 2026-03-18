@@ -3,7 +3,12 @@
   "assist": {
     "actions": {
       "source": {
-        "organizeImports": "on"
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [":NODE:", ":PACKAGE:", ":BLANK_LINE:", ":PATH:"]
+          }
+        }
       }
     }
   },
@@ -26,7 +31,12 @@
         "useConst": "error",
         "useNodejsImportProtocol": "error",
         "useTemplate": "error",
-        "useImportType": "error",
+        "useImportType": {
+          "level": "error",
+          "options": {
+            "style": "inlineType"
+          }
+        },
         "useExportType": "error",
         "useForOf": "error",
         "useThrowOnlyError": "error",

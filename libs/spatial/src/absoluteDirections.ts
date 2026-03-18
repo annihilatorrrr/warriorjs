@@ -1,6 +1,5 @@
-import type { AbsoluteOffset, RelativeOffset } from './location.js';
-import type { RelativeDirection } from './relativeDirections.js';
-import { RELATIVE_DIRECTIONS } from './relativeDirections.js';
+import { type AbsoluteOffset, type RelativeOffset } from './location.js';
+import { RELATIVE_DIRECTIONS, type RelativeDirection } from './relativeDirections.js';
 
 export const NORTH = 'north';
 export const EAST = 'east';

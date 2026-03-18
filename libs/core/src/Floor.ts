@@ -1,8 +1,8 @@
-import type { Location } from '@warriorjs/spatial';
+import { type Location } from '@warriorjs/spatial';
 
 import Position from './Position.js';
 import Space from './Space.js';
-import type { PositionConfig } from './types.js';
+import { type PositionConfig } from './types.js';
 import type Unit from './Unit.js';
 import type Warrior from './Warrior.js';
 

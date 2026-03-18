@@ -1,6 +1,6 @@
-import type { SensedSpace } from '@warriorjs/core';
-import { Sense } from '@warriorjs/core';
-import type { AbilityMeta } from './types.js';
+import { Sense, type SensedSpace } from '@warriorjs/core';
+
+import { type AbilityMeta } from './types.js';
 
 class DistanceOf extends Sense {
   readonly description = 'Returns an integer representing the distance to the given space.';

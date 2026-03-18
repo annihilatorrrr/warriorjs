@@ -2,7 +2,7 @@ import { Box, Text } from 'ink';
 import type React from 'react';
 import { useState } from 'react';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import type Tower from '../../Tower.js';
 import ConfirmPrompt from './ConfirmPrompt.js';

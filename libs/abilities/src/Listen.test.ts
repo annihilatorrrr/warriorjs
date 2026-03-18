@@ -1,6 +1,7 @@
 import { Sense } from '@warriorjs/core';
 import { FORWARD, NORTH } from '@warriorjs/spatial';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import Listen from './Listen.js';
 
 describe('Listen', () => {

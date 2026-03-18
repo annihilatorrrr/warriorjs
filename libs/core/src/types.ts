@@ -1,8 +1,8 @@
-import type { AbsoluteDirection } from '@warriorjs/spatial';
+import { type AbsoluteDirection } from '@warriorjs/spatial';
 
-import type { AbilityEntry } from './Ability.js';
-import type { EffectEntry } from './Effect.js';
-import type { UnitClass } from './Unit.js';
+import { type AbilityEntry } from './Ability.js';
+import { type EffectEntry } from './Effect.js';
+import { type UnitClass } from './Unit.js';
 
 /** Dimensions. */
 export type Size = { width: number; height: number };

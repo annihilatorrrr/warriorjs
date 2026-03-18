@@ -1,6 +1,7 @@
 import { Action } from '@warriorjs/core';
 import { FORWARD, LEFT } from '@warriorjs/spatial';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import Bind from './Bind.js';
 
 describe('Bind', () => {

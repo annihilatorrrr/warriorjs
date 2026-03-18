@@ -1,4 +1,5 @@
-import type { LevelConfig } from '@warriorjs/core';
+import { type LevelConfig } from '@warriorjs/core';
+
 import type Profile from '../Profile.js';
 
 function renderPlayerCode(profile: Profile, _levelConfig: LevelConfig): string {

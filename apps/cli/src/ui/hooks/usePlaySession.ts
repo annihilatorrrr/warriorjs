@@ -1,16 +1,16 @@
 import { getLevelConfig, runLevel } from '@warriorjs/core';
 import { useCallback, useRef, useState } from 'react';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
-import type {
-  LevelCompleteChoice,
-  LevelConfig,
-  LevelEvaluation,
-  LevelReport,
-  LevelResult,
-  LevelRun,
-  PlaySessionState,
+import {
+  type LevelCompleteChoice,
+  type LevelConfig,
+  type LevelEvaluation,
+  type LevelReport,
+  type LevelResult,
+  type LevelRun,
+  type PlaySessionState,
 } from '../types.js';
 import { buildLevelReport } from '../utils/buildLevelReport.js';
 

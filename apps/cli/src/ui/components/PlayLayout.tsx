@@ -1,7 +1,7 @@
 import { Box } from 'ink';
 import type React from 'react';
 
-import type { TurnEvent } from '../types.js';
+import { type TurnEvent } from '../types.js';
 import Divider from './Divider.js';
 import FloorMap from './FloorMap.js';
 import Header from './Header.js';

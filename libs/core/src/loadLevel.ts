@@ -1,9 +1,9 @@
-import type { AbilityEntry } from './Ability.js';
-import type { EffectEntry } from './Effect.js';
+import { type AbilityEntry } from './Ability.js';
+import { type EffectEntry } from './Effect.js';
 import Floor from './Floor.js';
 import Level from './Level.js';
 import loadPlayer from './loadPlayer.js';
-import type { LevelConfig, UnitConfig } from './types.js';
+import { type LevelConfig, type UnitConfig } from './types.js';
 import type Unit from './Unit.js';
 import Warrior from './Warrior.js';
 

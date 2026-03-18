@@ -2,7 +2,7 @@ import { useApp } from 'ink';
 import type React from 'react';
 import { useEffect } from 'react';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import { usePlaySession } from '../hooks/usePlaySession.js';
 import ErrorMessage from './ErrorMessage.js';

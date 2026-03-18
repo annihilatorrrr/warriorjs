@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'vitest';
+
 import { EAST, NORTH, SOUTH, WEST } from './absoluteDirections.js';
 import { getDirectionOfLocation, getDistanceOfLocation, translateLocation } from './location.js';
 

@@ -1,6 +1,5 @@
-import type { AbsoluteDirection } from './absoluteDirections.js';
-import { ABSOLUTE_DIRECTIONS } from './absoluteDirections.js';
-import type { Location, RelativeOffset } from './location.js';
+import { ABSOLUTE_DIRECTIONS, type AbsoluteDirection } from './absoluteDirections.js';
+import { type Location, type RelativeOffset } from './location.js';
 
 export const FORWARD = 'forward';
 export const RIGHT = 'right';

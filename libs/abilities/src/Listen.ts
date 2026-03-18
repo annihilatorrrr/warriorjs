@@ -1,6 +1,7 @@
 import { Sense } from '@warriorjs/core';
 import { FORWARD, getRelativeOffset } from '@warriorjs/spatial';
-import type { AbilityMeta } from './types.js';
+
+import { type AbilityMeta } from './types.js';
 
 class Listen extends Sense {
   readonly description =

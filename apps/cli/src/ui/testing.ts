@@ -1,4 +1,4 @@
-import type { LevelReport, LevelRun } from './types.js';
+import { type LevelReport, type LevelRun } from './types.js';
 
 export const waitForRender = () => new Promise((resolve) => setTimeout(resolve, 50));
 

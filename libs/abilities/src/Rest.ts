@@ -1,6 +1,6 @@
-import type { AbilityBinding } from '@warriorjs/core';
-import { Action } from '@warriorjs/core';
-import type { AbilityMeta, Unit } from './types.js';
+import { type AbilityBinding, Action } from '@warriorjs/core';
+
+import { type AbilityMeta, type Unit } from './types.js';
 
 interface RestConfig {
   healthGain: number;

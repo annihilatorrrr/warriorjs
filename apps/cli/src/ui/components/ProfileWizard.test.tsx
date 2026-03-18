@@ -1,7 +1,7 @@
 import { render } from 'ink-testing-library';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { GameContext } from '../../Game.js';
+import { type GameContext } from '../../Game.js';
 import type Profile from '../../Profile.js';
 import type Tower from '../../Tower.js';
 import { waitForRender } from '../testing.js';

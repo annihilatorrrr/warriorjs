@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
 import getClearBonus from './getClearBonus.js';
 import getLevelScore from './getLevelScore.js';
 import getRemainingTimeBonus from './getRemainingTimeBonus.js';

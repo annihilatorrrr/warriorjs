@@ -9,7 +9,7 @@
   "repository": "https://github.com/olistic/warriorjs",
   "scripts": {
     "build": "turbo run build --filter='!warriorjs-website'",
-    "clean": "rm -rf libs/*/lib",
+    "clean": "rm -rf {apps,libs,towers}/*/dist",
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "typecheck": "turbo run typecheck --filter='!warriorjs-website'",

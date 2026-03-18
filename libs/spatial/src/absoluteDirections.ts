@@ -22,7 +22,7 @@ export type AbsoluteDirection = (typeof ABSOLUTE_DIRECTIONS)[number];
  * @throws Will throw if the direction is not valid.
  */
 export function verifyAbsoluteDirection(direction: string): asserts direction is AbsoluteDirection {
-  if (!(ABSOLUTE_DIRECTIONS as readonly string[]).includes(direction)) {
+  if (!ABSOLUTE_DIRECTIONS.includes(direction as AbsoluteDirection)) {
     throw new Error(
       `Unknown direction: '${direction}'. Should be one of: '${NORTH}', '${EAST}', '${SOUTH}' or '${WEST}'.`,
     );

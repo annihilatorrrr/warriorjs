@@ -1,5 +1,6 @@
 import getLastEvent from './getLastEvent.js';
 import isFloorClear from './isFloorClear.js';
+import { type ScoringEvent } from './types.js';
 
 /**
  * Returns the bonus for clearing the level.
@@ -9,9 +10,9 @@ import isFloorClear from './isFloorClear.js';
  * @param timeBonus The time bonus.
  * @returns The clear bonus.
  */
-function getClearBonus(turns: unknown[][], warriorScore: number, timeBonus: number): number {
+function getClearBonus(turns: ScoringEvent[][], warriorScore: number, timeBonus: number): number {
   const lastEvent = getLastEvent(turns);
-  if (!isFloorClear(lastEvent.floorMap as { unit?: unknown }[][])) {
+  if (!isFloorClear(lastEvent.floorMap)) {
     return 0;
   }
 

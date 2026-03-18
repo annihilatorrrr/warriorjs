@@ -84,6 +84,12 @@ class TestSludge extends Unit {
 }
 
 const levelConfig = {
+  number: 1,
+  description: 'Test level',
+  tip: 'Test tip',
+  clue: 'Test clue',
+  timeBonus: 15,
+  aceScore: 30,
   floor: {
     size: { width: 8, height: 1 },
     stairs: { x: 7, y: 0 },

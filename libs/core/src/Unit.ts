@@ -1,4 +1,5 @@
 import { type RelativeDirection } from '@warriorjs/spatial';
+import invariant from 'tiny-invariant';
 
 import type Ability from './Ability.js';
 import { type AbilityEntry } from './Ability.js';
@@ -22,6 +23,7 @@ export interface UnitClass {
 
 class Unit {
   static declaredAbilities?: Record<string, AbilityEntry>;
+
   name: string;
   character: string;
   color: string;
@@ -37,27 +39,32 @@ class Unit {
   turn: TurnState | null;
 
   constructor(
-    name?: string,
-    character?: string,
-    color?: string,
-    maxHealth?: number,
+    name: string,
+    character: string,
+    color: string,
+    maxHealth: number,
     reward: number | null = null,
     enemy: boolean = true,
     bound: boolean = false,
   ) {
-    this.name = name!;
-    this.character = character!;
-    this.color = color!;
-    this.maxHealth = maxHealth!;
-    this.reward = reward === null ? maxHealth! : reward;
+    this.name = name;
+    this.character = character;
+    this.color = color;
+    this.maxHealth = maxHealth;
+    this.reward = reward === null ? maxHealth : reward;
     this.enemy = enemy;
     this.bound = bound;
     this.position = null;
-    this.health = maxHealth!;
+    this.health = maxHealth;
     this.score = 0;
     this.abilities = new Map();
     this.effects = new Map();
     this.turn = null;
+  }
+
+  private requirePosition(): Position {
+    invariant(this.position, `${this.name} has no position (unit is not on the floor).`);
+    return this.position;
   }
 
   getNextTurn(): TurnState {
@@ -188,11 +195,13 @@ class Unit {
   }
 
   getOtherUnits(): Unit[] {
-    return this.position!.floor.getUnits().filter((unit) => unit !== this);
+    const position = this.requirePosition();
+    return position.floor.getUnits().filter((unit) => unit !== this);
   }
 
   getSpace(): Space {
-    return this.position!.getSpace();
+    const position = this.requirePosition();
+    return position.getSpace();
   }
 
   getSensedSpaceAt(
@@ -204,25 +213,30 @@ class Unit {
   }
 
   getSpaceAt(direction: RelativeDirection, forward: number = 1, right: number = 0): Space {
-    return this.position!.getRelativeSpace(direction, [forward, right]);
+    const position = this.requirePosition();
+    return position.getRelativeSpace(direction, [forward, right]);
   }
 
   getDirectionOfStairs(): RelativeDirection {
-    return this.position!.getRelativeDirectionOf(this.position!.floor.getStairsSpace());
+    const position = this.requirePosition();
+    return position.getRelativeDirectionOf(position.floor.getStairsSpace());
   }
 
   getDirectionOf(sensedSpace: SensedSpace): RelativeDirection {
+    const position = this.requirePosition();
     const space = Space.from(sensedSpace, this);
-    return this.position!.getRelativeDirectionOf(space);
+    return position.getRelativeDirectionOf(space);
   }
 
   getDistanceOf(sensedSpace: SensedSpace): number {
+    const position = this.requirePosition();
     const space = Space.from(sensedSpace, this);
-    return this.position!.getDistanceOf(space);
+    return position.getDistanceOf(space);
   }
 
   move(direction: RelativeDirection, forward: number = 1, right: number = 0): void {
-    this.position!.move(direction, [forward, right]);
+    const position = this.requirePosition();
+    position.move(direction, [forward, right]);
   }
 
   rotate(direction: RelativeDirection): void {

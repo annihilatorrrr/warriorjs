@@ -53,7 +53,11 @@ class Profile {
       throw new GameError(`Unable to find tower '${towerKey}', make sure it is available.`);
     }
 
-    const profile = new Profile(warriorName as string, profileTower, profileDirectoryPath);
+    if (typeof warriorName !== 'string') {
+      throw new GameError('Corrupted .profile file: missing warrior name.');
+    }
+
+    const profile = new Profile(warriorName, profileTower, profileDirectoryPath);
     return Object.assign(profile, profileData);
   }
 
@@ -171,9 +175,9 @@ class Profile {
     return this.epic;
   }
 
-  tallyPoints(levelNumber: number, totalScore: number, grade?: number): void {
+  tallyPoints(levelNumber: number, totalScore: number, grade: number): void {
     if (this.isEpic()) {
-      this.currentEpicGrades[levelNumber] = grade!;
+      this.currentEpicGrades[levelNumber] = grade;
       this.currentEpicScore += totalScore;
     } else {
       this.score += totalScore;

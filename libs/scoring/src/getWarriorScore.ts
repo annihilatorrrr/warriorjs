@@ -1,4 +1,5 @@
 import getLastEvent from './getLastEvent.js';
+import { type ScoringEvent } from './types.js';
 
 /**
  * Returns the score of the warrior.
@@ -6,9 +7,13 @@ import getLastEvent from './getLastEvent.js';
  * @param turns The turns that happened during the play.
  * @returns The score of the warrior.
  */
-function getWarriorScore(turns: unknown[][]): number {
+function getWarriorScore(turns: ScoringEvent[][]): number {
   const lastEvent = getLastEvent(turns);
-  return (lastEvent as { warriorStatus: { score: number } }).warriorStatus.score;
+  if (!lastEvent.warriorStatus) {
+    throw new Error('Last event has no warrior status.');
+  }
+
+  return lastEvent.warriorStatus.score;
 }
 
 export default getWarriorScore;

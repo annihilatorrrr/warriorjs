@@ -22,7 +22,7 @@ export type RelativeDirection = (typeof RELATIVE_DIRECTIONS)[number];
  * @throws Will throw if the direction is not valid.
  */
 export function verifyRelativeDirection(direction: string): asserts direction is RelativeDirection {
-  if (!(RELATIVE_DIRECTIONS as readonly string[]).includes(direction)) {
+  if (!RELATIVE_DIRECTIONS.includes(direction as RelativeDirection)) {
     throw new Error(
       `Unknown direction: '${direction}'. Should be one of: '${FORWARD}', '${RIGHT}', '${BACKWARD}' or '${LEFT}'.`,
     );

@@ -5,6 +5,7 @@ import {
   type RelativeOffset,
   translateLocation,
 } from '@warriorjs/spatial';
+import invariant from 'tiny-invariant';
 
 import type Floor from './Floor.js';
 import type Unit from './Unit.js';
@@ -38,7 +39,8 @@ class Space {
   location: Location;
 
   static from(sensedSpace: SensedSpace, unit: Unit): Space {
-    const { floor, location, orientation } = unit.position!;
+    invariant(unit.position, `${unit.name} has no position (unit is not on the floor).`);
+    const { floor, location, orientation } = unit.position;
     const offset = getAbsoluteOffset(sensedSpace.getLocation(), orientation);
     const spaceLocation = translateLocation(location, offset);
     return new Space(floor, spaceLocation);
@@ -50,8 +52,9 @@ class Space {
   }
 
   getCharacter(): string {
-    if (this.isUnit()) {
-      return this.getUnit()!.character;
+    const unit = this.getUnit();
+    if (unit) {
+      return unit.character;
     }
 
     if (this.isWall()) {
@@ -111,9 +114,11 @@ class Space {
   }
 
   as(unit: Unit): SensedSpace {
+    invariant(unit.position, `${unit.name} has no position (unit is not on the floor).`);
+    const unitPosition = unit.position;
     return {
       getLocation: () =>
-        getRelativeOffset(this.location, unit.position!.location, unit.position!.orientation),
+        getRelativeOffset(this.location, unitPosition.location, unitPosition.orientation),
       getUnit: () => {
         const spaceUnit = this.getUnit.call(this);
         return spaceUnit ? spaceUnit.as(unit) : null;
@@ -126,8 +131,9 @@ class Space {
   }
 
   toString(): string {
-    if (this.isUnit()) {
-      return this.getUnit()!.toString();
+    const unit = this.getUnit();
+    if (unit) {
+      return unit.toString();
     }
 
     if (this.isWall()) {

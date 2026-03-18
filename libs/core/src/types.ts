@@ -4,13 +4,10 @@ import { type AbilityEntry } from './Ability.js';
 import { type EffectEntry } from './Effect.js';
 import { type UnitClass } from './Unit.js';
 
-/** Dimensions. */
 export type Size = { width: number; height: number };
 
-/** A location as an object with named coordinates. */
 export type LocationConfig = { x: number; y: number };
 
-/** A position (location + facing direction). */
 export type PositionConfig = LocationConfig & { facing: AbsoluteDirection };
 
 export interface UnitConfig {
@@ -29,16 +26,16 @@ export interface WarriorConfig {
 }
 
 export interface LevelConfig {
-  number?: number;
-  description?: string;
-  tip?: string;
-  clue?: string;
-  timeBonus?: number;
-  aceScore?: number;
+  number: number;
+  description: string;
+  tip: string;
+  clue: string;
+  timeBonus: number;
+  aceScore: number;
   floor: {
     size: Size;
     stairs: LocationConfig;
-    warrior: WarriorConfig;
+    warrior: WarriorConfig & { name: string };
     units?: UnitConfig[];
   };
 }

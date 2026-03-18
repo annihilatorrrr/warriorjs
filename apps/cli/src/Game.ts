@@ -144,18 +144,34 @@ class Game {
   }
 
   prepareNextLevel(): void {
-    this.profile!.goToNextLevel();
+    if (!this.profile) {
+      throw new GameError('No profile loaded.');
+    }
+
+    this.profile.goToNextLevel();
     this.generateProfileFiles();
   }
 
   generateProfileFiles(): void {
-    const { tower, levelNumber, warriorName, epic } = this.profile!;
+    if (!this.profile) {
+      throw new GameError('No profile loaded.');
+    }
+
+    const { tower, levelNumber, warriorName, epic } = this.profile;
     const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
-    new ProfileGenerator(this.profile!, levelConfig!).generate();
+    if (!levelConfig) {
+      throw new GameError(`Level ${levelNumber} not found in tower '${tower.id}'.`);
+    }
+
+    new ProfileGenerator(this.profile, levelConfig).generate();
   }
 
   prepareEpicMode(): void {
-    this.profile!.enableEpicMode();
+    if (!this.profile) {
+      throw new GameError('No profile loaded.');
+    }
+
+    this.profile.enableEpicMode();
   }
 }
 

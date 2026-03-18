@@ -240,7 +240,7 @@ describe('Unit', () => {
   });
 
   test('can damage another unit', () => {
-    const receiver = new Unit();
+    const receiver = new Unit('Test', 'T', '#000', 10);
     receiver.health = 10;
     receiver.position = {} as any;
     receiver.log = vi.fn();
@@ -252,7 +252,7 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit();
+      receiver = new Unit('Test', 'T', '#000', 10);
       receiver.maxHealth = 5;
       receiver.reward = 10;
       receiver.health = 5;
@@ -302,7 +302,7 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit();
+      receiver = new Unit('Test', 'T', '#000', 10);
       receiver.reward = 10;
       receiver.bound = true;
       receiver.position = {} as any;
@@ -423,7 +423,7 @@ describe('Unit', () => {
   });
 
   test("doesn't fetch itself when fetching other units", () => {
-    const anotherUnit = new Unit();
+    const anotherUnit = new Unit('Test', 'T', '#000', 10);
     floor.addUnit(anotherUnit, { x: 3, y: 4, facing: NORTH });
     expect(unit.getOtherUnits()).not.toContain(unit);
     expect(unit.getOtherUnits()).toContain(anotherUnit);
@@ -509,7 +509,7 @@ describe('Unit', () => {
     let sensedUnit: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit();
+      sensingUnit = new Unit('Test', 'T', '#000', 10);
       sensingUnit.enemy = false;
       floor.addUnit(sensingUnit, { x: 0, y: 1, facing: SOUTH });
       sensedUnit = unit.as(sensingUnit);

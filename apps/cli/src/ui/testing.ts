@@ -5,7 +5,7 @@ export const waitForRender = () => new Promise((resolve) => setTimeout(resolve, 
 /** Returns the last non-empty frame (exit() can write an empty frame after unmount). */
 export function getLastContentFrame(frames: string[]): string {
   for (let i = frames.length - 1; i >= 0; i--) {
-    if (frames[i]!.trim()) return frames[i]!;
+    if (frames[i].trim()) return frames[i];
   }
   return '';
 }

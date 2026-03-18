@@ -187,7 +187,7 @@ describe('Space', () => {
       let unit: Unit;
 
       beforeEach(() => {
-        unit = new Unit('Foo', 'f');
+        unit = new Unit('Foo', 'f', '#000', 10);
         floor.addUnit(unit, { x: 0, y: 2, facing: NORTH });
       });
 
@@ -213,7 +213,7 @@ describe('Space', () => {
     let unit: Unit;
 
     beforeEach(() => {
-      unit = new Unit('Foo', 'f');
+      unit = new Unit('Foo', 'f', '#000', 10);
       floor.addUnit(unit, { x: 0, y: 0, facing: NORTH });
     });
 
@@ -251,7 +251,7 @@ describe('Space', () => {
     let sensedSpace: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit();
+      sensingUnit = new Unit('Sensor', 'S', '#000', 10);
       floor.addUnit(sensingUnit, { x: 1, y: 1, facing: NORTH });
       sensedSpace = space.as(sensingUnit);
     });

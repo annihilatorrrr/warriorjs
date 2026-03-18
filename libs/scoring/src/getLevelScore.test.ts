@@ -4,6 +4,7 @@ import getClearBonus from './getClearBonus.js';
 import getLevelScore from './getLevelScore.js';
 import getRemainingTimeBonus from './getRemainingTimeBonus.js';
 import getWarriorScore from './getWarriorScore.js';
+import { type ScoringEvent } from './types.js';
 
 vi.mock('./getClearBonus.js');
 vi.mock('./getRemainingTimeBonus.js');
@@ -16,12 +17,13 @@ test('returns null when level failed', () => {
 });
 
 describe('level passed', () => {
-  let levelResult: { passed: boolean; turns: unknown[][] };
+  const stubTurns: ScoringEvent[][] = [[{ floorMap: [[]] }]];
+  let levelResult: { passed: boolean; turns: ScoringEvent[][] };
 
   beforeEach(() => {
     levelResult = {
       passed: true,
-      turns: [['turn-events']] as unknown[][],
+      turns: stubTurns,
     };
   });
 
@@ -33,7 +35,7 @@ describe('level passed', () => {
   test('has time bonus part', () => {
     vi.mocked(getRemainingTimeBonus).mockReturnValue(10);
     expect(getLevelScore(levelResult, levelConfig)?.timeBonus).toBe(10);
-    expect(getRemainingTimeBonus).toHaveBeenCalledWith([['turn-events']], 16);
+    expect(getRemainingTimeBonus).toHaveBeenCalledWith(stubTurns, 16);
   });
 
   test('has clear bonus part', () => {
@@ -41,6 +43,6 @@ describe('level passed', () => {
     vi.mocked(getRemainingTimeBonus).mockReturnValue(12);
     vi.mocked(getClearBonus).mockReturnValue(4);
     expect(getLevelScore(levelResult, levelConfig)?.clearBonus).toBe(4);
-    expect(getClearBonus).toHaveBeenCalledWith([['turn-events']], 8, 12);
+    expect(getClearBonus).toHaveBeenCalledWith(stubTurns, 8, 12);
   });
 });

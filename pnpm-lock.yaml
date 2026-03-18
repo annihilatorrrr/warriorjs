@@ -103,6 +103,9 @@ importers:
       esbuild:
         specifier: ^0.27.3
         version: 0.27.3
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
 
   libs/effects:
     dependencies:
@@ -4864,6 +4867,9 @@ packages:
 
   timsort@0.3.0:
     resolution: {integrity: sha512-qsdtZH+vMoCARQtyod4imc2nIJwg9Cc7lPRrw9CzF8ZKR0khdr8+2nX80PBhET3tcyTtJDxAffGh2rXH4tyU8A==}
+
+  tiny-invariant@1.3.3:
+    resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
   tiny-lr@1.1.1:
     resolution: {integrity: sha512-44yhA3tsaRoMOjQQ+5v5mVdqef+kH6Qze9jTpqtVufgYjYt08zyZAwNwwVBj3i1rJMnR52IxOW0LK0vBzgAkuA==}
@@ -10722,6 +10728,8 @@ snapshots:
   timed-out@4.0.1: {}
 
   timsort@0.3.0: {}
+
+  tiny-invariant@1.3.3: {}
 
   tiny-lr@1.1.1:
     dependencies:

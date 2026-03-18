@@ -1,21 +1,5 @@
 import { type LevelConfig, type TowerDefinition } from './types.js';
 
-function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object' || obj.constructor !== Object) {
-    return obj;
-  }
-
-  if (Array.isArray(obj)) {
-    return obj.map((item) => deepClone(item)) as T;
-  }
-
-  const clone = {} as Record<string, unknown>;
-  for (const key of Object.keys(obj)) {
-    clone[key] = deepClone((obj as Record<string, unknown>)[key]);
-  }
-  return clone as T;
-}
-
 /**
  * Returns the config for the level with the given number.
  *
@@ -37,8 +21,6 @@ function getLevelConfig(
     return null;
   }
 
-  const levelConfig = deepClone(level) as unknown as LevelConfig;
-
   const levels = epic ? tower.levels : tower.levels.slice(0, levelNumber);
   const warriorAbilities = Object.assign(
     {},
@@ -51,14 +33,25 @@ function getLevelConfig(
     ),
   );
 
-  levelConfig.number = levelNumber;
-  levelConfig.floor.warrior = {
-    ...tower.warrior,
-    ...levelConfig.floor.warrior,
-    name: warriorName,
-    abilities: warriorAbilities,
+  return {
+    number: levelNumber,
+    description: level.description,
+    tip: level.tip,
+    clue: level.clue ?? '',
+    timeBonus: level.timeBonus,
+    aceScore: level.aceScore,
+    floor: {
+      size: structuredClone(level.floor.size),
+      stairs: structuredClone(level.floor.stairs),
+      warrior: {
+        ...structuredClone(tower.warrior),
+        ...structuredClone(level.floor.warrior),
+        name: warriorName,
+        abilities: warriorAbilities,
+      },
+      units: level.floor.units ? structuredClone(level.floor.units) : undefined,
+    },
   };
-  return levelConfig;
 }
 
 export default getLevelConfig;

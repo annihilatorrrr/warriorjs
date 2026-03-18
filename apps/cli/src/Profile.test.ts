@@ -284,7 +284,7 @@ describe('Profile', () => {
 
   test('tallies the points by adding to the score', () => {
     profile.score = 0;
-    profile.tallyPoints(1, 123);
+    profile.tallyPoints(1, 123, 0.8);
     expect(profile.score).toBe(123);
   });
 

@@ -8,14 +8,13 @@ interface AbilityInfo {
 }
 
 class Warrior extends Unit {
-  constructor(name?: string, character?: string, color?: string, maxHealth?: number) {
+  constructor(name: string, character: string, color: string, maxHealth: number) {
     super(name, character, color, maxHealth, null, false);
   }
 
   performTurn(): void {
     super.performTurn();
-    const turn = this.turn as { action: [string, any[]] | null };
-    if (!turn.action || this.isBound()) {
+    if (!this.turn?.action || this.isBound()) {
       this.log('does nothing');
     }
   }

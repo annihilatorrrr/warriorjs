@@ -1,6 +1,4 @@
-interface Space {
-  unit?: unknown;
-}
+import { type ScoringFloorSpace } from './types.js';
 
 /**
  * Checks if the floor is clear.
@@ -10,9 +8,9 @@ interface Space {
  * @param floorMap The floor map.
  * @returns Whether the floor is clear or not.
  */
-function isFloorClear(floorMap: Space[][]): boolean {
-  const spaces = floorMap.reduce<Space[]>((acc, val) => acc.concat(val), []);
-  const unitCount = spaces.filter((space: Space) => !!space.unit).length;
+function isFloorClear(floorMap: ScoringFloorSpace[][]): boolean {
+  const spaces = floorMap.reduce<ScoringFloorSpace[]>((acc, val) => acc.concat(val), []);
+  const unitCount = spaces.filter((space) => !!space.unit).length;
   return unitCount <= 1;
 }
 

@@ -11,7 +11,7 @@ describe('Position', () => {
 
   beforeEach(() => {
     floor = new Floor(5, 6, [0, 0]);
-    unit = new Unit();
+    unit = new Unit('Test', 'T', '#000', 10);
     floor.addUnit(unit, { x: 1, y: 2, facing: NORTH });
     position = unit.position;
   });
@@ -26,28 +26,28 @@ describe('Position', () => {
   });
 
   test('gets relative space in front', () => {
-    floor.addUnit(new Unit(), { x: 1, y: 1, facing: NORTH });
+    floor.addUnit(new Unit('Test', 'T', '#000', 10), { x: 1, y: 1, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [1, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space in front two spaces yonder', () => {
-    floor.addUnit(new Unit(), { x: 1, y: 0, facing: NORTH });
+    floor.addUnit(new Unit('Test', 'T', '#000', 10), { x: 1, y: 0, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [2, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space in front when rotated', () => {
-    floor.addUnit(new Unit(), { x: 2, y: 2, facing: NORTH });
+    floor.addUnit(new Unit('Test', 'T', '#000', 10), { x: 2, y: 2, facing: NORTH });
     position.rotate(RIGHT);
     expect(position.getRelativeSpace(FORWARD, [1, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space diagonally', () => {
-    floor.addUnit(new Unit(), { x: 2, y: 1, facing: NORTH });
+    floor.addUnit(new Unit('Test', 'T', '#000', 10), { x: 2, y: 1, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [1, 1]).isEmpty()).toBe(false);
   });
 
   test('gets relative space diagonally when rotated', () => {
-    floor.addUnit(new Unit(), { x: 2, y: 1, facing: NORTH });
+    floor.addUnit(new Unit('Test', 'T', '#000', 10), { x: 2, y: 1, facing: NORTH });
     position.rotate(BACKWARD);
     expect(position.getRelativeSpace(FORWARD, [-1, -1]).isEmpty()).toBe(false);
   });

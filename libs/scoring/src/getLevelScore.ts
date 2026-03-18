@@ -1,10 +1,11 @@
 import getClearBonus from './getClearBonus.js';
 import getRemainingTimeBonus from './getRemainingTimeBonus.js';
 import getWarriorScore from './getWarriorScore.js';
+import { type ScoringEvent } from './types.js';
 
 interface LevelResult {
   passed: boolean;
-  turns: unknown[][];
+  turns: ScoringEvent[][];
 }
 
 interface LevelConfig {

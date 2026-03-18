@@ -36,7 +36,14 @@ interface LevelOutcome {
 function executeLevel(profile: Profile, levelNumber: number, context: GameContext): LevelOutcome {
   try {
     const { tower, warriorName, epic } = profile;
-    const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic)!;
+    const levelConfig = getLevelConfig(tower, levelNumber, warriorName, epic);
+    if (!levelConfig) {
+      return {
+        state: { type: 'error', message: `Level ${levelNumber} not found.` },
+        evaluation: null,
+        currentReport: null,
+      };
+    }
     const playerCode = profile.readPlayerCode();
     if (!playerCode) {
       return {
@@ -54,7 +61,11 @@ function executeLevel(profile: Profile, levelNumber: number, context: GameContex
         currentReport: null,
       };
     }
-    const levelResult = rawResult as LevelResult;
+    const levelResult: LevelResult = {
+      passed: rawResult.passed,
+      turns: rawResult.turns as LevelResult['turns'],
+      initialState: rawResult.initialState as LevelResult['initialState'],
+    };
 
     const levelRun: LevelRun = {
       turns: levelResult.turns,

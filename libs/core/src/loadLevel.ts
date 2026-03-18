@@ -65,10 +65,10 @@ function loadLevel(
 
   loadWarrior(warrior, floor, playerCode, language);
   for (const entry of units) {
-    loadUnit(entry as UnitConfig, floor);
+    loadUnit(entry, floor);
   }
 
-  return new Level(number!, description!, tip!, clue!, floor);
+  return new Level(number, description, tip, clue, floor);
 }
 
 export default loadLevel;

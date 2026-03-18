@@ -90,6 +90,8 @@ const levelConfig = {
       },
     ],
   },
+  timeBonus: 15,
+  aceScore: 30,
 } satisfies LevelConfig;
 
 test('returns level', () => {

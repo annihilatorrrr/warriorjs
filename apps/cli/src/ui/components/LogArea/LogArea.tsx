@@ -2,11 +2,12 @@ import { Box, Text } from 'ink';
 import type React from 'react';
 import { useMemo } from 'react';
 
+import { type PlaybackCursor } from '../../hooks/usePlayback.js';
 import { type TurnEvent } from '../../types.js';
 
 interface LogAreaProps {
   turns: TurnEvent[][];
-  currentTurn: number;
+  cursor: PlaybackCursor;
   maxLines?: number;
 }
 
@@ -70,32 +71,41 @@ function colorizeMessage(
 
 export default function LogArea({
   turns,
-  currentTurn,
+  cursor,
   maxLines = 10,
 }: LogAreaProps): React.ReactElement {
   const unitColors = useMemo(() => buildUnitColorMap(turns), [turns]);
   const colorizeRegex = useMemo(() => buildColorizeRegex(unitColors), [unitColors]);
 
-  // Build a flat list of lines (turn headers + events), newest first.
+  // Build a flat list of lines in chronological order, up to the cursor position.
   const visibleLines = useMemo(() => {
     const lines: LogLine[] = [];
-    const visibleTurns = turns.slice(0, currentTurn + 1);
 
-    for (let i = visibleTurns.length - 1; i >= 0; i--) {
-      const turnEvents = visibleTurns[i]!;
-      const hasMessages = turnEvents.some((e) => e.message);
-      if (!hasMessages) continue;
-      const turnNumber = i;
-      lines.push({ type: 'turn', turnNumber });
-      for (const event of turnEvents) {
+    for (let t = 0; t <= cursor.turn; t++) {
+      const turnEvents = turns[t]!;
+      const maxEvent = t === cursor.turn ? cursor.event : turnEvents.length - 1;
+      const eventsInRange: TurnEvent[] = [];
+
+      for (let e = 0; e <= maxEvent; e++) {
+        const event = turnEvents[e]!;
         if (event.message) {
-          lines.push({ type: 'event', turnNumber, event });
+          eventsInRange.push(event);
+        }
+      }
+
+      if (eventsInRange.length > 0) {
+        lines.push({ type: 'turn', turnNumber: t });
+        for (const event of eventsInRange) {
+          lines.push({ type: 'event', turnNumber: t, event });
         }
       }
     }
 
-    return lines.slice(0, maxLines);
-  }, [turns, currentTurn, maxLines]);
+    // Truncate from the top (oldest lines scroll off).
+    return lines.length > maxLines ? lines.slice(lines.length - maxLines) : lines;
+  }, [turns, cursor, maxLines]);
+
+  const lastIndex = visibleLines.length - 1;
 
   return (
     <Box flexDirection="column">
@@ -109,11 +119,14 @@ export default function LogArea({
         }
         const event = line.event!;
         const text = event.unit ? `${event.unit.name} ${event.message}` : event.message;
+        const isCurrent = index === lastIndex;
         return (
           // biome-ignore lint/suspicious/noArrayIndexKey: unique with turnNumber
           <Box key={`e${line.turnNumber}-${index}`} gap={1}>
-            <Text dimColor>{'>'}</Text>
-            <Text>{colorizeMessage(text, unitColors, colorizeRegex)}</Text>
+            <Text dimColor={!isCurrent}>{'>'}</Text>
+            <Text bold={isCurrent} dimColor={!isCurrent}>
+              {isCurrent ? colorizeMessage(text, unitColors, colorizeRegex) : text}
+            </Text>
           </Box>
         );
       })}

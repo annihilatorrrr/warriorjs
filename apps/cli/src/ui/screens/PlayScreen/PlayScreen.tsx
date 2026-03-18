@@ -56,7 +56,7 @@ export default function PlayScreen({
       </Box>
       <Divider />
       <Box flexDirection="column" height={10}>
-        <LogArea turns={turnsWithInitial} currentTurn={cursor.turn} />
+        <LogArea turns={turnsWithInitial} cursor={cursor} />
       </Box>
       <Divider />
       <Scrubber

@@ -45,11 +45,10 @@ function renderSenses(senses: Ability[]): string {
 }
 
 function renderAbilities(level: any): string {
-  const sections = [
-    '## Abilities',
-    renderActions(level.warriorAbilities.actions),
-    renderSenses(level.warriorAbilities.senses),
-  ].filter(Boolean);
+  const abilities: any[] = level.warriorAbilities ?? [];
+  const actions = abilities.filter((a: any) => a.isAction);
+  const senses = abilities.filter((a: any) => !a.isAction);
+  const sections = ['## Abilities', renderActions(actions), renderSenses(senses)].filter(Boolean);
   return sections.join('\n\n');
 }
 

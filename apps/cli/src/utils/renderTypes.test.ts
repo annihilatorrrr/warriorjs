@@ -1,44 +1,35 @@
-import { type AbilityMeta, Action, Sense } from '@warriorjs/core';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
+
+vi.mock('@warriorjs/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@warriorjs/core')>();
+  return { ...actual, getLevel: vi.fn() };
+});
+
+import { getLevel } from '@warriorjs/core';
 
 import renderTypes from './renderTypes.js';
 
-class MockWalk extends Action {
-  readonly description = 'Walks forward';
-  readonly meta: AbilityMeta = {
-    params: [{ name: 'direction', type: 'Direction', optional: true }],
-    returns: 'void',
-  };
-  perform() {}
-}
-
-class MockFeel extends Sense {
-  readonly description = 'Feels the space ahead';
-  readonly meta: AbilityMeta = {
-    params: [{ name: 'direction', type: 'Direction', optional: true }],
-    returns: 'Space',
-  };
-  perform() {}
-}
-
-class MockHealth extends Sense {
-  readonly description = 'Returns current health';
-  readonly meta: AbilityMeta = {
-    params: [],
-    returns: 'number',
-  };
-  perform() {}
-}
-
 const profile: any = { language: 'typescript' };
 
-function makeLevelConfig(abilities: Record<string, any>): any {
-  return { floor: { warrior: { abilities } } };
+function setup(abilities: any[]) {
+  (getLevel as any).mockReturnValue({ warriorAbilities: abilities });
+  return {} as any; // levelConfig — not inspected since getLevel is mocked
 }
 
 describe('renderTypes', () => {
   test('renders types with a single action', () => {
-    expect(renderTypes(profile, makeLevelConfig({ walk: MockWalk }))).toBe(
+    const levelConfig = setup([
+      {
+        name: 'walk',
+        description: 'Walks forward',
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'void',
+        },
+        isAction: true,
+      },
+    ]);
+    expect(renderTypes(profile, levelConfig)).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -54,16 +45,33 @@ describe('renderTypes', () => {
   });
 
   test('renders types with actions before senses, both sorted alphabetically', () => {
-    expect(
-      renderTypes(
-        profile,
-        makeLevelConfig({
-          health: MockHealth,
-          walk: MockWalk,
-          feel: MockFeel,
-        }),
-      ),
-    ).toBe(
+    const levelConfig = setup([
+      {
+        name: 'feel',
+        description: 'Feels the space ahead',
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'Space',
+        },
+        isAction: false,
+      },
+      {
+        name: 'health',
+        description: 'Returns current health',
+        meta: { params: [], returns: 'number' },
+        isAction: false,
+      },
+      {
+        name: 'walk',
+        description: 'Walks forward',
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'void',
+        },
+        isAction: true,
+      },
+    ]);
+    expect(renderTypes(profile, levelConfig)).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -107,7 +115,24 @@ describe('renderTypes', () => {
   });
 
   test('omits Space and Unit interfaces when no abilities use Space', () => {
-    expect(renderTypes(profile, makeLevelConfig({ walk: MockWalk, health: MockHealth }))).toBe(
+    const levelConfig = setup([
+      {
+        name: 'walk',
+        description: 'Walks forward',
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'void',
+        },
+        isAction: true,
+      },
+      {
+        name: 'health',
+        description: 'Returns current health',
+        meta: { params: [], returns: 'number' },
+        isAction: false,
+      },
+    ]);
+    expect(renderTypes(profile, levelConfig)).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -125,15 +150,15 @@ describe('renderTypes', () => {
   });
 
   test('handles rest parameters', () => {
-    class RestAction extends Action {
-      readonly description = 'Does something with rest params';
-      readonly meta: AbilityMeta = {
-        params: [{ name: 'targets', type: 'any', rest: true }],
-        returns: 'void',
-      };
-      perform() {}
-    }
-    expect(renderTypes(profile, makeLevelConfig({ multi: RestAction }))).toBe(
+    const levelConfig = setup([
+      {
+        name: 'multi',
+        description: 'Does something with rest params',
+        meta: { params: [{ name: 'targets', type: 'any', rest: true }], returns: 'void' },
+        isAction: true,
+      },
+    ]);
+    expect(renderTypes(profile, levelConfig)).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',
@@ -149,7 +174,8 @@ describe('renderTypes', () => {
   });
 
   test('handles empty abilities', () => {
-    expect(renderTypes(profile, makeLevelConfig({}))).toBe(
+    const levelConfig = setup([]);
+    expect(renderTypes(profile, levelConfig)).toBe(
       [
         '// @generated — Auto-generated each level. Do not edit.',
         '',

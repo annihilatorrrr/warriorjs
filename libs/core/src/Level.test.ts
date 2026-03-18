@@ -16,7 +16,13 @@ describe('Level', () => {
     floor = new Floor(2, 1, [1, 0]);
     floor.addUnit(warrior, { x: 0, y: 0, facing: EAST });
     floor.warrior = warrior;
-    level = new Level(1, 'a description', 'a tip', 'a clue', floor);
+    level = new Level(
+      1,
+      'You see a faint light at the end of the hallway.',
+      'Use `warrior.walk()` to move toward the stairs.',
+      'Walk forward each turn until you reach the stairs.',
+      floor,
+    );
   });
 
   describe('playing', () => {
@@ -63,12 +69,12 @@ describe('Level', () => {
   test('has a minimal JSON representation', () => {
     expect(level.toJSON()).toEqual({
       number: 1,
-      description: 'a description',
-      tip: 'a tip',
-      clue: 'a clue',
+      description: 'You see a faint light at the end of the hallway.',
+      tip: 'Use `warrior.walk()` to move toward the stairs.',
+      clue: 'Walk forward each turn until you reach the stairs.',
       floorMap: level.floor.getMap(),
       warriorStatus: level.floor.warrior?.getStatus(),
-      warriorAbilities: level.floor.warrior?.getAbilities(),
+      warriorAbilities: [],
     });
   });
 });

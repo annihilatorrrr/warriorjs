@@ -1,4 +1,10 @@
-export type { AbilityBinding, AbilityEntry, AbilityMeta, AbilityParam } from './Ability.js';
+export type {
+  AbilityBinding,
+  AbilityEntry,
+  AbilityMeta,
+  AbilityParam,
+  AbilitySpec,
+} from './Ability.js';
 export { default as Ability } from './Ability.js';
 export { default as Action } from './Action.js';
 export type { EffectBinding, EffectEntry } from './Effect.js';

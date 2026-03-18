@@ -10,6 +10,13 @@ export interface AbilityMeta {
   returns: 'void' | 'number' | 'string' | 'Direction' | 'Space' | 'Space[]';
 }
 
+export interface AbilitySpec {
+  name: string;
+  description: string;
+  meta: AbilityMeta;
+  isAction: boolean;
+}
+
 export interface AbilityClass {
   new (unit: any, config?: any): Ability;
 }

@@ -57,11 +57,21 @@ describe('Warrior', () => {
     expect(warrior.log).toHaveBeenCalledWith('loses 5 points');
   });
 
-  test('has a grouped collection of abilities', () => {
-    expect(warrior.getAbilities()).toEqual({
-      actions: [{ name: 'walk', description: 'a description' }],
-      senses: [{ name: 'feel', description: 'a description' }],
-    });
+  test('returns abilities as a sorted flat list', () => {
+    expect(warrior.getAbilities()).toEqual([
+      {
+        name: 'feel',
+        description: 'a description',
+        meta: { params: [], returns: 'void' },
+        isAction: false,
+      },
+      {
+        name: 'walk',
+        description: 'a description',
+        meta: { params: [], returns: 'void' },
+        isAction: true,
+      },
+    ]);
   });
 
   test('has a status', () => {

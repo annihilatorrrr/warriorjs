@@ -145,25 +145,35 @@ test('returns level', () => {
       ],
     ],
     warriorStatus: { health: 20, score: 0 },
-    warriorAbilities: {
-      actions: [
-        {
-          name: 'attack',
-          description:
-            "Attacks a unit in the given direction (`'forward'` by default), dealing 5 HP of damage.",
+    warriorAbilities: [
+      {
+        name: 'attack',
+        description:
+          "Attacks a unit in the given direction (`'forward'` by default), dealing 5 HP of damage.",
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'void',
         },
-        {
-          name: 'walk',
-          description: "Moves one space in the given direction (`'forward'` by default).",
+        isAction: true,
+      },
+      {
+        name: 'feel',
+        description: "Returns the adjacent space in the given direction (`'forward'` by default).",
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'Space',
         },
-      ],
-      senses: [
-        {
-          name: 'feel',
-          description:
-            "Returns the adjacent space in the given direction (`'forward'` by default).",
+        isAction: false,
+      },
+      {
+        name: 'walk',
+        description: "Moves one space in the given direction (`'forward'` by default).",
+        meta: {
+          params: [{ name: 'direction', type: 'Direction', optional: true }],
+          returns: 'void',
         },
-      ],
-    },
+        isAction: true,
+      },
+    ],
   });
 });

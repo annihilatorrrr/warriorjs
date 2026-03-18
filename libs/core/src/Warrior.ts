@@ -1,11 +1,6 @@
+import { type AbilitySpec } from './Ability.js';
 import Action from './Action.js';
 import Unit from './Unit.js';
-
-interface AbilityInfo {
-  name: string;
-  isAction: boolean;
-  description?: string;
-}
 
 class Warrior extends Unit {
   constructor(name: string, character: string, color: string, maxHealth: number) {
@@ -29,26 +24,15 @@ class Warrior extends Unit {
     this.log(`loses ${points} points`);
   }
 
-  getAbilities(): {
-    actions: Omit<AbilityInfo, 'isAction'>[];
-    senses: Omit<AbilityInfo, 'isAction'>[];
-  } {
-    const abilities: AbilityInfo[] = [...this.abilities].map(([name, ability]) => ({
-      name,
-      isAction: ability instanceof Action,
-      description: ability.description,
-    }));
-    const sortedAbilities = abilities.sort((a, b) => (a.name > b.name ? 1 : -1));
-    const actions = sortedAbilities
-      .filter((ability) => ability.isAction)
-      .map(({ isAction, ...rest }) => rest);
-    const senses = sortedAbilities
-      .filter((ability) => !ability.isAction)
-      .map(({ isAction, ...rest }) => rest);
-    return {
-      actions,
-      senses,
-    };
+  getAbilities(): AbilitySpec[] {
+    return [...this.abilities]
+      .map(([name, ability]) => ({
+        name,
+        description: ability.description,
+        meta: ability.meta,
+        isAction: ability instanceof Action,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   getStatus(): { health: number; score: number } {

@@ -29,10 +29,14 @@ describe('renderReadme', () => {
       tip: 'Walk towards the light.',
       clue: 'Use warrior.walk()',
       floorMap: [[{ character: '@' }, { character: ' ' }, { character: '>' }]],
-      warriorAbilities: {
-        actions: [{ name: 'walk', description: 'Walks forward' }],
-        senses: [],
-      },
+      warriorAbilities: [
+        {
+          name: 'walk',
+          description: 'Walks forward',
+          meta: { params: [], returns: 'void' },
+          isAction: true,
+        },
+      ],
     };
     (getLevel as any).mockReturnValue(level);
   });
@@ -159,7 +163,20 @@ describe('renderReadme', () => {
   });
 
   test('renders readme with actions and senses', () => {
-    level.warriorAbilities.senses = [{ name: 'feel', description: 'Feels the space ahead' }];
+    level.warriorAbilities = [
+      {
+        name: 'walk',
+        description: 'Walks forward',
+        meta: { params: [], returns: 'void' },
+        isAction: true,
+      },
+      {
+        name: 'feel',
+        description: 'Feels the space ahead',
+        meta: { params: [], returns: 'Space' },
+        isAction: false,
+      },
+    ];
     const result = renderReadme(profile, levelConfig);
     expect(result).toBe(
       [

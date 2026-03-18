@@ -62,7 +62,7 @@ class Level {
       clue: this.clue,
       floorMap: this.floor.getMap(),
       warriorStatus: this.floor.warrior?.getStatus(),
-      warriorAbilities: this.floor.warrior?.getAbilities(),
+      warriorAbilities: this.floor.warrior?.getAbilities() ?? [],
     };
   }
 }

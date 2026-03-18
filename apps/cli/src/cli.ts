@@ -3,7 +3,7 @@ import React from 'react';
 
 import Game from './Game.js';
 import parseArgs from './parseArgs.js';
-import App from './ui/components/App.js';
+import App from './ui/components/App/index.js';
 
 /**
  * Starts the game.

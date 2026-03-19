@@ -5,8 +5,22 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     clearMocks: true,
-    include: ['libs/**/src/**/*.test.ts', 'apps/**/src/**/*.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**'],
+    projects: [
+      {
+        test: {
+          name: 'libs',
+          include: ['libs/**/src/**/*.test.ts'],
+        },
+      },
+      {
+        test: {
+          name: 'cli',
+          include: ['apps/cli/src/**/*.test.{ts,tsx}'],
+          setupFiles: ['apps/cli/setupTests.ts'],
+        },
+      },
+    ],
     coverage: {
       include: ['libs/**/src/**/*.ts', 'apps/**/src/**/*.{ts,tsx}'],
       exclude: ['libs/warriorjs-tower-**/src/**', '**/*.test.{ts,tsx}'],

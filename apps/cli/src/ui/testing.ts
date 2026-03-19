@@ -1,6 +1,8 @@
+import { act } from 'react';
+
 import { type LevelContext, type LevelReplay, type LevelReport } from './types.js';
 
-export const waitForRender = () => new Promise((resolve) => setTimeout(resolve, 50));
+export const waitForRender = () => act(() => new Promise((resolve) => setTimeout(resolve, 50)));
 
 /** Returns the last non-empty frame (exit() can write an empty frame after unmount). */
 export function getLastContentFrame(frames: string[]): string {

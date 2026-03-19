@@ -14,11 +14,12 @@ function renderHeader(): string {
 }
 
 function renderDirectionType(): string {
-  return "export type Direction = 'forward' | 'right' | 'backward' | 'left';";
+  return "/** A direction relative to where the warrior is facing. */\nexport type Direction = 'forward' | 'right' | 'backward' | 'left';";
 }
 
 function renderSpaceInterfaces(): string {
   return [
+    '/** A unit on the floor. */',
     'export interface Unit {',
     '  /** Determines if the unit is bound. */',
     '  isBound(): boolean;',
@@ -28,6 +29,7 @@ function renderSpaceInterfaces(): string {
     '  isUnderEffect(name: string): boolean;',
     '}',
     '',
+    '/** A space on the floor. */',
     'export interface Space {',
     '  /** Returns the relative location of this space as the offset `[forward, right]`. */',
     '  getLocation(): [number, number];',
@@ -50,11 +52,12 @@ function renderMethod(method: MethodEntry): string {
 }
 
 function renderWarriorInterface(methods: MethodEntry[]): string {
+  const jsdoc = '/** Your warrior. */';
   if (!methods.length) {
-    return 'export interface Warrior {\n}';
+    return `${jsdoc}\nexport interface Warrior {}`;
   }
   const body = methods.map(renderMethod).join('\n');
-  return `export interface Warrior {\n${body}\n}`;
+  return `${jsdoc}\nexport interface Warrior {\n${body}\n}`;
 }
 
 function renderTypes(_profile: Profile, levelConfig: LevelConfig): string {

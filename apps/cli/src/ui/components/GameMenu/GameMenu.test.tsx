@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { type GameContext } from '../../../Game.js';
 import type Profile from '../../../Profile.js';
 import type Tower from '../../../Tower.js';
-import { getLastContentFrame, waitForRender } from '../../testing.js';
+import { getLastContentFrame, waitForRender } from '../../../testing/index.js';
 import GameMenu from './GameMenu.js';
 
 vi.mock('./utils/getWarriorNameSuggestions.js', () => ({

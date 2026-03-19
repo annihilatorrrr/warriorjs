@@ -1,7 +1,7 @@
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
-import { waitForRender } from '../../testing.js';
+import { waitForRender } from '../../../testing/index.js';
 import ErrorMessage from './ErrorMessage.js';
 
 describe('ErrorMessage', () => {

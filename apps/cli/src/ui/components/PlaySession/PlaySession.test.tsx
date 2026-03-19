@@ -11,7 +11,7 @@ import {
   makeLevelReplay,
   makeLevelReport,
   waitForRender,
-} from '../../testing.js';
+} from '../../../testing/index.js';
 import PlaySession from './PlaySession.js';
 
 vi.mock('../../hooks/usePlaySession.js', () => ({

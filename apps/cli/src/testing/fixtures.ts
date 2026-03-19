@@ -1,15 +1,4 @@
-import { act } from 'react';
-
 import { type LevelContext, type LevelReplay, type LevelReport } from '../types.js';
-
-export const waitForRender = () => act(() => new Promise((resolve) => setTimeout(resolve, 50)));
-
-export function getLastContentFrame(frames: string[]): string {
-  for (let i = frames.length - 1; i >= 0; i--) {
-    if (frames[i].trim()) return frames[i];
-  }
-  return '';
-}
 
 export function makeLevelReplay(overrides: Partial<LevelReplay> = {}): LevelReplay {
   return {

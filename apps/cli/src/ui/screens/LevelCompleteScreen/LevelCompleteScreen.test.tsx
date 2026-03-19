@@ -6,7 +6,7 @@ import {
   makeLevelReplay,
   makeLevelReport,
   waitForRender,
-} from '../../testing.js';
+} from '../../../testing/index.js';
 import LevelCompleteScreen from './LevelCompleteScreen.js';
 
 describe('LevelCompleteScreen', () => {

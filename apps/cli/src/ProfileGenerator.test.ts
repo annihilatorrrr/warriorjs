@@ -1,6 +1,12 @@
 import fs from 'node:fs';
-import mock from 'mock-fs';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+
+import { mockFs } from './testing/index.js';
+
+vi.mock('node:fs', async () => {
+  const memfs = await import('memfs');
+  return { default: memfs.fs, ...memfs.fs };
+});
 
 import ProfileGenerator from './ProfileGenerator.js';
 import renderPlayerCode from './utils/renderPlayerCode.js';
@@ -73,28 +79,28 @@ describe('ProfileGenerator', () => {
 
   test('generates readme file', () => {
     (renderReadme as any).mockReturnValue('rendered readme');
-    mock({ '/path/to/profile': {} });
+    mockFs({ '/path/to/profile': {} });
     profileGenerator.generateReadmeFile();
     expect(renderReadme).toHaveBeenCalledWith(profile, levelConfig);
     expect(fs.readFileSync('/path/to/profile/readme', 'utf8')).toBe('rendered readme');
-    mock.restore();
+    mockFs.restore();
   });
 
   test('generates player code file', () => {
     (renderPlayerCode as any).mockReturnValue('rendered player code');
-    mock({ '/path/to/profile': {} });
+    mockFs({ '/path/to/profile': {} });
     profileGenerator.generatePlayerCodeFile();
     expect(renderPlayerCode).toHaveBeenCalledWith(profile, levelConfig);
     expect(fs.readFileSync('/path/to/profile/player-code', 'utf8')).toBe('rendered player code');
-    mock.restore();
+    mockFs.restore();
   });
 
   test('generates types file', () => {
     (renderTypes as any).mockReturnValue('rendered types');
-    mock({ '/path/to/profile': {} });
+    mockFs({ '/path/to/profile': {} });
     profileGenerator.generateTypesFile();
     expect(renderTypes).toHaveBeenCalledWith(profile, levelConfig);
     expect(fs.readFileSync('/path/to/profile/types.ts', 'utf8')).toBe('rendered types');
-    mock.restore();
+    mockFs.restore();
   });
 });

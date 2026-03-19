@@ -1,5 +1,16 @@
-import mock from 'mock-fs';
 import { expect, test, vi } from 'vitest';
+
+import { memfsGlobbySync, mockFs } from './testing/index.js';
+
+vi.mock('node:fs', async () => {
+  const memfs = await import('memfs');
+  return { default: memfs.fs, ...memfs.fs };
+});
+
+vi.mock('globby', () => ({
+  globbySync: (patterns: string | string[], options?: Record<string, unknown>) =>
+    memfsGlobbySync(patterns, options),
+}));
 
 import loadTowers from './loadTowers.js';
 import Tower from './Tower.js';
@@ -29,9 +40,9 @@ test('loads internal towers', () => {
     warrior: 'warrior',
     levels: ['level1', 'level2'],
   });
-  mock({ '/path/to/node_modules/@warriorjs/cli': {} });
+  mockFs({ '/path/to/node_modules/@warriorjs/cli': {} });
   loadTowers();
-  mock.restore();
+  mockFs.restore();
   expect(Tower).toHaveBeenCalledWith(
     'the-narrow-path',
     'The Narrow Path',
@@ -58,7 +69,7 @@ test('loads external official towers', () => {
       levels: ['level1', 'level2'],
     };
   });
-  mock({
+  mockFs({
     '/path/to/node_modules': {
       '@warriorjs': {
         cli: {},
@@ -71,7 +82,7 @@ test('loads external official towers', () => {
     },
   });
   loadTowers();
-  mock.restore();
+  mockFs.restore();
   expect(Tower).toHaveBeenCalledWith('foo', 'Foo', 'bar', 'warrior', ['level1', 'level2']);
 });
 
@@ -92,7 +103,7 @@ test('loads external community towers', () => {
       levels: ['level1', 'level2'],
     };
   });
-  mock({
+  mockFs({
     '/path/to/node_modules': {
       '@warriorjs': {
         cli: {},
@@ -105,7 +116,7 @@ test('loads external community towers', () => {
     },
   });
   loadTowers();
-  mock.restore();
+  mockFs.restore();
   expect(Tower).toHaveBeenCalledWith('foo', 'Foo', 'bar', 'warrior', ['level1', 'level2']);
 });
 
@@ -116,7 +127,7 @@ test("ignores directories that are seemingly towers but don't have a package.jso
     warrior: 'warrior',
     levels: ['level1', 'level2'],
   });
-  mock({
+  mockFs({
     '/path/to/node_modules': {
       '@warriorjs': {
         cli: {},
@@ -132,7 +143,7 @@ test("ignores directories that are seemingly towers but don't have a package.jso
     },
   });
   loadTowers();
-  mock.restore();
+  mockFs.restore();
   expect(Tower).not.toHaveBeenCalledWith('foo', 'Foo', 'baz', 'warrior', ['level1', 'level2']);
   expect(Tower).not.toHaveBeenCalledWith('bar', 'Bar', 'baz', 'warrior', ['level1', 'level2']);
 });

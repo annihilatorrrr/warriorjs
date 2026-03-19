@@ -1,8 +1,19 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { getLevelConfig } from '@warriorjs/core';
-import mock from 'mock-fs';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+
+import { memfsGlobbySync, mockFs } from './testing/index.js';
+
+vi.mock('node:fs', async () => {
+  const memfs = await import('memfs');
+  return { default: memfs.fs, ...memfs.fs };
+});
+
+vi.mock('globby', () => ({
+  globbySync: (patterns: string | string[], options?: Record<string, unknown>) =>
+    memfsGlobbySync(patterns, options),
+}));
 
 import Game from './Game.js';
 import GameError from './GameError.js';
@@ -127,7 +138,7 @@ describe('Game', () => {
 
   test('returns paths to profile directories', async () => {
     game.ensureGameDirectory = vi.fn();
-    mock({
+    mockFs({
       '/path/to/game/warriorjs': {
         profile1: {},
         profile2: {},
@@ -135,7 +146,7 @@ describe('Game', () => {
       },
     });
     const profileDirectoriesPaths = await game.getProfileDirectoriesPaths();
-    mock.restore();
+    mockFs.restore();
     expect(profileDirectoriesPaths).toEqual([
       '/path/to/game/warriorjs/profile1',
       '/path/to/game/warriorjs/profile2',
@@ -145,22 +156,22 @@ describe('Game', () => {
 
   describe('ensuring game directory', () => {
     test("creates directory if it doesn't exist", () => {
-      mock({ '/path/to/game': {} });
+      mockFs({ '/path/to/game': {} });
       game.ensureGameDirectory();
       expect(fs.statSync('/path/to/game/warriorjs').isDirectory()).toBe(true);
-      mock.restore();
+      mockFs.restore();
     });
 
     test('does nothing if directory already exists', () => {
-      mock({ '/path/to/game/warriorjs': {} });
+      mockFs({ '/path/to/game/warriorjs': {} });
       expect(fs.statSync('/path/to/game/warriorjs').isDirectory()).toBe(true);
       game.ensureGameDirectory();
       expect(fs.statSync('/path/to/game/warriorjs').isDirectory()).toBe(true);
-      mock.restore();
+      mockFs.restore();
     });
 
     test('throws if a warriorjs file exists', () => {
-      mock({ '/path/to/game/warriorjs': '' });
+      mockFs({ '/path/to/game/warriorjs': '' });
       expect(() => {
         game.ensureGameDirectory();
       }).toThrow(
@@ -168,7 +179,7 @@ describe('Game', () => {
           'A file named warriorjs exists at this location. Please change the directory under which you are running warriorjs.',
         ),
       );
-      mock.restore();
+      mockFs.restore();
     });
   });
 

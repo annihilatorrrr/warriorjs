@@ -1,4 +1,4 @@
-import arrayShuffle from 'array-shuffle';
+import shuffle from '../../../../utils/shuffle.js';
 
 const warriorNames = [
   'Aldric',
@@ -54,7 +54,7 @@ const warriorNames = [
 ];
 
 function getWarriorNameSuggestions(): string[] {
-  return arrayShuffle(warriorNames);
+  return shuffle(warriorNames);
 }
 
 export default getWarriorNameSuggestions;

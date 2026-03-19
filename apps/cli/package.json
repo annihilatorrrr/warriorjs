@@ -52,14 +52,13 @@
   "devDependencies": {
     "@types/react": "^19.2.14",
     "ink-testing-library": "^4.0.0",
-    "mock-fs": "^5.5.0"
+    "memfs": "^4.56.11"
   },
   "dependencies": {
     "@warriorjs/abilities": "workspace:^",
     "@warriorjs/core": "workspace:^",
     "@warriorjs/scoring": "workspace:^",
     "@warriorjs/tower-the-narrow-path": "workspace:^",
-    "array-shuffle": "^3.0.0",
     "citty": "^0.2.1",
     "find-up": "^7.0.0",
     "globby": "^14.0.0",

@@ -1,7 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import mock from 'mock-fs';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+
+import { mockFs } from './testing/index.js';
+
+vi.mock('node:fs', async () => {
+  const memfs = await import('memfs');
+  return { default: memfs.fs, ...memfs.fs };
+});
 
 import GameError from './GameError.js';
 import Profile from './Profile.js';
@@ -72,15 +78,15 @@ describe('Profile.load', () => {
 
 describe('Profile.isProfileDirectory', () => {
   test('returns false if only the profile file exists', () => {
-    mock({ '/path/to/profile/.profile': 'encoded profile' });
+    mockFs({ '/path/to/profile/.profile': 'encoded profile' });
     expect(Profile.isProfileDirectory('/path/to/profile')).toBe(false);
-    mock.restore();
+    mockFs.restore();
   });
 
   test('returns false if only the player code file exists', () => {
-    mock({ '/path/to/profile/Player.js': 'player code' });
+    mockFs({ '/path/to/profile/Player.js': 'player code' });
     expect(Profile.isProfileDirectory('/path/to/profile')).toBe(false);
-    mock.restore();
+    mockFs.restore();
   });
 
   test('returns false if neither file exists', () => {
@@ -88,26 +94,26 @@ describe('Profile.isProfileDirectory', () => {
   });
 
   test('returns true if both files exist', () => {
-    mock({
+    mockFs({
       '/path/to/profile/.profile': 'encoded profile',
       '/path/to/profile/Player.js': 'player code',
     });
     expect(Profile.isProfileDirectory('/path/to/profile')).toBe(true);
-    mock.restore();
+    mockFs.restore();
   });
 });
 
 describe('Profile.read', () => {
   test('returns contents of profile file', () => {
-    mock({ '/path/to/profile/file': 'encoded profile' });
+    mockFs({ '/path/to/profile/file': 'encoded profile' });
     expect(Profile.read('/path/to/profile/file')).toBe('encoded profile');
-    mock.restore();
+    mockFs.restore();
   });
 
   test("returns null if profile file doesn't exist", () => {
-    mock({ '/path/to/profile': {} });
+    mockFs({ '/path/to/profile': {} });
     expect(Profile.read('/path/to/profile/file')).toBeNull();
-    mock.restore();
+    mockFs.restore();
   });
 });
 
@@ -181,10 +187,10 @@ describe('Profile', () => {
   });
 
   test('makes directory', () => {
-    mock({ '/path/to': {} });
+    mockFs({ '/path/to': {} });
     profile.makeProfileDirectory();
     expect(fs.statSync('/path/to/profile').isDirectory()).toBe(true);
-    mock.restore();
+    mockFs.restore();
   });
 
   describe('when reading player code', () => {
@@ -193,15 +199,15 @@ describe('Profile', () => {
     });
 
     test('returns contents of player code file', () => {
-      mock({ '/path/to/profile/player-code': 'class Player {}' });
+      mockFs({ '/path/to/profile/player-code': 'class Player {}' });
       expect(profile.readPlayerCode()).toBe('class Player {}');
-      mock.restore();
+      mockFs.restore();
     });
 
     test("returns null if player code file doesn't exist", () => {
-      mock({ '/path/to/profile': {} });
+      mockFs({ '/path/to/profile': {} });
       expect(profile.readPlayerCode()).toBeNull();
-      mock.restore();
+      mockFs.restore();
     });
   });
 
@@ -291,10 +297,10 @@ describe('Profile', () => {
   test('writes the encoded profile to the profile file when saving', () => {
     profile.getProfileFilePath = () => '/path/to/profile/file';
     profile.encode = () => 'encoded';
-    mock({ '/path/to/profile': {} });
+    mockFs({ '/path/to/profile': {} });
     profile.save();
     expect(fs.readFileSync('/path/to/profile/file', 'utf8')).toBe('encoded');
-    mock.restore();
+    mockFs.restore();
   });
 
   test('knows the path to the profile file', () => {

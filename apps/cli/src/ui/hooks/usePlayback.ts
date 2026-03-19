@@ -118,8 +118,8 @@ export function nextStepCrossesTurn(cursor: PlaybackCursor, turnEventCounts: num
   return cursor.event >= maxEvent;
 }
 
-const INTRA_TURN_DELAY = 600;
-const INTER_TURN_DELAY = 720;
+const INTRA_TURN_DELAY = 500;
+const INTER_TURN_DELAY = 600;
 
 export function usePlayback(
   turns: unknown[][],

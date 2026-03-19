@@ -8,9 +8,8 @@ class Sludge extends MeleeUnit {
     feel: Feel,
   };
 
-  constructor() {
-    super('Sludge', 12);
-  }
+  readonly name = 'Sludge';
+  readonly maxHealth = 12;
 }
 
 export default Sludge;

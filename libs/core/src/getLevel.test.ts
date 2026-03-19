@@ -50,18 +50,18 @@ class TestSludge extends Unit {
     feel: TestFeel,
   };
 
-  constructor() {
-    super('Sludge', 12);
-    this.playTurn = (turn: any) => {
-      const playerDirection = RELATIVE_DIRECTIONS.find((direction) => {
-        const space = turn.feel(direction);
-        return space.isUnit() && space.getUnit().isPlayer();
-      });
-      if (playerDirection) {
-        turn.attack(playerDirection);
-      }
-    };
-  }
+  readonly name = 'Sludge';
+  readonly maxHealth = 12;
+
+  playTurn = (turn: any) => {
+    const playerDirection = RELATIVE_DIRECTIONS.find((direction) => {
+      const space = turn.feel(direction);
+      return space.isUnit() && space.getUnit().isPlayer();
+    });
+    if (playerDirection) {
+      turn.attack(playerDirection);
+    }
+  };
 }
 
 const levelConfig = {

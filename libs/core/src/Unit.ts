@@ -25,37 +25,28 @@ export interface UnitClass {
 class Unit {
   static declaredAbilities?: Record<string, AbilityEntry>;
 
-  name: string;
-  maxHealth: number;
-  reward: number;
-  enemy: boolean;
-  bound: boolean;
-  position: Position | null;
-  health: number;
-  score: number;
-  abilities: Map<string, Ability>;
-  effects: Map<string, Effect>;
-  turn: TurnState | null;
+  readonly name: string = '';
+  readonly maxHealth: number = 0;
+  readonly enemy: boolean = true;
+  bound: boolean = false;
 
-  constructor(
-    name: string,
-    maxHealth: number,
-    reward: number | null = null,
-    enemy: boolean = true,
-    bound: boolean = false,
-  ) {
-    this.name = name;
-    this.maxHealth = maxHealth;
-    this.reward = reward === null ? maxHealth : reward;
-    this.enemy = enemy;
-    this.bound = bound;
-    this.position = null;
-    this.health = maxHealth;
-    this.score = 0;
-    this.abilities = new Map();
-    this.effects = new Map();
-    this.turn = null;
+  #health?: number;
+  get health(): number {
+    return this.#health ?? this.maxHealth;
   }
+  set health(value: number) {
+    this.#health = value;
+  }
+
+  get reward(): number {
+    return this.maxHealth;
+  }
+
+  position: Position | null = null;
+  score: number = 0;
+  abilities: Map<string, Ability> = new Map();
+  effects: Map<string, Effect> = new Map();
+  turn: TurnState | null = null;
 
   private requirePosition(): Position {
     invariant(this.position, `${this.name} has no position (unit is not on the floor).`);

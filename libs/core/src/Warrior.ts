@@ -3,8 +3,14 @@ import Action from './Action.js';
 import Unit from './Unit.js';
 
 class Warrior extends Unit {
+  override readonly name: string;
+  override readonly maxHealth: number;
+  override readonly enemy = false;
+
   constructor(name: string, maxHealth: number) {
-    super(name, maxHealth, null, false);
+    super();
+    this.name = name;
+    this.maxHealth = maxHealth;
   }
 
   performTurn(): void {

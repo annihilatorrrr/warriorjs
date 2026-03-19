@@ -6,6 +6,17 @@ import Floor from './Floor.js';
 import Sense from './Sense.js';
 import Unit from './Unit.js';
 
+class TestUnit extends Unit {
+  override readonly name: string;
+  override readonly maxHealth: number;
+
+  constructor(name: string, maxHealth: number) {
+    super();
+    this.name = name;
+    this.maxHealth = maxHealth;
+  }
+}
+
 class MockAction extends Action {
   readonly description = 'mock action';
   readonly meta = { params: [], returns: 'void' as const };
@@ -23,7 +34,7 @@ describe('Unit', () => {
   let floor: Floor;
 
   beforeEach(() => {
-    unit = new Unit('Aldric', 20);
+    unit = new TestUnit('Aldric', 20);
     unit.emit = vi.fn();
     floor = new Floor(5, 6, [0, 0]);
     floor.addUnit(unit, { x: 1, y: 2, facing: NORTH });
@@ -41,16 +52,28 @@ describe('Unit', () => {
     expect(unit.reward).toBe(20);
   });
 
-  test('allows to specify reward', () => {
-    expect(new Unit('Foo', 20, 30).reward).toBe(30);
+  test('allows subclasses to override reward', () => {
+    class CustomRewardUnit extends Unit {
+      readonly name = 'Foo';
+      readonly maxHealth = 20;
+      override get reward() {
+        return 30;
+      }
+    }
+    expect(new CustomRewardUnit().reward).toBe(30);
   });
 
   test('has an enemy status which defaults to true', () => {
     expect(unit.enemy).toBe(true);
   });
 
-  test('allows to specify enemy status', () => {
-    expect(new Unit('Foo', 20, 30, false).enemy).toBe(false);
+  test('allows subclasses to override enemy status', () => {
+    class FriendlyUnit extends Unit {
+      readonly name = 'Foo';
+      readonly maxHealth = 20;
+      override readonly enemy = false;
+    }
+    expect(new FriendlyUnit().enemy).toBe(false);
   });
 
   test('has a bound status which defaults to false', () => {
@@ -58,11 +81,16 @@ describe('Unit', () => {
   });
 
   test('has a position which is null before adding the unit to the floor', () => {
-    expect(new Unit('Foo', 20).position).toBeNull();
+    expect(new TestUnit('Foo', 20).position).toBeNull();
   });
 
-  test('allows to specify bound status', () => {
-    expect(new Unit('Foo', 20, 30, false, true).bound).toBe(true);
+  test('allows subclasses to override bound status', () => {
+    class BoundUnit extends Unit {
+      readonly name = 'Foo';
+      readonly maxHealth = 20;
+      override bound = true;
+    }
+    expect(new BoundUnit().bound).toBe(true);
   });
 
   test('has a health which defaults to max health', () => {
@@ -260,7 +288,7 @@ describe('Unit', () => {
   });
 
   test('can damage another unit', () => {
-    const receiver = new Unit('Test', 10);
+    const receiver = new TestUnit('Test', 10);
     receiver.health = 10;
     receiver.position = {} as any;
     receiver.emit = vi.fn();
@@ -272,9 +300,14 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit('Test', 10);
-      receiver.maxHealth = 5;
-      receiver.reward = 10;
+      class TestReceiver extends Unit {
+        readonly name = 'Test';
+        readonly maxHealth = 5;
+        override get reward() {
+          return 10;
+        }
+      }
+      receiver = new TestReceiver();
       receiver.health = 5;
       receiver.position = {} as any;
       receiver.as = () => ({
@@ -322,8 +355,7 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit('Test', 10);
-      receiver.reward = 10;
+      receiver = new TestUnit('Test', 10);
       receiver.bound = true;
       receiver.position = {} as any;
       receiver.as = () => ({
@@ -443,7 +475,7 @@ describe('Unit', () => {
   });
 
   test("doesn't fetch itself when fetching other units", () => {
-    const anotherUnit = new Unit('Test', 10);
+    const anotherUnit = new TestUnit('Test', 10);
     floor.addUnit(anotherUnit, { x: 3, y: 4, facing: NORTH });
     expect(unit.getOtherUnits()).not.toContain(unit);
     expect(unit.getOtherUnits()).toContain(anotherUnit);
@@ -529,8 +561,12 @@ describe('Unit', () => {
     let sensedUnit: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit('Test', 10);
-      sensingUnit.enemy = false;
+      class FriendlyUnit extends Unit {
+        readonly name = 'Test';
+        readonly maxHealth = 10;
+        override readonly enemy = false;
+      }
+      sensingUnit = new FriendlyUnit();
       floor.addUnit(sensingUnit, { x: 0, y: 1, facing: SOUTH });
       sensedUnit = unit.as(sensingUnit);
     });

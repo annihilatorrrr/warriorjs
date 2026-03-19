@@ -1,8 +1,13 @@
 import { Unit } from '@warriorjs/core';
 
 class Captive extends Unit {
-  constructor() {
-    super('Captive', 1, 20, false, true);
+  readonly name = 'Captive';
+  readonly maxHealth = 1;
+  readonly enemy = false;
+  override bound = true;
+
+  override get reward(): number {
+    return 20;
   }
 }
 

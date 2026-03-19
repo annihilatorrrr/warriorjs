@@ -4,9 +4,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import MeleeUnit from './MeleeUnit.js';
 
 class TestMeleeUnit extends MeleeUnit {
-  constructor() {
-    super('Melee', 10);
-  }
+  readonly name = 'Melee';
+  readonly maxHealth = 10;
 }
 
 describe('MeleeUnit', () => {

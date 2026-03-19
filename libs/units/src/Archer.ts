@@ -8,9 +8,8 @@ class Archer extends RangedUnit {
     shoot: Shoot.with({ range: 3, power: 3 }),
   };
 
-  constructor() {
-    super('Archer', 7);
-  }
+  readonly name = 'Archer';
+  readonly maxHealth = 7;
 }
 
 export default Archer;

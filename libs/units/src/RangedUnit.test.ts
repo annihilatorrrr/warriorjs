@@ -4,9 +4,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import RangedUnit from './RangedUnit.js';
 
 class TestRangedUnit extends RangedUnit {
-  constructor() {
-    super('Ranged', 8);
-  }
+  readonly name = 'Ranged';
+  readonly maxHealth = 8;
 }
 
 describe('RangedUnit', () => {

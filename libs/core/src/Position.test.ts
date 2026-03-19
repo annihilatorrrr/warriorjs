@@ -4,14 +4,19 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import Floor from './Floor.js';
 import Unit from './Unit.js';
 
+class TestUnit extends Unit {
+  readonly name = 'Sludge';
+  readonly maxHealth = 10;
+}
+
 describe('Position', () => {
   let floor: Floor;
-  let unit: Unit;
+  let unit: TestUnit;
   let position: any;
 
   beforeEach(() => {
     floor = new Floor(5, 6, [0, 0]);
-    unit = new Unit('Test', 10);
+    unit = new TestUnit();
     floor.addUnit(unit, { x: 1, y: 2, facing: NORTH });
     position = unit.position;
   });
@@ -26,28 +31,28 @@ describe('Position', () => {
   });
 
   test('gets relative space in front', () => {
-    floor.addUnit(new Unit('Test', 10), { x: 1, y: 1, facing: NORTH });
+    floor.addUnit(new TestUnit(), { x: 1, y: 1, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [1, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space in front two spaces yonder', () => {
-    floor.addUnit(new Unit('Test', 10), { x: 1, y: 0, facing: NORTH });
+    floor.addUnit(new TestUnit(), { x: 1, y: 0, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [2, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space in front when rotated', () => {
-    floor.addUnit(new Unit('Test', 10), { x: 2, y: 2, facing: NORTH });
+    floor.addUnit(new TestUnit(), { x: 2, y: 2, facing: NORTH });
     position.rotate(RIGHT);
     expect(position.getRelativeSpace(FORWARD, [1, 0]).isEmpty()).toBe(false);
   });
 
   test('gets relative space diagonally', () => {
-    floor.addUnit(new Unit('Test', 10), { x: 2, y: 1, facing: NORTH });
+    floor.addUnit(new TestUnit(), { x: 2, y: 1, facing: NORTH });
     expect(position.getRelativeSpace(FORWARD, [1, 1]).isEmpty()).toBe(false);
   });
 
   test('gets relative space diagonally when rotated', () => {
-    floor.addUnit(new Unit('Test', 10), { x: 2, y: 1, facing: NORTH });
+    floor.addUnit(new TestUnit(), { x: 2, y: 1, facing: NORTH });
     position.rotate(BACKWARD);
     expect(position.getRelativeSpace(FORWARD, [-1, -1]).isEmpty()).toBe(false);
   });

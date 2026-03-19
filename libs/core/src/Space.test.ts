@@ -6,6 +6,11 @@ import Space from './Space.js';
 import Unit from './Unit.js';
 import Warrior from './Warrior.js';
 
+class TestUnit extends Unit {
+  readonly name = 'Sludge';
+  readonly maxHealth = 10;
+}
+
 describe('Space', () => {
   let floor: Floor;
   let space: Space;
@@ -98,7 +103,7 @@ describe('Space', () => {
 
     describe('with unit', () => {
       beforeEach(() => {
-        const unit = new Unit('Foo', 10);
+        const unit = new TestUnit();
         floor.addUnit(unit, { x: 0, y: 2, facing: NORTH });
       });
 
@@ -111,16 +116,16 @@ describe('Space', () => {
       });
 
       test('has name of unit', () => {
-        expect(space.toString()).toEqual('Foo');
+        expect(space.toString()).toEqual('Sludge');
       });
     });
   });
 
   describe('with unit', () => {
-    let unit: Unit;
+    let unit: TestUnit;
 
     beforeEach(() => {
-      unit = new Unit('Foo', 10);
+      unit = new TestUnit();
       floor.addUnit(unit, { x: 0, y: 0, facing: NORTH });
     });
 
@@ -145,16 +150,16 @@ describe('Space', () => {
     });
 
     test('has name of unit', () => {
-      expect(space.toString()).toEqual('Foo');
+      expect(space.toString()).toEqual('Sludge');
     });
   });
 
   describe('sensed space', () => {
-    let sensingUnit: Unit;
+    let sensingUnit: TestUnit;
     let sensedSpace: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit('Sensor', 10);
+      sensingUnit = new TestUnit();
       floor.addUnit(sensingUnit, { x: 1, y: 1, facing: NORTH });
       sensedSpace = space.as(sensingUnit);
     });
@@ -203,9 +208,9 @@ describe('Space', () => {
     });
 
     test('space with unit', () => {
-      const unit = new Unit('Foo', 10);
+      const unit = new TestUnit();
       floor.addUnit(unit, { x: 0, y: 0, facing: NORTH });
-      expect(space.toJSON()).toEqual({ unit: { name: 'Foo', maxHealth: 10 } });
+      expect(space.toJSON()).toEqual({ unit: { name: 'Sludge', maxHealth: 10 } });
     });
 
     test('space with warrior', () => {

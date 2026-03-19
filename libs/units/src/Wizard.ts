@@ -8,9 +8,8 @@ class Wizard extends RangedUnit {
     shoot: Shoot.with({ range: 3, power: 11 }),
   };
 
-  constructor() {
-    super('Wizard', 3);
-  }
+  readonly name = 'Wizard';
+  readonly maxHealth = 3;
 }
 
 export default Wizard;

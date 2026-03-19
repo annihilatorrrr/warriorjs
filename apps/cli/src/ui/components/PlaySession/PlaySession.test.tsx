@@ -3,8 +3,6 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { type GameContext } from '../../../Game.js';
 import type Profile from '../../../Profile.js';
-import { type PlaySessionState } from '../../../types.js';
-import { usePlaySession } from '../../hooks/usePlaySession.js';
 import {
   getLastContentFrame,
   makeLevelContext,
@@ -12,6 +10,8 @@ import {
   makeLevelReport,
   waitForRender,
 } from '../../../testing/index.js';
+import { type PlaySessionState } from '../../../types.js';
+import { usePlaySession } from '../../hooks/usePlaySession.js';
 import PlaySession from './PlaySession.js';
 
 vi.mock('../../hooks/usePlaySession.js', () => ({

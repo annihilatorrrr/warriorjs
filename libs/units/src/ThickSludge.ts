@@ -8,9 +8,8 @@ class ThickSludge extends MeleeUnit {
     feel: Feel,
   };
 
-  constructor() {
-    super('Thick Sludge', 24);
-  }
+  readonly name = 'Thick Sludge';
+  readonly maxHealth = 24;
 }
 
 export default ThickSludge;

@@ -7,30 +7,42 @@ describe('LogArea', () => {
   const turns = [
     [
       {
-        message: '',
-        unit: { name: 'Warrior', color: '#ffffff' },
+        action: { type: 'noop', description: '', params: {} },
+        actor: { name: 'Warrior', warrior: true },
         floorMap: [],
         warriorStatus: { health: 20, score: 0 },
       },
     ],
     [
       {
-        message: 'walks forward',
-        unit: { name: 'Warrior', color: '#ffffff' },
+        action: {
+          type: 'walk',
+          description: 'walks {direction}',
+          params: { direction: 'forward', blocked: false },
+        },
+        actor: { name: 'Warrior', warrior: true },
         floorMap: [],
         warriorStatus: { health: 20, score: 0 },
       },
     ],
     [
       {
-        message: 'attacks forward',
-        unit: { name: 'Warrior', color: '#ffffff' },
+        action: {
+          type: 'attack',
+          description: 'attacks {direction}',
+          params: { direction: 'forward' },
+        },
+        actor: { name: 'Warrior', warrior: true },
         floorMap: [],
         warriorStatus: { health: 18, score: 5 },
       },
       {
-        message: 'takes 5 damage, dies',
-        unit: { name: 'Sludge', color: '#00ff00' },
+        action: {
+          type: 'damage',
+          description: 'takes 5 damage, dies',
+          params: {},
+        },
+        actor: { name: 'Sludge', warrior: false },
         floorMap: [],
         warriorStatus: { health: 18, score: 10 },
       },
@@ -126,16 +138,20 @@ describe('LogArea', () => {
     const manyTurns = [
       [
         {
-          message: '',
-          unit: { name: 'W', color: '#fff' },
+          action: { type: 'noop', description: '', params: {} },
+          actor: { name: 'W', warrior: true },
           floorMap: [],
           warriorStatus: { health: 20, score: 0 },
         },
       ],
       ...Array.from({ length: 8 }, (_, i) => [
         {
-          message: `event ${i + 1}`,
-          unit: { name: 'W', color: '#fff' },
+          action: {
+            type: 'walk',
+            description: `event ${i + 1}`,
+            params: {},
+          },
+          actor: { name: 'W', warrior: true },
           floorMap: [],
           warriorStatus: { health: 20, score: 0 },
         },

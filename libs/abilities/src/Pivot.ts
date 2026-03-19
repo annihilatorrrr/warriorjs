@@ -14,7 +14,7 @@ class Pivot extends Action {
 
   perform(direction: RelativeDirection = defaultDirection): void {
     this.unit.rotate(direction);
-    this.unit.log(`pivots ${direction}`);
+    this.unit.emit({ type: 'pivot', description: 'pivots {direction}', params: { direction } });
   }
 }
 

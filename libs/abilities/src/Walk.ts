@@ -17,9 +17,17 @@ class Walk extends Action {
     const space = this.unit.getSpaceAt(direction);
     if (space.isEmpty()) {
       this.unit.move(direction);
-      this.unit.log(`walks ${direction}`);
+      this.unit.emit({
+        type: 'walk',
+        description: 'walks {direction}',
+        params: { direction, blocked: false },
+      });
     } else {
-      this.unit.log(`walks ${direction} and bumps into ${space}`);
+      this.unit.emit({
+        type: 'walk',
+        description: 'walks {direction} and bumps into {obstacle}',
+        params: { direction, obstacle: String(space), blocked: true },
+      });
     }
   }
 }

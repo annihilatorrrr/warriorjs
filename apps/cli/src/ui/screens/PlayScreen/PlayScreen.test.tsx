@@ -1,29 +1,38 @@
+import { type FloorSpace } from '@warriorjs/core';
 import { render } from 'ink-testing-library';
 import { describe, expect, test, vi } from 'vitest';
 
 import PlayScreen from './PlayScreen.js';
 
 describe('PlayScreen', () => {
+  const e: FloorSpace = {};
+  const w: FloorSpace = { wall: true };
+  const warrior: FloorSpace = { unit: { name: 'Aldric', maxHealth: 20, warrior: true } };
+
   const replay = {
     initialState: {
-      message: '',
-      unit: null,
+      action: { type: 'noop', description: '', params: {} },
+      actor: null,
       floorMap: [
-        [{ character: '╔' }, { character: '═' }, { character: '╗' }],
-        [{ character: '║' }, { character: '@', unit: { color: '#ffffff' } }, { character: '║' }],
-        [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+        [w, w, w],
+        [w, warrior, w],
+        [w, w, w],
       ],
       warriorStatus: { health: 20, score: 0 },
     },
     turns: [
       [
         {
-          message: 'walks forward',
-          unit: { name: 'Warrior', color: '#ffffff' },
+          action: {
+            type: 'walk',
+            description: 'walks {direction}',
+            params: { direction: 'forward', blocked: false },
+          },
+          actor: { name: 'Aldric', warrior: true },
           floorMap: [
-            [{ character: '╔' }, { character: '═' }, { character: '╗' }],
-            [{ character: '║' }, { character: ' ' }, { character: '║' }],
-            [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+            [w, w, w],
+            [w, e, w],
+            [w, w, w],
           ],
           warriorStatus: { health: 20, score: 0 },
         },
@@ -32,7 +41,7 @@ describe('PlayScreen', () => {
   };
 
   const context = {
-    warriorName: 'Olric',
+    warriorName: 'Aldric',
     towerName: 'The Narrow Path',
     levelNumber: 1,
     totalScore: 0,
@@ -45,7 +54,7 @@ describe('PlayScreen', () => {
     );
     const output = lastFrame()!;
     expect(output).toContain('WarriorJS');
-    expect(output).toContain('Olric');
+    expect(output).toContain('Aldric');
     expect(output).toContain('@');
     expect(output).toContain('❤');
     expect(output).toContain('Turn 0/1');
@@ -57,30 +66,30 @@ describe('PlayScreen', () => {
       turns: [
         [
           {
-            message: 'attacks forward',
-            unit: { name: 'Warrior', color: '#ffffff' },
+            action: {
+              type: 'attack',
+              description: 'attacks {direction}',
+              params: { direction: 'forward' },
+            },
+            actor: { name: 'Aldric', warrior: true },
             floorMap: [
-              [{ character: '╔' }, { character: '═' }, { character: '╗' }],
-              [
-                { character: '║' },
-                { character: '@', unit: { color: '#ffffff' } },
-                { character: '║' },
-              ],
-              [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+              [w, w, w],
+              [w, warrior, w],
+              [w, w, w],
             ],
             warriorStatus: { health: 20, score: 5 },
           },
           {
-            message: 'takes 3 damage',
-            unit: { name: 'Sludge', color: '#00ff00' },
+            action: {
+              type: 'damage',
+              description: 'takes 3 damage',
+              params: {},
+            },
+            actor: { name: 'Sludge', warrior: false },
             floorMap: [
-              [{ character: '╔' }, { character: '═' }, { character: '╗' }],
-              [
-                { character: '║' },
-                { character: '@', unit: { color: '#ffffff' } },
-                { character: '║' },
-              ],
-              [{ character: '╚' }, { character: '═' }, { character: '╝' }],
+              [w, w, w],
+              [w, warrior, w],
+              [w, w, w],
             ],
             warriorStatus: { health: 17, score: 5 },
           },

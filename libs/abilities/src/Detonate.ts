@@ -34,7 +34,11 @@ class Detonate extends Action {
   }
 
   perform(direction: RelativeDirection = defaultDirection): void {
-    this.unit.log(`detonates a bomb ${direction} launching a deadly explosion`);
+    this.unit.emit({
+      type: 'detonate',
+      description: 'detonates a bomb {direction} launching a deadly explosion',
+      params: { direction },
+    });
     const targetSpace = this.unit.getSpaceAt(direction);
     this.bomb(targetSpace, this.targetPower);
     surroundingOffsets
@@ -49,7 +53,11 @@ class Detonate extends Action {
     if (receiver) {
       this.unit.damage(receiver, power);
       if (receiver.isUnderEffect('ticking')) {
-        receiver.log('caught in the blast, detonating the ticking explosive');
+        receiver.emit({
+          type: 'chainDetonate',
+          description: 'caught in the blast, detonating the ticking explosive',
+          params: {},
+        });
         receiver.triggerEffect('ticking');
       }
     }

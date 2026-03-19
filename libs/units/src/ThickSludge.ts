@@ -9,7 +9,7 @@ class ThickSludge extends MeleeUnit {
   };
 
   constructor() {
-    super('Thick Sludge', 'S', '#bf616a', 24);
+    super('Thick Sludge', 24);
   }
 }
 

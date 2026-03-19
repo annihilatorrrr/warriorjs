@@ -1,10 +1,20 @@
-interface FloorSpace {
-  character: string;
-  [key: string]: unknown;
-}
+import { type FloorSpace } from '@warriorjs/core';
+
+import getSpaceAppearance from './getSpaceAppearance.js';
 
 function getFloorMap(map: FloorSpace[][]): string {
-  return map.map((row) => row.map((space) => space.character).join('')).join('\n');
+  const totalRows = map.length;
+  const totalCols = map[0]?.length ?? 0;
+  return map
+    .map((row, rowIndex) =>
+      row
+        .map(
+          (space, colIndex) =>
+            getSpaceAppearance(space, rowIndex, colIndex, totalRows, totalCols).character,
+        )
+        .join(''),
+    )
+    .join('\n');
 }
 
 export default getFloorMap;

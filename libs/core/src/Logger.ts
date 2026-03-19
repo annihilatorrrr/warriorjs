@@ -1,10 +1,12 @@
 import type Floor from './Floor.js';
+import { type FloorSpace } from './Floor.js';
+import { type GameAction } from './GameAction.js';
 import type Unit from './Unit.js';
 
 export interface TurnEvent {
-  message: string;
-  unit: { name: string; color: string } | null;
-  floorMap: { character: string; unit?: { color: string } }[][];
+  action: GameAction;
+  actor: { name: string; warrior: boolean } | null;
+  floorMap: FloorSpace[][];
   warriorStatus: { health: number; score: number } | undefined;
 }
 
@@ -15,7 +17,7 @@ const Logger: {
   initialState: TurnEvent | null;
   play(floor: Floor): void;
   turn(): void;
-  unit(unit: Unit, message: string): void;
+  unit(unit: Unit, action: GameAction): void;
 } = {
   floor: null,
   turns: [],
@@ -27,8 +29,8 @@ const Logger: {
     Logger.turns = [];
     Logger.lastTurn = null;
     Logger.initialState = {
-      message: '',
-      unit: null,
+      action: { type: 'init', description: '', params: {} },
+      actor: null,
       floorMap: JSON.parse(JSON.stringify(floor.getMap())),
       warriorStatus: floor.warrior?.getStatus(),
     };
@@ -39,10 +41,10 @@ const Logger: {
     Logger.turns.push(Logger.lastTurn);
   },
 
-  unit(unit: Unit, message: string) {
+  unit(unit: Unit, action: GameAction) {
     Logger.lastTurn?.push({
-      message,
-      unit: JSON.parse(JSON.stringify(unit)),
+      action,
+      actor: { name: unit.name, warrior: unit === Logger.floor?.warrior },
       floorMap: JSON.parse(JSON.stringify(Logger.floor?.getMap())),
       warriorStatus: Logger.floor?.warrior?.getStatus(),
     });

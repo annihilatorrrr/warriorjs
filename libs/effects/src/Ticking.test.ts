@@ -8,7 +8,7 @@ describe('Ticking', () => {
   let unit: {
     health: number;
     takeDamage: ReturnType<typeof vi.fn>;
-    log: ReturnType<typeof vi.fn>;
+    emit: ReturnType<typeof vi.fn>;
     getOtherUnits?: () => { health: number; takeDamage: ReturnType<typeof vi.fn> }[];
   };
 
@@ -16,7 +16,7 @@ describe('Ticking', () => {
     unit = {
       health: 20,
       takeDamage: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     ticking = new Ticking(unit, { time: 3 });
   });
@@ -39,7 +39,11 @@ describe('Ticking', () => {
     test('counts down bomb timer once', () => {
       ticking.passTurn();
       expect(ticking.time).toBe(2);
-      expect(unit.log).toHaveBeenCalledWith('is ticking');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'tick',
+        description: 'is ticking',
+        params: {},
+      });
     });
 
     test("doesn't count down bomb timer below zero", () => {
@@ -67,9 +71,11 @@ describe('Ticking', () => {
       };
       unit.getOtherUnits = () => [anotherUnit as never];
       ticking.trigger();
-      expect(unit.log).toHaveBeenCalledWith(
-        'explodes, collapsing the ceiling and killing every unit',
-      );
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'explode',
+        description: 'explodes, collapsing the ceiling and killing every unit',
+        params: {},
+      });
       expect(anotherUnit.takeDamage).toHaveBeenCalledWith(10);
       expect(unit.takeDamage).toHaveBeenCalledWith(20);
     });

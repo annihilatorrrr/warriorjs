@@ -1,9 +1,12 @@
+import { type GameAction } from '@warriorjs/core';
 import { Box, Text } from 'ink';
 import type React from 'react';
 import { useMemo } from 'react';
 
+import { type TurnEvent } from '../../../types.js';
+import getUnitAppearance from '../../../utils/getUnitAppearance.js';
+import interpolateAction from '../../../utils/interpolateAction.js';
 import { type PlaybackCursor } from '../../hooks/usePlayback.js';
-import { type TurnEvent } from '../../types.js';
 
 interface LogAreaProps {
   turns: TurnEvent[][];
@@ -19,38 +22,45 @@ interface LogLine {
   event?: TurnEvent;
 }
 
-function buildUnitColorMap(turns: TurnEvent[][]): Map<string, string> {
-  const map = new Map<string, string>();
-  for (const turn of turns) {
-    for (const event of turn) {
-      if (event.unit) {
-        map.set(event.unit.name, event.unit.color);
-      }
-    }
-  }
-  return map;
+interface UnitRef {
+  type: 'unit';
+  name: string;
 }
 
-const STAT_RE = /\d+ damage|\d+ HP/;
-
-function buildColorizeRegex(unitColors: Map<string, string>): RegExp {
-  const unitNames = Array.from(unitColors.keys()).map((name) =>
-    name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-  );
-  const alternatives = [STAT_RE.source, ...unitNames];
-  return new RegExp(`(${alternatives.join('|')})`);
+function isUnitRef(value: unknown): value is UnitRef {
+  return typeof value === 'object' && value !== null && (value as UnitRef).type === 'unit';
 }
+
+const STAT_RE = /(\d+ damage|\d+ HP)/;
 
 function colorizeMessage(
-  message: string,
-  unitColors: Map<string, string>,
-  regex: RegExp,
-  boldStats = true,
+  action: GameAction,
+  actor: { name: string; warrior: boolean } | null,
+  boldStats: boolean,
 ): React.ReactNode[] {
-  const parts = message.split(regex);
+  const text = actor ? `${actor.name} ${interpolateAction(action)}` : interpolateAction(action);
 
+  // Collect unit names to colorize: the acting unit + any unit refs in params.
+  const unitNames = new Map<string, string>();
+  if (actor) {
+    unitNames.set(actor.name, getUnitAppearance(actor.name, actor.warrior).color);
+  }
+  for (const value of Object.values(action.params)) {
+    if (isUnitRef(value)) {
+      unitNames.set(value.name, getUnitAppearance(value.name).color);
+    }
+  }
+
+  // Build regex to split on unit names and stat patterns.
+  const escapedNames = Array.from(unitNames.keys()).map((name) =>
+    name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+  );
+  const alternatives = [STAT_RE.source, ...escapedNames];
+  const regex = new RegExp(`(${alternatives.join('|')})`);
+
+  const parts = text.split(regex);
   return parts.map((part, i) => {
-    const unitColor = unitColors.get(part);
+    const unitColor = unitNames.get(part);
     if (unitColor) {
       return (
         // biome-ignore lint/suspicious/noArrayIndexKey: split parts are positional
@@ -78,9 +88,6 @@ export default function LogArea({
   mode,
   maxLines = 10,
 }: LogAreaProps): React.ReactElement {
-  const unitColors = useMemo(() => buildUnitColorMap(turns), [turns]);
-  const colorizeRegex = useMemo(() => buildColorizeRegex(unitColors), [unitColors]);
-
   const isReview = mode === 'review';
 
   // Build a flat list of log lines and determine which are visible.
@@ -95,7 +102,7 @@ export default function LogArea({
 
       for (let e = 0; e <= maxEvent; e++) {
         const event = turnEvents[e]!;
-        if (event.message) {
+        if (event.action.description) {
           eventsInRange.push({ event, eventIndex: e });
         }
       }
@@ -151,7 +158,6 @@ export default function LogArea({
           );
         }
         const event = line.event!;
-        const text = event.unit ? `${event.unit.name} ${event.message}` : event.message;
         const isCurrent = index === focusedIndex;
         const dim = isReview && !isCurrent;
         return (
@@ -159,7 +165,7 @@ export default function LogArea({
           <Box key={`e${line.turnNumber}-${index}`} gap={1}>
             <Text dimColor>{'>'}</Text>
             <Text bold={isReview && isCurrent} dimColor={dim}>
-              {colorizeMessage(text, unitColors, colorizeRegex, !dim)}
+              {colorizeMessage(event.action, event.actor, !dim)}
             </Text>
           </Box>
         );

@@ -12,7 +12,7 @@ describe('Rest', () => {
       maxHealth: 20,
       health: 10,
       heal: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     rest = new Rest(unit, { healthGain: 0.1 });
   });
@@ -40,14 +40,18 @@ describe('Rest', () => {
   describe('performing', () => {
     test('gives health back', () => {
       rest.perform();
-      expect(unit.log).toHaveBeenCalledWith('rests');
+      expect(unit.emit).toHaveBeenCalledWith({ type: 'rest', description: 'rests', params: {} });
       expect(unit.heal).toHaveBeenCalledWith(2);
     });
 
     test("doesn't add health when at max", () => {
       unit.health = 20;
       rest.perform();
-      expect(unit.log).toHaveBeenCalledWith('has nothing to heal');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'rest',
+        description: 'has nothing to heal',
+        params: { atFull: true },
+      });
       expect(unit.heal).not.toHaveBeenCalled();
     });
   });

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, test } from 'vitest';
 import Floor from './Floor.js';
 import Space from './Space.js';
 import Unit from './Unit.js';
+import Warrior from './Warrior.js';
 
 describe('Space', () => {
   let floor: Floor;
@@ -34,86 +35,6 @@ describe('Space', () => {
     test('has name "wall"', () => {
       expect(space.toString()).toEqual('wall');
     });
-
-    describe('upper left corner', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([-1, -1]);
-      });
-
-      test("appears as '\u2554' on map", () => {
-        expect(space.getCharacter()).toBe('\u2554');
-      });
-    });
-
-    describe('upper right corner', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([2, -1]);
-      });
-
-      test("appears as '\u2557' on map", () => {
-        expect(space.getCharacter()).toBe('\u2557');
-      });
-    });
-
-    describe('lower left corner', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([-1, 3]);
-      });
-
-      test("appears as '\u255a' on map", () => {
-        expect(space.getCharacter()).toBe('\u255a');
-      });
-    });
-
-    describe('lower right corner', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([2, 3]);
-      });
-
-      test("appears as '\u255d' on map", () => {
-        expect(space.getCharacter()).toBe('\u255d');
-      });
-    });
-
-    describe('upper side', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([1, -1]);
-      });
-
-      test("appears as '\u2550' on map", () => {
-        expect(space.getCharacter()).toBe('\u2550');
-      });
-    });
-
-    describe('lower side', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([1, 3]);
-      });
-
-      test("appears as '\u2550' on map", () => {
-        expect(space.getCharacter()).toBe('\u2550');
-      });
-    });
-
-    describe('left side', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([-1, 1]);
-      });
-
-      test("appears as '\u2551' on map", () => {
-        expect(space.getCharacter()).toBe('\u2551');
-      });
-    });
-
-    describe('right side', () => {
-      beforeEach(() => {
-        space = floor.getSpaceAt([2, 1]);
-      });
-
-      test("appears as '\u2551' on map", () => {
-        expect(space.getCharacter()).toBe('\u2551');
-      });
-    });
   });
 
   describe('with nothing on it', () => {
@@ -143,10 +64,6 @@ describe('Space', () => {
 
     test('has name "nothing"', () => {
       expect(space.toString()).toEqual('nothing');
-    });
-
-    test("appears as ' ' on map", () => {
-      expect(space.getCharacter()).toBe(' ');
     });
   });
 
@@ -179,15 +96,9 @@ describe('Space', () => {
       expect(space.toString()).toEqual('nothing');
     });
 
-    test("appears as '>' on map", () => {
-      expect(space.getCharacter()).toBe('>');
-    });
-
     describe('with unit', () => {
-      let unit: Unit;
-
       beforeEach(() => {
-        unit = new Unit('Foo', 'f', '#000', 10);
+        const unit = new Unit('Foo', 10);
         floor.addUnit(unit, { x: 0, y: 2, facing: NORTH });
       });
 
@@ -202,10 +113,6 @@ describe('Space', () => {
       test('has name of unit', () => {
         expect(space.toString()).toEqual('Foo');
       });
-
-      test('appears as unit character on map', () => {
-        expect(space.getCharacter()).toBe('f');
-      });
     });
   });
 
@@ -213,7 +120,7 @@ describe('Space', () => {
     let unit: Unit;
 
     beforeEach(() => {
-      unit = new Unit('Foo', 'f', '#000', 10);
+      unit = new Unit('Foo', 10);
       floor.addUnit(unit, { x: 0, y: 0, facing: NORTH });
     });
 
@@ -240,10 +147,6 @@ describe('Space', () => {
     test('has name of unit', () => {
       expect(space.toString()).toEqual('Foo');
     });
-
-    test('appears as its character on map', () => {
-      expect(space.getCharacter()).toBe('f');
-    });
   });
 
   describe('sensed space', () => {
@@ -251,7 +154,7 @@ describe('Space', () => {
     let sensedSpace: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit('Sensor', 'S', '#000', 10);
+      sensingUnit = new Unit('Sensor', 10);
       floor.addUnit(sensingUnit, { x: 1, y: 1, facing: NORTH });
       sensedSpace = space.as(sensingUnit);
     });
@@ -264,7 +167,7 @@ describe('Space', () => {
     });
 
     test("doesn't allow calling other space methods", () => {
-      const forbiddenApi = ['as', 'getCharacter'];
+      const forbiddenApi = ['as'];
       forbiddenApi.forEach((propertyName: string) => {
         expect(sensedSpace).not.toHaveProperty(propertyName);
       });
@@ -282,10 +185,33 @@ describe('Space', () => {
     });
   });
 
-  test('has a minimal JSON representation', () => {
-    expect(space.toJSON()).toEqual({
-      character: space.getCharacter(),
-      unit: space.getUnit(),
+  describe('toJSON', () => {
+    test('empty space', () => {
+      expect(space.toJSON()).toEqual({});
+    });
+
+    test('wall space', () => {
+      expect(floor.getSpaceAt([-1, 0]).toJSON()).toEqual({
+        wall: true,
+      });
+    });
+
+    test('stairs space', () => {
+      expect(floor.getSpaceAt([0, 2]).toJSON()).toEqual({
+        stairs: true,
+      });
+    });
+
+    test('space with unit', () => {
+      const unit = new Unit('Foo', 10);
+      floor.addUnit(unit, { x: 0, y: 0, facing: NORTH });
+      expect(space.toJSON()).toEqual({ unit: { name: 'Foo', maxHealth: 10 } });
+    });
+
+    test('space with warrior', () => {
+      const warrior = new Warrior('Aldric', 20);
+      floor.addWarrior(warrior, { x: 0, y: 0, facing: NORTH });
+      expect(space.toJSON()).toEqual({ unit: { name: 'Aldric', maxHealth: 20, warrior: true } });
     });
   });
 });

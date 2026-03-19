@@ -19,8 +19,6 @@ const tower: TowerDefinition = {
   name: 'The Narrow Path',
   description: 'A corridor of stone where the only way out is forward',
   warrior: {
-    character: '@',
-    color: '#8fbcbb',
     maxHealth: 20,
   },
   levels: [

@@ -8,7 +8,7 @@ describe('Think', () => {
   let unit: any;
 
   beforeEach(() => {
-    unit = { log: vi.fn() };
+    unit = { emit: vi.fn() };
     think = new Think(unit);
   });
 
@@ -30,17 +30,29 @@ describe('Think', () => {
   describe('performing', () => {
     test('thinks nothing by default', () => {
       think.perform();
-      expect(unit.log).toHaveBeenCalledWith('thinks nothing');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'think',
+        description: 'thinks {thought}',
+        params: { thought: 'nothing' },
+      });
     });
 
     test('allows to specify thought', () => {
       think.perform('he should be brave');
-      expect(unit.log).toHaveBeenCalledWith('thinks he should be brave');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'think',
+        description: 'thinks {thought}',
+        params: { thought: 'he should be brave' },
+      });
     });
 
     test('allows complex thoughts', () => {
       think.perform('that %o', { brave: true });
-      expect(unit.log).toHaveBeenCalledWith('thinks that { brave: true }');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'think',
+        description: 'thinks {thought}',
+        params: { thought: 'that { brave: true }' },
+      });
     });
   });
 });

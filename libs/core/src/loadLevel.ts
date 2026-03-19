@@ -37,8 +37,8 @@ function loadWarrior(
   playerCode?: string,
   language: 'javascript' | 'typescript' = 'javascript',
 ): void {
-  const { name, character, color, maxHealth, abilities, position } = warrior;
-  const unit = new Warrior(name, character, color, maxHealth);
+  const { name, maxHealth, abilities, position } = warrior;
+  const unit = new Warrior(name, maxHealth);
   loadAbilities(unit, abilities);
   unit.playTurn = playerCode ? loadPlayer(playerCode, language) : () => {};
   floor.addWarrior(unit, position);

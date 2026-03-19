@@ -8,16 +8,8 @@ import {
 import invariant from 'tiny-invariant';
 
 import type Floor from './Floor.js';
+import { type FloorSpace } from './Floor.js';
 import type Unit from './Unit.js';
-
-const upperLeftWallCharacter = '\u2554';
-const upperRightWallCharacter = '\u2557';
-const lowerLeftWallCharacter = '\u255a';
-const lowerRightWallCharacter = '\u255d';
-const verticalWallCharacter = '\u2551';
-const horizontalWallCharacter = '\u2550';
-const emptyCharacter = ' ';
-const stairsCharacter = '>';
 
 export interface SensedSpace {
   getLocation(): RelativeOffset;
@@ -49,48 +41,6 @@ class Space {
   constructor(floor: Floor, location: Location) {
     this.floor = floor;
     this.location = location;
-  }
-
-  getCharacter(): string {
-    const unit = this.getUnit();
-    if (unit) {
-      return unit.character;
-    }
-
-    if (this.isWall()) {
-      const [locationX, locationY] = this.location;
-      if (locationX < 0) {
-        if (locationY < 0) {
-          return upperLeftWallCharacter;
-        }
-
-        if (locationY > this.floor.height - 1) {
-          return lowerLeftWallCharacter;
-        }
-
-        return verticalWallCharacter;
-      }
-
-      if (locationX > this.floor.width - 1) {
-        if (locationY < 0) {
-          return upperRightWallCharacter;
-        }
-
-        if (locationY > this.floor.height - 1) {
-          return lowerRightWallCharacter;
-        }
-
-        return verticalWallCharacter;
-      }
-
-      return horizontalWallCharacter;
-    }
-
-    if (this.isStairs()) {
-      return stairsCharacter;
-    }
-
-    return emptyCharacter;
   }
 
   isEmpty(): boolean {
@@ -143,11 +93,19 @@ class Space {
     return 'nothing';
   }
 
-  toJSON(): { character: string; unit: Unit | undefined } {
-    return {
-      character: this.getCharacter(),
-      unit: this.getUnit(),
-    };
+  toJSON(): FloorSpace {
+    const space: FloorSpace = {};
+    if (this.isWall()) space.wall = true;
+    if (this.isStairs()) space.stairs = true;
+    const unit = this.getUnit();
+    if (unit) {
+      space.unit = {
+        name: unit.name,
+        maxHealth: unit.maxHealth,
+        ...(unit === this.floor.warrior && { warrior: true }),
+      };
+    }
+    return space;
   }
 }
 

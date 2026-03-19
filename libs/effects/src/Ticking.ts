@@ -19,7 +19,7 @@ class Ticking extends Effect {
       this.time -= 1;
     }
 
-    this.unit.log('is ticking');
+    this.unit.emit({ type: 'tick', description: 'is ticking', params: {} });
 
     if (!this.time) {
       this.trigger();
@@ -27,7 +27,11 @@ class Ticking extends Effect {
   }
 
   trigger(): void {
-    this.unit.log('explodes, collapsing the ceiling and killing every unit');
+    this.unit.emit({
+      type: 'explode',
+      description: 'explodes, collapsing the ceiling and killing every unit',
+      params: {},
+    });
     [...this.unit.getOtherUnits(), this.unit].forEach((anotherUnit: any) =>
       anotherUnit.takeDamage(anotherUnit.health),
     );

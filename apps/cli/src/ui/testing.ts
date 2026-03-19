@@ -1,10 +1,9 @@
 import { act } from 'react';
 
-import { type LevelContext, type LevelReplay, type LevelReport } from './types.js';
+import { type LevelContext, type LevelReplay, type LevelReport } from '../types.js';
 
 export const waitForRender = () => act(() => new Promise((resolve) => setTimeout(resolve, 50)));
 
-/** Returns the last non-empty frame (exit() can write an empty frame after unmount). */
 export function getLastContentFrame(frames: string[]): string {
   for (let i = frames.length - 1; i >= 0; i--) {
     if (frames[i].trim()) return frames[i];
@@ -17,17 +16,21 @@ export function makeLevelReplay(overrides: Partial<LevelReplay> = {}): LevelRepl
     turns: [
       [
         {
-          message: 'test',
-          unit: null,
-          floorMap: [[{ character: '@' }]],
+          action: {
+            type: 'walk',
+            description: 'walks {direction}',
+            params: { direction: 'forward', blocked: false },
+          },
+          actor: { name: 'Aldric', warrior: true },
+          floorMap: [[{ unit: { name: 'Aldric', maxHealth: 20, warrior: true } }]],
           warriorStatus: { health: 20, score: 0 },
         },
       ],
     ],
     initialState: {
-      message: '',
-      unit: null,
-      floorMap: [[{ character: '@' }]],
+      action: { type: 'init', description: '', params: {} },
+      actor: null,
+      floorMap: [[{ unit: { name: 'Aldric', maxHealth: 20, warrior: true } }]],
       warriorStatus: { health: 20, score: 0 },
     },
     ...overrides,
@@ -36,7 +39,7 @@ export function makeLevelReplay(overrides: Partial<LevelReplay> = {}): LevelRepl
 
 export function makeLevelContext(overrides: Partial<LevelContext> = {}): LevelContext {
   return {
-    warriorName: 'Olric',
+    warriorName: 'Aldric',
     towerName: 'The Narrow Path',
     levelNumber: 1,
     totalScore: 10,

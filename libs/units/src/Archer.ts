@@ -9,7 +9,7 @@ class Archer extends RangedUnit {
   };
 
   constructor() {
-    super('Archer', 'a', '#ebcb8b', 7);
+    super('Archer', 7);
   }
 }
 

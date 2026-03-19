@@ -4,17 +4,17 @@ import Link from 'ink-link';
 import type React from 'react';
 import { useMemo } from 'react';
 
-import Divider from '../../components/Divider/index.js';
-import LevelLayout from '../../components/LevelLayout/index.js';
-import ResultScreen from '../../components/ResultScreen/index.js';
-import SelectPrompt from '../../components/SelectPrompt/index.js';
 import {
   type LevelCompleteAction,
   type LevelCompleteChoice,
   type LevelContext,
   type LevelReplay,
   type LevelReport,
-} from '../../types.js';
+} from '../../../types.js';
+import Divider from '../../components/Divider/index.js';
+import LevelLayout from '../../components/LevelLayout/index.js';
+import ResultScreen from '../../components/ResultScreen/index.js';
+import SelectPrompt from '../../components/SelectPrompt/index.js';
 import buildMenuItems from './utils/buildMenuItems.js';
 
 interface LevelCompleteScreenProps {

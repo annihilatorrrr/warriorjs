@@ -3,6 +3,7 @@ import { describe, expect, test, vi } from 'vitest';
 
 import { type GameContext } from '../../../Game.js';
 import type Profile from '../../../Profile.js';
+import { type PlaySessionState } from '../../../types.js';
 import { usePlaySession } from '../../hooks/usePlaySession.js';
 import {
   getLastContentFrame,
@@ -11,7 +12,6 @@ import {
   makeLevelReport,
   waitForRender,
 } from '../../testing.js';
-import { type PlaySessionState } from '../../types.js';
 import PlaySession from './PlaySession.js';
 
 vi.mock('../../hooks/usePlaySession.js', () => ({
@@ -29,7 +29,11 @@ const mockProfile = {
 describe('PlaySession', () => {
   test('renders PlayScreen when state is playing', () => {
     mockUsePlaySession.mockReturnValue({
-      state: { type: 'playing', replay: makeLevelReplay(), context: makeLevelContext() },
+      state: {
+        type: 'playing',
+        replay: makeLevelReplay(),
+        context: makeLevelContext(),
+      },
       handlePlayComplete: vi.fn(),
       handleLevelCompleteChoice: vi.fn(),
     });
@@ -38,7 +42,7 @@ describe('PlaySession', () => {
       <PlaySession context={mockContext} profile={mockProfile} initialLevel={1} />,
     );
     const output = lastFrame()!;
-    expect(output).toContain('Olric');
+    expect(output).toContain('Aldric');
     expect(output).toContain('@');
   });
 

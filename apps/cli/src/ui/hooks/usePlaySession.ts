@@ -11,8 +11,8 @@ import {
   type LevelReplay,
   type PlaySessionState,
   type SessionPhase,
-} from '../types.js';
-import { buildLevelReport } from '../utils/buildLevelReport.js';
+} from '../../types.js';
+import { buildLevelReport } from '../../utils/buildLevelReport.js';
 
 interface UsePlaySessionParams {
   context: GameContext;

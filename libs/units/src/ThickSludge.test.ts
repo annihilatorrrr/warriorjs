@@ -14,14 +14,6 @@ describe('ThickSludge', () => {
     expect(thickSludge).toBeInstanceOf(MeleeUnit);
   });
 
-  test("appears as 'S' on map", () => {
-    expect(thickSludge.character).toBe('S');
-  });
-
-  test('has #bf616a color', () => {
-    expect(thickSludge.color).toBe('#bf616a');
-  });
-
   test('has 24 max health', () => {
     expect(thickSludge.maxHealth).toBe(24);
   });

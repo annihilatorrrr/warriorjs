@@ -27,12 +27,20 @@ class Attack extends Action {
   perform(direction: RelativeDirection = defaultDirection): void {
     const receiver = this.unit.getSpaceAt(direction).getUnit();
     if (receiver) {
-      this.unit.log(`attacks ${direction} and hits ${receiver}`);
+      this.unit.emit({
+        type: 'attack',
+        description: 'attacks {direction} and hits {target}',
+        params: { direction, target: { type: 'unit', name: receiver.name }, hit: true },
+      });
       const attackingBackward = direction === BACKWARD;
       const amount = attackingBackward ? Math.ceil(this.power / 2.0) : this.power;
       this.unit.damage(receiver, amount);
     } else {
-      this.unit.log(`attacks ${direction} and hits nothing`);
+      this.unit.emit({
+        type: 'attack',
+        description: 'attacks {direction} and hits nothing',
+        params: { direction, hit: false },
+      });
     }
   }
 

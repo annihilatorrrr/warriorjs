@@ -1,8 +1,15 @@
 import { type LevelConfig, type TurnEvent } from '@warriorjs/core';
 
-export type { LevelConfig, LevelResult, TurnEvent } from '@warriorjs/core';
+export type {
+  FloorSpace,
+  GameAction,
+  LevelConfig,
+  LevelResult,
+  TurnEvent,
+  UnitRef,
+} from '@warriorjs/core';
 
-import type Profile from '../Profile.js';
+import type Profile from './Profile.js';
 
 export interface LevelReplay {
   turns: TurnEvent[][];

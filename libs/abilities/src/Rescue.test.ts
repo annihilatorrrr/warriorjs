@@ -11,7 +11,7 @@ describe('Rescue', () => {
   beforeEach(() => {
     unit = {
       release: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     rescue = new Rescue(unit);
   });
@@ -49,7 +49,11 @@ describe('Rescue', () => {
     test('misses if no receiver', () => {
       unit.getSpaceAt = () => ({ getUnit: () => null });
       rescue.perform();
-      expect(unit.log).toHaveBeenCalledWith(`unbinds ${FORWARD} and rescues nothing`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'rescue',
+        description: 'unbinds {direction} and rescues nothing',
+        params: { direction: FORWARD },
+      });
     });
 
     describe('with receiver', () => {
@@ -57,8 +61,8 @@ describe('Rescue', () => {
 
       beforeEach(() => {
         receiver = {
+          name: 'receiver',
           isBound: () => true,
-          toString: () => 'receiver',
         };
         unit.getSpaceAt = () => ({ getUnit: () => receiver });
       });
@@ -66,13 +70,21 @@ describe('Rescue', () => {
       test("does nothing to receiver if it's not bound", () => {
         receiver.isBound = () => false;
         rescue.perform();
-        expect(unit.log).toHaveBeenCalledWith(`unbinds ${FORWARD} and rescues nothing`);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'rescue',
+          description: 'unbinds {direction} and rescues nothing',
+          params: { direction: FORWARD },
+        });
         expect(unit.release).not.toHaveBeenCalled();
       });
 
       test('releases receiver', () => {
         rescue.perform();
-        expect(unit.log).toHaveBeenCalledWith(`unbinds ${FORWARD} and rescues receiver`);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'rescue',
+          description: 'unbinds {direction} and rescues {target}',
+          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' } },
+        });
         expect(unit.release).toHaveBeenCalledWith(receiver);
       });
     });

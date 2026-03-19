@@ -12,7 +12,7 @@ class Think extends Sense {
 
   perform(...args: unknown[]) {
     const thought = args.length > 0 ? util.format(...args) : 'nothing';
-    this.unit.log(`thinks ${thought}`);
+    this.unit.emit({ type: 'think', description: 'thinks {thought}', params: { thought } });
   }
 }
 

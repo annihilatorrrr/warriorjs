@@ -21,17 +21,17 @@ describe('Profile.load', () => {
   test('instances Profile with contents of profile file', () => {
     Profile.isProfileDirectory = () => true;
     Profile.read = () =>
-      'eyJ3YXJyaW9yTmFtZSI6ICJKb2UiLCAidG93ZXJJZCI6ICJmb28iLCAiYW5vdGhlcktleSI6IDQyfQ==';
+      'eyJ3YXJyaW9yTmFtZSI6ICJBbGRyaWMiLCAidG93ZXJJZCI6ICJmb28iLCAiYW5vdGhlcktleSI6IDQyfQ==';
     const profile = Profile.load('/path/to/profile', towers)!;
     expect(profile).toBeInstanceOf(Profile);
-    expect(profile.warriorName).toBe('Joe');
+    expect(profile.warriorName).toBe('Aldric');
     expect(profile.tower).toBe(profileTower);
     expect((profile as any).anotherKey).toBe(42);
   });
 
   test('sets the directory path to the path from where the profile is being loaded', () => {
     Profile.isProfileDirectory = () => true;
-    Profile.read = () => 'eyJ3YXJyaW9yTmFtZSI6ICJKb2UiLCAidG93ZXJJZCI6ICJmb28ifQ==';
+    Profile.read = () => 'eyJ3YXJyaW9yTmFtZSI6ICJBbGRyaWMiLCAidG93ZXJJZCI6ICJmb28ifQ==';
     const profile = Profile.load('/path/to/profile', towers)!;
     expect(profile.directoryPath).toBe('/path/to/profile');
   });
@@ -39,7 +39,7 @@ describe('Profile.load', () => {
   test('ignores keys that were once part of the encoded profile', () => {
     Profile.isProfileDirectory = () => true;
     Profile.read = () =>
-      'eyJ3YXJyaW9yTmFtZSI6ICJKb2UiLCAidG93ZXJJZCI6ICJmb28iLCAiZGlyZWN0b3J5UGF0aCI6ICJsZWdhY3kiLCAidG93ZXJOYW1lIjogImxlZ2FjeSIsICJjdXJyZW50RXBpY1Njb3JlIjogImxlZ2FjeSIsICJjdXJyZW50RXBpY0dyYWRlcyI6ICJsZWdhY3kifQ==';
+      'eyJ3YXJyaW9yTmFtZSI6ICJBbGRyaWMiLCAidG93ZXJJZCI6ICJmb28iLCAiZGlyZWN0b3J5UGF0aCI6ICJsZWdhY3kiLCAidG93ZXJOYW1lIjogImxlZ2FjeSIsICJjdXJyZW50RXBpY1Njb3JlIjogImxlZ2FjeSIsICJjdXJyZW50RXBpY0dyYWRlcyI6ICJsZWdhY3kifQ==';
     const profile = Profile.load('/path/to/profile', towers)!;
     expect(profile).not.toHaveProperty('towerName');
     expect(profile.directoryPath).toBe('/path/to/profile');
@@ -63,7 +63,7 @@ describe('Profile.load', () => {
   test('throws if profile tower is not available', () => {
     Profile.isProfileDirectory = () => true;
     Profile.read = () =>
-      'eyJ3YXJyaW9yTmFtZSI6ICJKb2UiLCAidG93ZXJJZCI6ICJmb28iLCAiYW5vdGhlcktleSI6IDQyfQ==';
+      'eyJ3YXJyaW9yTmFtZSI6ICJBbGRyaWMiLCAidG93ZXJJZCI6ICJmb28iLCAiYW5vdGhlcktleSI6IDQyfQ==';
     expect(() => {
       Profile.load('/path/to/profile', []);
     }).toThrow(new GameError(`Unable to find tower 'foo', make sure it is available.`));
@@ -115,10 +115,10 @@ describe('Profile.decode', () => {
   test('decodes from JSON + base64', () => {
     expect(
       Profile.decode(
-        'eyJ3YXJyaW9yTmFtZSI6IkpvZSIsInRvd2VySWQiOiJmb28iLCJsZXZlbE51bWJlciI6MCwiY2x1ZSI6ZmFsc2UsImVwaWMiOmZhbHNlLCJzY29yZSI6MCwiZXBpY1Njb3JlIjowLCJhdmVyYWdlR3JhZGUiOm51bGx9',
+        'eyJ3YXJyaW9yTmFtZSI6IkFsZHJpYyIsInRvd2VySWQiOiJmb28iLCJsZXZlbE51bWJlciI6MCwiY2x1ZSI6ZmFsc2UsImVwaWMiOmZhbHNlLCJzY29yZSI6MCwiZXBpY1Njb3JlIjowLCJhdmVyYWdlR3JhZGUiOm51bGx9',
       ),
     ).toEqual({
-      warriorName: 'Joe',
+      warriorName: 'Aldric',
       towerId: 'foo',
       levelNumber: 0,
       clue: false,
@@ -146,11 +146,11 @@ describe('Profile', () => {
 
   beforeEach(() => {
     tower = { id: 'foo', name: 'Foo' };
-    profile = new Profile('Joe', tower, '/path/to/profile');
+    profile = new Profile('Aldric', tower, '/path/to/profile');
   });
 
   test('has a warrior name', () => {
-    expect(profile.warriorName).toBe('Joe');
+    expect(profile.warriorName).toBe('Aldric');
   });
 
   test('has a tower', () => {
@@ -303,7 +303,7 @@ describe('Profile', () => {
 
   test('encodes with JSON + base64', () => {
     expect(profile.encode()).toBe(
-      'eyJ3YXJyaW9yTmFtZSI6IkpvZSIsInRvd2VySWQiOiJmb28iLCJsYW5ndWFnZSI6ImphdmFzY3JpcHQiLCJsZXZlbE51bWJlciI6MCwiY2x1ZSI6ZmFsc2UsImVwaWMiOmZhbHNlLCJzY29yZSI6MCwiZXBpY1Njb3JlIjowLCJhdmVyYWdlR3JhZGUiOm51bGx9',
+      'eyJ3YXJyaW9yTmFtZSI6IkFsZHJpYyIsInRvd2VySWQiOiJmb28iLCJsYW5ndWFnZSI6ImphdmFzY3JpcHQiLCJsZXZlbE51bWJlciI6MCwiY2x1ZSI6ZmFsc2UsImVwaWMiOmZhbHNlLCJzY29yZSI6MCwiZXBpY1Njb3JlIjowLCJhdmVyYWdlR3JhZGUiOm51bGx9',
     );
   });
 
@@ -323,7 +323,7 @@ describe('Profile', () => {
     profile.tower.toString = () => 'Foo';
     profile.levelNumber = 4;
     profile.score = 123;
-    expect(profile.toString()).toBe('Joe - JavaScript - Foo - level 4 - score 123');
+    expect(profile.toString()).toBe('Aldric - JavaScript - Foo - level 4 - score 123');
   });
 
   describe('epic mode', () => {
@@ -393,7 +393,7 @@ describe('Profile', () => {
       profile.score = 123;
       profile.getEpicScoreWithGrade = () => '124 (C)';
       expect(profile.toString()).toBe(
-        'Joe - JavaScript - Foo - first score 123 - epic score 124 (C)',
+        'Aldric - JavaScript - Foo - first score 123 - epic score 124 (C)',
       );
     });
   });

@@ -9,20 +9,20 @@ import {
   type LevelConfig,
   type LevelReport,
   type PlaySessionState,
-} from '../types.js';
+} from '../../types.js';
 
 vi.mock('@warriorjs/core', () => ({
   getLevelConfig: vi.fn(),
   runLevel: vi.fn(),
 }));
 
-vi.mock('../utils/buildLevelReport.js', () => ({
+vi.mock('../../utils/buildLevelReport.js', () => ({
   buildLevelReport: vi.fn(),
 }));
 
 // Re-import after mocks are set up
 const { getLevelConfig, runLevel } = await import('@warriorjs/core');
-const { buildLevelReport } = await import('../utils/buildLevelReport.js');
+const { buildLevelReport } = await import('../../utils/buildLevelReport.js');
 const { usePlaySession } = await import('./usePlaySession.js');
 
 const mockedGetLevelConfig = vi.mocked(getLevelConfig);
@@ -38,7 +38,7 @@ function createMockProfile(overrides: Partial<Record<string, unknown>> = {}): Pr
       hasLevel: vi.fn().mockReturnValue(true),
       levels: [1, 2, 3],
     },
-    warriorName: 'Olric',
+    warriorName: 'Aldric',
     epic: false,
     levelNumber: 1,
     language: 'javascript',
@@ -158,7 +158,7 @@ describe('usePlaySession', () => {
     mockProfile = createMockProfile();
 
     mockedGetLevelConfig.mockReturnValue(defaultLevelConfig as ReturnType<typeof getLevelConfig>);
-    mockedRunLevel.mockReturnValue(defaultLevelResult as ReturnType<typeof runLevel>);
+    mockedRunLevel.mockReturnValue(defaultLevelResult as unknown as ReturnType<typeof runLevel>);
     mockedBuildLevelReport.mockReturnValue({ ...defaultLevelReport });
   });
 
@@ -172,7 +172,7 @@ describe('usePlaySession', () => {
       });
 
       expect(ref.current!.state).toEqual(expect.objectContaining({ type: 'playing' }));
-      expect(mockedGetLevelConfig).toHaveBeenCalledWith(mockProfile.tower, 1, 'Olric', false);
+      expect(mockedGetLevelConfig).toHaveBeenCalledWith(mockProfile.tower, 1, 'Aldric', false);
       expect(mockedRunLevel).toHaveBeenCalled();
     });
 
@@ -383,7 +383,7 @@ describe('usePlaySession', () => {
       });
 
       // Should have called getLevelConfig for level 2.
-      expect(mockedGetLevelConfig).toHaveBeenCalledWith(mockProfile.tower, 2, 'Olric', false);
+      expect(mockedGetLevelConfig).toHaveBeenCalledWith(mockProfile.tower, 2, 'Aldric', false);
     });
 
     test('epic auto-advance does not happen when practiceLevel is set', () => {
@@ -524,7 +524,7 @@ describe('usePlaySession', () => {
       mockedRunLevel.mockReturnValue({
         ...defaultLevelResult,
         passed: true,
-      } as ReturnType<typeof runLevel>);
+      } as unknown as ReturnType<typeof runLevel>);
 
       renderHook({
         context,
@@ -544,7 +544,7 @@ describe('usePlaySession', () => {
       mockedRunLevel.mockReturnValue({
         ...defaultLevelResult,
         passed: false,
-      } as ReturnType<typeof runLevel>);
+      } as unknown as ReturnType<typeof runLevel>);
       (mockProfile.isShowingClue as ReturnType<typeof vi.fn>).mockReturnValue(true);
 
       renderHook({
@@ -810,7 +810,7 @@ describe('usePlaySession', () => {
       expect(mockedGetLevelConfig).toHaveBeenCalledWith(
         mockProfile.tower,
         defaultLevelReport.levelNumber,
-        'Olric',
+        'Aldric',
         false,
       );
       expect(mockedRunLevel).toHaveBeenCalled();

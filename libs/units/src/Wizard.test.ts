@@ -14,14 +14,6 @@ describe('Wizard', () => {
     expect(wizard).toBeInstanceOf(RangedUnit);
   });
 
-  test("appears as 'w' on map", () => {
-    expect(wizard.character).toBe('w');
-  });
-
-  test('has #b48ead color', () => {
-    expect(wizard.color).toBe('#b48ead');
-  });
-
   test('has 3 max health', () => {
     expect(wizard.maxHealth).toBe(3);
   });

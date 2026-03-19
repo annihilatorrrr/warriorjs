@@ -9,7 +9,7 @@ class Wizard extends RangedUnit {
   };
 
   constructor() {
-    super('Wizard', 'w', '#b48ead', 3);
+    super('Wizard', 3);
   }
 }
 

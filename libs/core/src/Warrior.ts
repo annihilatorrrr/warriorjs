@@ -3,25 +3,33 @@ import Action from './Action.js';
 import Unit from './Unit.js';
 
 class Warrior extends Unit {
-  constructor(name: string, character: string, color: string, maxHealth: number) {
-    super(name, character, color, maxHealth, null, false);
+  constructor(name: string, maxHealth: number) {
+    super(name, maxHealth, null, false);
   }
 
   performTurn(): void {
     super.performTurn();
     if (!this.turn?.action || this.isBound()) {
-      this.log('does nothing');
+      this.emit({ type: 'idle', description: 'does nothing', params: {} });
     }
   }
 
   earnPoints(points: number): void {
     super.earnPoints(points);
-    this.log(`earns ${points} points`);
+    this.emit({
+      type: 'earnPoints',
+      description: 'earns {points} points',
+      params: { points },
+    });
   }
 
   losePoints(points: number): void {
     super.losePoints(points);
-    this.log(`loses ${points} points`);
+    this.emit({
+      type: 'losePoints',
+      description: 'loses {points} points',
+      params: { points },
+    });
   }
 
   getAbilities(): AbilitySpec[] {

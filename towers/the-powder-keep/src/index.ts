@@ -24,8 +24,6 @@ const tower: TowerDefinition = {
   name: 'The Powder Keep',
   description: 'An old fortress where something ticks beneath the floor',
   warrior: {
-    character: '@',
-    color: '#8fbcbb',
     maxHealth: 20,
   },
   levels: [

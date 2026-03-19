@@ -11,7 +11,7 @@ describe('Attack', () => {
   beforeEach(() => {
     unit = {
       damage: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     attack = new Attack(unit, { power: 3 });
   });
@@ -54,25 +54,40 @@ describe('Attack', () => {
     test('misses if no receiver', () => {
       unit.getSpaceAt = () => ({ getUnit: () => null });
       attack.perform();
-      expect(unit.log).toHaveBeenCalledWith(`attacks ${FORWARD} and hits nothing`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'attack',
+        description: 'attacks {direction} and hits nothing',
+        params: { direction: FORWARD, hit: false },
+      });
       expect(unit.damage).not.toHaveBeenCalled();
     });
 
     describe('with receiver', () => {
+      let receiver: any;
+
       beforeEach(() => {
-        unit.getSpaceAt = () => ({ getUnit: () => 'receiver' });
+        receiver = { name: 'receiver' };
+        unit.getSpaceAt = () => ({ getUnit: () => receiver });
       });
 
       test('damages receiver', () => {
         attack.perform();
-        expect(unit.log).toHaveBeenCalledWith(`attacks ${FORWARD} and hits receiver`);
-        expect(unit.damage).toHaveBeenCalledWith('receiver', 3);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'attack',
+          description: 'attacks {direction} and hits {target}',
+          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+        });
+        expect(unit.damage).toHaveBeenCalledWith(receiver, 3);
       });
 
       test('reduces power when attacking backward', () => {
         attack.perform(BACKWARD);
-        expect(unit.log).toHaveBeenCalledWith(`attacks ${BACKWARD} and hits receiver`);
-        expect(unit.damage).toHaveBeenCalledWith('receiver', 2);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'attack',
+          description: 'attacks {direction} and hits {target}',
+          params: { direction: BACKWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+        });
+        expect(unit.damage).toHaveBeenCalledWith(receiver, 2);
       });
     });
   });

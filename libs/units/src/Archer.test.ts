@@ -14,14 +14,6 @@ describe('Archer', () => {
     expect(archer).toBeInstanceOf(RangedUnit);
   });
 
-  test("appears as 'a' on map", () => {
-    expect(archer.character).toBe('a');
-  });
-
-  test('has #ebcb8b color', () => {
-    expect(archer.color).toBe('#ebcb8b');
-  });
-
   test('has 7 max health', () => {
     expect(archer.maxHealth).toBe(7);
   });

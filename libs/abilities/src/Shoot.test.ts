@@ -11,7 +11,7 @@ describe('Shoot', () => {
   beforeEach(() => {
     unit = {
       damage: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     shoot = new Shoot(unit, { power: 3, range: 3 });
   });
@@ -61,30 +61,47 @@ describe('Shoot', () => {
         .mockReturnValueOnce({ getUnit: () => null })
         .mockReturnValueOnce({ getUnit: () => null })
         .mockReturnValueOnce({ getUnit: () => null })
-        .mockReturnValueOnce({ getUnit: () => 'anotherUnit' });
+        .mockReturnValueOnce({
+          getUnit: () => ({
+            name: 'anotherUnit',
+          }),
+        });
       shoot.perform();
-      expect(unit.log).toHaveBeenCalledWith(`shoots ${FORWARD} and hits nothing`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'shoot',
+        description: 'shoots {direction} and hits nothing',
+        params: { direction: FORWARD, hit: false },
+      });
       expect(unit.damage).not.toHaveBeenCalled();
     });
 
     describe('with receiver', () => {
+      let receiver: any;
+      let anotherUnit: any;
+
       beforeEach(() => {
+        receiver = { name: 'receiver' };
+        anotherUnit = { name: 'anotherUnit' };
         unit.getSpaceAt = vi
           .fn()
           .mockReturnValueOnce({ getUnit: () => null })
-          .mockReturnValueOnce({ getUnit: () => 'receiver' })
-          .mockReturnValueOnce({ getUnit: () => 'anotherUnit' });
+          .mockReturnValueOnce({ getUnit: () => receiver })
+          .mockReturnValueOnce({ getUnit: () => anotherUnit });
       });
 
       test('damages receiver', () => {
         shoot.perform();
-        expect(unit.log).toHaveBeenCalledWith(`shoots ${FORWARD} and hits receiver`);
-        expect(unit.damage).toHaveBeenCalledWith('receiver', 3);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'shoot',
+          description: 'shoots {direction} and hits {target}',
+          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+        });
+        expect(unit.damage).toHaveBeenCalledWith(receiver, 3);
       });
 
       test('shoots only first unit', () => {
         shoot.perform();
-        expect(unit.damage).not.toHaveBeenCalledWith('anotherUnit', 3);
+        expect(unit.damage).not.toHaveBeenCalledWith(anotherUnit, 3);
       });
     });
   });

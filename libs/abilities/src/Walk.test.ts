@@ -11,7 +11,7 @@ describe('Walk', () => {
   beforeEach(() => {
     unit = {
       move: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     walk = new Walk(unit);
   });
@@ -52,14 +52,22 @@ describe('Walk', () => {
         toString: () => 'space',
       });
       walk.perform();
-      expect(unit.log).toHaveBeenCalledWith(`walks ${FORWARD} and bumps into space`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'walk',
+        description: 'walks {direction} and bumps into {obstacle}',
+        params: { direction: FORWARD, obstacle: 'space', blocked: true },
+      });
       expect(unit.move).not.toHaveBeenCalled();
     });
 
     test('moves in specified direction if space is empty', () => {
       unit.getSpaceAt = () => ({ isEmpty: () => true });
       walk.perform(RIGHT);
-      expect(unit.log).toHaveBeenCalledWith(`walks ${RIGHT}`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'walk',
+        description: 'walks {direction}',
+        params: { direction: RIGHT, blocked: false },
+      });
       expect(unit.move).toHaveBeenCalledWith(RIGHT);
     });
   });

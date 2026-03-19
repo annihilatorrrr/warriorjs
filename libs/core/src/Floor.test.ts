@@ -14,7 +14,7 @@ describe('Floor', () => {
   });
 
   test('returns its map', () => {
-    const unit = new Unit('Test', 'T', '#000', 10);
+    const unit = new Unit('Test', 10);
     floor.addUnit(unit, { x: 0, y: 1, facing: NORTH });
     const map = floor.getMap();
     expect(map[1][1].isEmpty()).toBe(true);
@@ -54,26 +54,26 @@ describe('Floor', () => {
   });
 
   test('adds a unit and fetches it at that position', () => {
-    const unit = new Unit('Test', 'T', '#000', 10);
+    const unit = new Unit('Test', 10);
     floor.addUnit(unit, { x: 0, y: 1, facing: NORTH });
     expect(floor.getUnitAt([0, 1])).toBe(unit);
   });
 
   test('adds the warrior and fetches it at that position', () => {
-    const warrior = new Warrior('Joe', '@', '#8fbcbb', 20);
+    const warrior = new Warrior('Aldric', 20);
     floor.addWarrior(warrior, { x: 0, y: 1, facing: NORTH });
     expect(floor.getUnitAt([0, 1])).toBe(warrior);
   });
 
   test('knows which unit is the warrior after adding it', () => {
     expect(floor.warrior).toBeNull();
-    const warrior = new Warrior('Joe', '@', '#8fbcbb', 20);
+    const warrior = new Warrior('Aldric', 20);
     floor.addWarrior(warrior, { x: 0, y: 1, facing: NORTH });
     expect(floor.warrior).toBe(warrior);
   });
 
   test("doesn't consider a unit to be on the floor if it's not alive", () => {
-    const unit = new Unit('Test', 'T', '#000', 10);
+    const unit = new Unit('Test', 10);
     floor.addUnit(unit, { x: 0, y: 1, facing: NORTH });
     unit.isAlive = () => false;
     expect(floor.getUnits()).not.toContain(unit);

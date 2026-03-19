@@ -16,10 +16,18 @@ class Bind extends Action {
   perform(direction: RelativeDirection = defaultDirection): void {
     const receiver = this.unit.getSpaceAt(direction).getUnit();
     if (receiver) {
-      this.unit.log(`binds ${direction} and restricts ${receiver}`);
+      this.unit.emit({
+        type: 'bind',
+        description: 'binds {direction} and restricts {target}',
+        params: { direction, target: { type: 'unit', name: receiver.name } },
+      });
       receiver.bind();
     } else {
-      this.unit.log(`binds ${direction} and restricts nothing`);
+      this.unit.emit({
+        type: 'bind',
+        description: 'binds {direction} and restricts nothing',
+        params: { direction },
+      });
     }
   }
 }

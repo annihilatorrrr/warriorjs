@@ -85,12 +85,12 @@ describe('Game', () => {
   describe('createProfile', () => {
     test('creates a profile with the correct directory path', () => {
       const tower = { id: 'the-narrow-path' };
-      const profile = game.createProfile('Olric', 'typescript', tower);
+      const profile = game.createProfile('Aldric', 'typescript', tower);
       expect(profile).toBeInstanceOf(Profile);
-      expect(profile.warriorName).toBe('Olric');
+      expect(profile.warriorName).toBe('Aldric');
       expect(profile.language).toBe('typescript');
       expect(profile.directoryPath).toBe(
-        path.normalize('/path/to/game/warriorjs/olric-the-narrow-path'),
+        path.normalize('/path/to/game/warriorjs/aldric-the-narrow-path'),
       );
     });
   });
@@ -184,7 +184,7 @@ describe('Game', () => {
     game.profile = {
       tower: 'tower',
       levelNumber: 1,
-      warriorName: 'Joe',
+      warriorName: 'Aldric',
       epic: false,
       getReadmeFilePath: () => '/path/to/profile/readme',
     };
@@ -194,7 +194,7 @@ describe('Game', () => {
       this.generate = mockGenerate;
     });
     game.generateProfileFiles();
-    expect(getLevelConfig).toHaveBeenCalledWith('tower', 1, 'Joe', false);
+    expect(getLevelConfig).toHaveBeenCalledWith('tower', 1, 'Aldric', false);
     expect(ProfileGenerator).toHaveBeenCalledWith(game.profile, 'config');
     expect(mockGenerate).toHaveBeenCalled();
   });

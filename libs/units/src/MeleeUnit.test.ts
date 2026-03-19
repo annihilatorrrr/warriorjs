@@ -5,7 +5,7 @@ import MeleeUnit from './MeleeUnit.js';
 
 class TestMeleeUnit extends MeleeUnit {
   constructor() {
-    super('Melee', 'm', '#aaa', 10);
+    super('Melee', 10);
   }
 }
 

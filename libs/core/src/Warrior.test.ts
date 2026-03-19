@@ -28,33 +28,49 @@ describe('Warrior', () => {
   let warrior: Warrior;
 
   beforeEach(() => {
-    warrior = new Warrior('Joe', '@', '#8fbcbb', 20);
+    warrior = new Warrior('Aldric', 20);
     warrior.addAbility('feel', new MockSense(warrior, 'a description'));
     warrior.addAbility('walk', new MockAction(warrior, 'a description'));
-    warrior.log = vi.fn();
+    warrior.emit = vi.fn();
   });
 
   test('is upset for not doing anything when no action', () => {
     warrior.turn = { action: null };
     warrior.performTurn();
-    expect(warrior.log).toHaveBeenCalledWith('does nothing');
+    expect(warrior.emit).toHaveBeenCalledWith({
+      type: 'idle',
+      description: 'does nothing',
+      params: {},
+    });
   });
 
   test('is upset for not doing anything when bound', () => {
     warrior.bind();
     warrior.turn = { action: ['walk', []] };
     warrior.performTurn();
-    expect(warrior.log).toHaveBeenCalledWith('does nothing');
+    expect(warrior.emit).toHaveBeenCalledWith({
+      type: 'idle',
+      description: 'does nothing',
+      params: {},
+    });
   });
 
   test('is proud of earning points', () => {
     warrior.earnPoints(5);
-    expect(warrior.log).toHaveBeenCalledWith('earns 5 points');
+    expect(warrior.emit).toHaveBeenCalledWith({
+      type: 'earnPoints',
+      description: 'earns {points} points',
+      params: { points: 5 },
+    });
   });
 
   test('is upset for losing points', () => {
     warrior.losePoints(5);
-    expect(warrior.log).toHaveBeenCalledWith('loses 5 points');
+    expect(warrior.emit).toHaveBeenCalledWith({
+      type: 'losePoints',
+      description: 'loses {points} points',
+      params: { points: 5 },
+    });
   });
 
   test('returns abilities as a sorted flat list', () => {

@@ -23,11 +23,15 @@ class Rest extends Action {
 
   perform(): void {
     if (this.unit.health < this.unit.maxHealth) {
-      this.unit.log('rests');
+      this.unit.emit({ type: 'rest', description: 'rests', params: {} });
       const amount = Math.round(this.unit.maxHealth * this.healthGain);
       this.unit.heal(amount);
     } else {
-      this.unit.log('has nothing to heal');
+      this.unit.emit({
+        type: 'rest',
+        description: 'has nothing to heal',
+        params: { atFull: true },
+      });
     }
   }
 

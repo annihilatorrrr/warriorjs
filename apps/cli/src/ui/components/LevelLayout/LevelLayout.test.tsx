@@ -2,14 +2,16 @@ import { Text } from 'ink';
 import { render } from 'ink-testing-library';
 import { describe, expect, test } from 'vitest';
 
-import { type TurnEvent } from '../../types.js';
+import { type TurnEvent } from '../../../types.js';
 import LevelLayout from './LevelLayout.js';
 
 function makeEvent(overrides: Partial<TurnEvent> = {}): TurnEvent {
   return {
-    message: 'test',
-    unit: null,
-    floorMap: [[{ character: '║' }, { character: '@' }, { character: '║' }]],
+    action: { type: 'test', description: 'test', params: {} },
+    actor: null,
+    floorMap: [
+      [{ wall: true }, { unit: { name: 'Aldric', maxHealth: 20, warrior: true } }, { wall: true }],
+    ],
     warriorStatus: { health: 20, score: 0 },
     ...overrides,
   };
@@ -19,7 +21,7 @@ describe('LevelLayout', () => {
   test('renders header, floor map, divider, and children', () => {
     const replay = { turns: [[makeEvent()]], initialState: makeEvent() };
     const context = {
-      warriorName: 'Olric',
+      warriorName: 'Aldric',
       towerName: 'The Narrow Path',
       levelNumber: 3,
       totalScore: 42,
@@ -31,7 +33,7 @@ describe('LevelLayout', () => {
       </LevelLayout>,
     );
     const output = lastFrame()!;
-    expect(output).toContain('Olric');
+    expect(output).toContain('Aldric');
     expect(output).toContain('The Narrow Path');
     expect(output).toContain('3');
     expect(output).toContain('@');
@@ -42,7 +44,7 @@ describe('LevelLayout', () => {
   test('renders without floor map when turns are empty', () => {
     const replay = { turns: [] as TurnEvent[][], initialState: makeEvent() };
     const context = {
-      warriorName: 'Olric',
+      warriorName: 'Aldric',
       towerName: 'The Narrow Path',
       levelNumber: 1,
       totalScore: 0,

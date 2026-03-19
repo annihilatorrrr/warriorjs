@@ -9,7 +9,7 @@ describe('Bind', () => {
   let unit: any;
 
   beforeEach(() => {
-    unit = { log: vi.fn() };
+    unit = { emit: vi.fn() };
     bind = new Bind(unit);
   });
 
@@ -46,7 +46,11 @@ describe('Bind', () => {
     test('misses if no receiver', () => {
       unit.getSpaceAt = () => ({ getUnit: () => null });
       bind.perform();
-      expect(unit.log).toHaveBeenCalledWith(`binds ${FORWARD} and restricts nothing`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'bind',
+        description: 'binds {direction} and restricts nothing',
+        params: { direction: FORWARD },
+      });
     });
 
     describe('with receiver', () => {
@@ -54,15 +58,19 @@ describe('Bind', () => {
 
       beforeEach(() => {
         receiver = {
+          name: 'receiver',
           bind: vi.fn(),
-          toString: () => 'receiver',
         };
         unit.getSpaceAt = () => ({ getUnit: () => receiver });
       });
 
       test('binds receiver', () => {
         bind.perform();
-        expect(unit.log).toHaveBeenCalledWith(`binds ${FORWARD} and restricts receiver`);
+        expect(unit.emit).toHaveBeenCalledWith({
+          type: 'bind',
+          description: 'binds {direction} and restricts {target}',
+          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' } },
+        });
         expect(receiver.bind).toHaveBeenCalled();
       });
     });

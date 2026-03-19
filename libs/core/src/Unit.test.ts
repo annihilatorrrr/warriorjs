@@ -23,22 +23,14 @@ describe('Unit', () => {
   let floor: Floor;
 
   beforeEach(() => {
-    unit = new Unit('Joe', '@', '#8fbcbb', 20);
-    unit.log = vi.fn();
+    unit = new Unit('Aldric', 20);
+    unit.emit = vi.fn();
     floor = new Floor(5, 6, [0, 0]);
     floor.addUnit(unit, { x: 1, y: 2, facing: NORTH });
   });
 
   test('has a name', () => {
-    expect(unit.name).toBe('Joe');
-  });
-
-  test('has a character that represents it', () => {
-    expect(unit.character).toBe('@');
-  });
-
-  test('has a color', () => {
-    expect(unit.color).toBe('#8fbcbb');
+    expect(unit.name).toBe('Aldric');
   });
 
   test('has a max health', () => {
@@ -50,7 +42,7 @@ describe('Unit', () => {
   });
 
   test('allows to specify reward', () => {
-    expect(new Unit('Foo', 'f', '#fff', 20, 30).reward).toBe(30);
+    expect(new Unit('Foo', 20, 30).reward).toBe(30);
   });
 
   test('has an enemy status which defaults to true', () => {
@@ -58,7 +50,7 @@ describe('Unit', () => {
   });
 
   test('allows to specify enemy status', () => {
-    expect(new Unit('Foo', 'f', '#fff', 20, 30, false).enemy).toBe(false);
+    expect(new Unit('Foo', 20, 30, false).enemy).toBe(false);
   });
 
   test('has a bound status which defaults to false', () => {
@@ -66,11 +58,11 @@ describe('Unit', () => {
   });
 
   test('has a position which is null before adding the unit to the floor', () => {
-    expect(new Unit('Foo', 'f', '#fff', 20).position).toBeNull();
+    expect(new Unit('Foo', 20).position).toBeNull();
   });
 
   test('allows to specify bound status', () => {
-    expect(new Unit('Foo', 'f', '#fff', 20, 30, false, true).bound).toBe(true);
+    expect(new Unit('Foo', 20, 30, false, true).bound).toBe(true);
   });
 
   test('has a health which defaults to max health', () => {
@@ -187,20 +179,32 @@ describe('Unit', () => {
       unit.health = 5;
       unit.heal(3);
       expect(unit.health).toBe(8);
-      expect(unit.log).toHaveBeenCalledWith('recovers 3 HP, up to 8 HP');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'heal',
+        description: 'recovers {amount} HP, up to {remainingHp} HP',
+        params: { amount: 3, remainingHp: 8 },
+      });
     });
 
     test("doesn't go over max health", () => {
       unit.health = 19;
       unit.heal(2);
       expect(unit.health).toBe(20);
-      expect(unit.log).toHaveBeenCalledWith('recovers 2 HP, up to 20 HP');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'heal',
+        description: 'recovers {amount} HP, up to {remainingHp} HP',
+        params: { amount: 2, remainingHp: 20 },
+      });
     });
 
     test("doesn't add health when at max", () => {
       unit.heal(1);
       expect(unit.health).toBe(20);
-      expect(unit.log).toHaveBeenCalledWith('recovers 1 HP, up to 20 HP');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'heal',
+        description: 'recovers {amount} HP, up to {remainingHp} HP',
+        params: { amount: 1, remainingHp: 20 },
+      });
     });
   });
 
@@ -208,20 +212,36 @@ describe('Unit', () => {
     test('subtracts health', () => {
       unit.takeDamage(3);
       expect(unit.health).toBe(17);
-      expect(unit.log).toHaveBeenCalledWith('takes 3 damage, 17 HP left');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'takeDamage',
+        description: 'takes {amount} damage, {remainingHp} HP left',
+        params: { amount: 3, remainingHp: 17 },
+      });
     });
 
     test("doesn't go under zero health", () => {
       unit.takeDamage(21);
       expect(unit.health).toBe(0);
-      expect(unit.log).toHaveBeenCalledWith('takes 21 damage, 0 HP left');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'takeDamage',
+        description: 'takes {amount} damage, {remainingHp} HP left',
+        params: { amount: 21, remainingHp: 0 },
+      });
     });
 
     test('dies when running out of health', () => {
       unit.takeDamage(20);
       expect(unit.isAlive()).toBe(false);
-      expect(unit.log).toHaveBeenCalledWith('takes 20 damage, 0 HP left');
-      expect(unit.log).toHaveBeenCalledWith('dies');
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'takeDamage',
+        description: 'takes {amount} damage, {remainingHp} HP left',
+        params: { amount: 20, remainingHp: 0 },
+      });
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'die',
+        description: 'dies',
+        params: {},
+      });
     });
   });
 
@@ -240,10 +260,10 @@ describe('Unit', () => {
   });
 
   test('can damage another unit', () => {
-    const receiver = new Unit('Test', 'T', '#000', 10);
+    const receiver = new Unit('Test', 10);
     receiver.health = 10;
     receiver.position = {} as any;
-    receiver.log = vi.fn();
+    receiver.emit = vi.fn();
     unit.damage(receiver, 3);
     expect(receiver.health).toBe(7);
   });
@@ -252,7 +272,7 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit('Test', 'T', '#000', 10);
+      receiver = new Unit('Test', 10);
       receiver.maxHealth = 5;
       receiver.reward = 10;
       receiver.health = 5;
@@ -262,7 +282,7 @@ describe('Unit', () => {
         isBound: () => false,
         isUnderEffect: () => false,
       });
-      receiver.log = vi.fn();
+      receiver.emit = vi.fn();
     });
 
     test('earns points equal to reward when killing unit', () => {
@@ -302,7 +322,7 @@ describe('Unit', () => {
     let receiver: Unit;
 
     beforeEach(() => {
-      receiver = new Unit('Test', 'T', '#000', 10);
+      receiver = new Unit('Test', 10);
       receiver.reward = 10;
       receiver.bound = true;
       receiver.position = {} as any;
@@ -311,7 +331,7 @@ describe('Unit', () => {
         isBound: () => false,
         isUnderEffect: () => false,
       });
-      receiver.log = vi.fn();
+      receiver.emit = vi.fn();
     });
 
     test('unbinds the unit', () => {
@@ -423,7 +443,7 @@ describe('Unit', () => {
   });
 
   test("doesn't fetch itself when fetching other units", () => {
-    const anotherUnit = new Unit('Test', 'T', '#000', 10);
+    const anotherUnit = new Unit('Test', 10);
     floor.addUnit(anotherUnit, { x: 3, y: 4, facing: NORTH });
     expect(unit.getOtherUnits()).not.toContain(unit);
     expect(unit.getOtherUnits()).toContain(anotherUnit);
@@ -509,7 +529,7 @@ describe('Unit', () => {
     let sensedUnit: any;
 
     beforeEach(() => {
-      sensingUnit = new Unit('Test', 'T', '#000', 10);
+      sensingUnit = new Unit('Test', 10);
       sensingUnit.enemy = false;
       floor.addUnit(sensingUnit, { x: 0, y: 1, facing: SOUTH });
       sensedUnit = unit.as(sensingUnit);
@@ -543,7 +563,7 @@ describe('Unit', () => {
         'getSpaceAt',
         'heal',
         'isAlive',
-        'log',
+        'emit',
         'losePoints',
         'move',
         'performTurn',
@@ -566,9 +586,7 @@ describe('Unit', () => {
 
   test('has a minimal JSON representation', () => {
     expect(unit.toJSON()).toEqual({
-      name: 'Joe',
-      color: '#8fbcbb',
-      maxHealth: 20,
+      name: 'Aldric',
     });
   });
 });

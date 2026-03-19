@@ -14,14 +14,6 @@ describe('Captive', () => {
     expect(captive).toBeInstanceOf(Unit);
   });
 
-  test("appears as 'C' on map", () => {
-    expect(captive.character).toBe('C');
-  });
-
-  test('has #81a1c1 color', () => {
-    expect(captive.color).toBe('#81a1c1');
-  });
-
   test('has 1 max health', () => {
     expect(captive.maxHealth).toBe(1);
   });

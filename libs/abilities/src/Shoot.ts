@@ -33,10 +33,18 @@ class Shoot extends Action {
       .map((offset) => this.unit.getSpaceAt(direction, offset).getUnit())
       .find((unitInRange) => unitInRange);
     if (receiver) {
-      this.unit.log(`shoots ${direction} and hits ${receiver}`);
+      this.unit.emit({
+        type: 'shoot',
+        description: 'shoots {direction} and hits {target}',
+        params: { direction, target: { type: 'unit', name: receiver.name }, hit: true },
+      });
       this.unit.damage(receiver, this.power);
     } else {
-      this.unit.log(`shoots ${direction} and hits nothing`);
+      this.unit.emit({
+        type: 'shoot',
+        description: 'shoots {direction} and hits nothing',
+        params: { direction, hit: false },
+      });
     }
   }
 

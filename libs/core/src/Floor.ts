@@ -6,6 +6,16 @@ import { type PositionConfig } from './types.js';
 import type Unit from './Unit.js';
 import type Warrior from './Warrior.js';
 
+export interface FloorSpace {
+  wall?: boolean;
+  stairs?: boolean;
+  unit?: {
+    name: string;
+    maxHealth: number;
+    warrior?: boolean;
+  };
+}
+
 class Floor {
   width: number;
   height: number;

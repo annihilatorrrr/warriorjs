@@ -2,6 +2,7 @@ import { Box } from 'ink';
 import type React from 'react';
 import { useMemo } from 'react';
 
+import { type LevelContext, type LevelReplay } from '../../../types.js';
 import Divider from '../../components/Divider/index.js';
 import FloorMap from '../../components/FloorMap/index.js';
 import Header from '../../components/Header/index.js';
@@ -9,7 +10,6 @@ import LogArea from '../../components/LogArea/index.js';
 import Scrubber from '../../components/Scrubber/index.js';
 import WarriorStatus from '../../components/WarriorStatus/index.js';
 import { usePlayback } from '../../hooks/usePlayback.js';
-import { type LevelContext, type LevelReplay } from '../../types.js';
 
 interface PlayScreenProps {
   replay: LevelReplay;

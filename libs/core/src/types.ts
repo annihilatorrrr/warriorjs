@@ -18,8 +18,6 @@ export interface UnitConfig {
 
 export interface WarriorConfig {
   name?: string;
-  character: string;
-  color: string;
   maxHealth: number;
   position: PositionConfig;
   abilities?: Record<string, AbilityEntry>;
@@ -41,8 +39,6 @@ export interface LevelConfig {
 }
 
 export interface WarriorDefinition {
-  character: string;
-  color: string;
   maxHealth: number;
 }
 

@@ -1,7 +1,7 @@
 import { Box } from 'ink';
 import type React from 'react';
 
-import { type LevelContext, type LevelReplay } from '../../types.js';
+import { type LevelContext, type LevelReplay } from '../../../types.js';
 import Divider from '../Divider/index.js';
 import FloorMap from '../FloorMap/index.js';
 import Header from '../Header/index.js';

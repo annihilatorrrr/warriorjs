@@ -5,6 +5,7 @@ import type Ability from './Ability.js';
 import { type AbilityEntry } from './Ability.js';
 import Action from './Action.js';
 import type Effect from './Effect.js';
+import { type GameAction } from './GameAction.js';
 import Logger from './Logger.js';
 import type Position from './Position.js';
 import Space, { type SensedSpace, type SensedUnit } from './Space.js';
@@ -25,8 +26,6 @@ class Unit {
   static declaredAbilities?: Record<string, AbilityEntry>;
 
   name: string;
-  character: string;
-  color: string;
   maxHealth: number;
   reward: number;
   enemy: boolean;
@@ -40,16 +39,12 @@ class Unit {
 
   constructor(
     name: string,
-    character: string,
-    color: string,
     maxHealth: number,
     reward: number | null = null,
     enemy: boolean = true,
     bound: boolean = false,
   ) {
     this.name = name;
-    this.character = character;
-    this.color = color;
     this.maxHealth = maxHealth;
     this.reward = reward === null ? maxHealth : reward;
     this.enemy = enemy;
@@ -110,7 +105,11 @@ class Unit {
     const revisedAmount =
       this.health + amount > this.maxHealth ? this.maxHealth - this.health : amount;
     this.health += revisedAmount;
-    this.log(`recovers ${amount} HP, up to ${this.health} HP`);
+    this.emit({
+      type: 'heal',
+      description: 'recovers {amount} HP, up to {remainingHp} HP',
+      params: { amount, remainingHp: this.health },
+    });
   }
 
   takeDamage(amount: number): void {
@@ -120,11 +119,15 @@ class Unit {
 
     const revisedAmount = this.health - amount < 0 ? this.health : amount;
     this.health -= revisedAmount;
-    this.log(`takes ${amount} damage, ${this.health} HP left`);
+    this.emit({
+      type: 'takeDamage',
+      description: 'takes {amount} damage, {remainingHp} HP left',
+      params: { amount, remainingHp: this.health },
+    });
 
     if (this.health === 0) {
       this.vanish();
-      this.log('dies');
+      this.emit({ type: 'die', description: 'dies', params: {} });
     }
   }
 
@@ -156,7 +159,7 @@ class Unit {
 
   unbind(): void {
     this.bound = false;
-    this.log('released from bonds');
+    this.emit({ type: 'release', description: 'released from bonds', params: {} });
   }
 
   bind(): void {
@@ -247,8 +250,8 @@ class Unit {
     this.position = null;
   }
 
-  log(message: string): void {
-    Logger.unit(this, message);
+  emit(action: GameAction): void {
+    Logger.unit(this, action);
   }
 
   as(unit: Unit): SensedUnit {
@@ -263,11 +266,9 @@ class Unit {
     return this.name;
   }
 
-  toJSON(): { name: string; color: string; maxHealth: number } {
+  toJSON(): { name: string } {
     return {
       name: this.name,
-      color: this.color,
-      maxHealth: this.maxHealth,
     };
   }
 }

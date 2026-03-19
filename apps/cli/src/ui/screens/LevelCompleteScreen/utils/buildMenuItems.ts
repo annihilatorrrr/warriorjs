@@ -1,4 +1,4 @@
-import { type LevelCompleteChoice, type LevelReport } from '../../../types.js';
+import { type LevelCompleteChoice, type LevelReport } from '../../../../types.js';
 
 export default function buildMenuItems(
   report: LevelReport,

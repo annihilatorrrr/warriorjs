@@ -12,9 +12,9 @@ describe('TextPrompt', () => {
 
   test('shows default value as hint', () => {
     const { lastFrame } = render(
-      <TextPrompt message="Name:" defaultValue="Olric" onSubmit={vi.fn()} />,
+      <TextPrompt message="Name:" defaultValue="Aldric" onSubmit={vi.fn()} />,
     );
-    expect(lastFrame()!).toContain('(Olric)');
+    expect(lastFrame()!).toContain('(Aldric)');
   });
 
   test('submits typed value on enter', async () => {
@@ -29,10 +29,10 @@ describe('TextPrompt', () => {
   test('submits default value when empty', () => {
     const onSubmit = vi.fn();
     const { stdin } = render(
-      <TextPrompt message="Name:" defaultValue="Olric" onSubmit={onSubmit} />,
+      <TextPrompt message="Name:" defaultValue="Aldric" onSubmit={onSubmit} />,
     );
     stdin.write('\r');
-    expect(onSubmit).toHaveBeenCalledWith('Olric');
+    expect(onSubmit).toHaveBeenCalledWith('Aldric');
   });
 
   test('backspace removes last character', async () => {

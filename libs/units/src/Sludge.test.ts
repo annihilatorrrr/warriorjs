@@ -14,14 +14,6 @@ describe('Sludge', () => {
     expect(sludge).toBeInstanceOf(MeleeUnit);
   });
 
-  test("appears as 's' on map", () => {
-    expect(sludge.character).toBe('s');
-  });
-
-  test('has #d08770 color', () => {
-    expect(sludge.color).toBe('#d08770');
-  });
-
   test('has 12 max health', () => {
     expect(sludge.maxHealth).toBe(12);
   });

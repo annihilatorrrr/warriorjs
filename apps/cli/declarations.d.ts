@@ -1,13 +1,3 @@
-declare module 'yargs' {
-  function yargs(args?: string[]): any;
-  export default yargs;
-}
-
-declare module 'yargs/helpers' {
-  function hideBin(args: string[]): string[];
-  export type { hideBin };
-}
-
 declare module 'mock-fs' {
   function mock(config: Record<string, unknown>): void;
   namespace mock {

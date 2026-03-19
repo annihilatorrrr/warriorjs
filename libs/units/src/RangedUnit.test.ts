@@ -5,7 +5,7 @@ import RangedUnit from './RangedUnit.js';
 
 class TestRangedUnit extends RangedUnit {
   constructor() {
-    super('Ranged', 'r', '#bbb', 8);
+    super('Ranged', 8);
   }
 }
 

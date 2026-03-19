@@ -28,7 +28,9 @@ describe('renderReadme', () => {
       description: 'You see a light in the distance.',
       tip: 'Walk towards the light.',
       clue: 'Use warrior.walk()',
-      floorMap: [[{ character: '@' }, { character: ' ' }, { character: '>' }]],
+      floorMap: [
+        [{ unit: { name: 'Aldric', maxHealth: 20, warrior: true } }, {}, { stairs: true }],
+      ],
       warriorAbilities: [
         {
           name: 'walk',
@@ -64,6 +66,7 @@ describe('renderReadme', () => {
         '```',
         '@ >',
         '',
+        '@ = Aldric (20 HP)',
         '> = stairs',
         '```',
         '',
@@ -106,6 +109,7 @@ describe('renderReadme', () => {
         '```',
         '@ >',
         '',
+        '@ = Aldric (20 HP)',
         '> = stairs',
         '```',
         '',
@@ -145,6 +149,7 @@ describe('renderReadme', () => {
         '```',
         '@ >',
         '',
+        '@ = Aldric (20 HP)',
         '> = stairs',
         '```',
         '',
@@ -195,6 +200,7 @@ describe('renderReadme', () => {
         '```',
         '@ >',
         '',
+        '@ = Aldric (20 HP)',
         '> = stairs',
         '```',
         '',

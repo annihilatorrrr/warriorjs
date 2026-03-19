@@ -16,10 +16,18 @@ class Rescue extends Action {
   perform(direction: RelativeDirection = defaultDirection): void {
     const receiver = this.unit.getSpaceAt(direction).getUnit();
     if (receiver?.isBound()) {
-      this.unit.log(`unbinds ${direction} and rescues ${receiver}`);
+      this.unit.emit({
+        type: 'rescue',
+        description: 'unbinds {direction} and rescues {target}',
+        params: { direction, target: { type: 'unit', name: receiver.name } },
+      });
       this.unit.release(receiver);
     } else {
-      this.unit.log(`unbinds ${direction} and rescues nothing`);
+      this.unit.emit({
+        type: 'rescue',
+        description: 'unbinds {direction} and rescues nothing',
+        params: { direction },
+      });
     }
   }
 }

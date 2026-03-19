@@ -18,9 +18,17 @@ class TestWalk extends Action {
     const space = this.unit.getSpaceAt(direction);
     if (space.isEmpty()) {
       this.unit.move(direction);
-      this.unit.log(`walks ${direction}`);
+      this.unit.emit({
+        type: 'walk',
+        description: 'walks {direction}',
+        params: { direction, blocked: false },
+      });
     } else {
-      this.unit.log(`walks ${direction} and bumps into ${space}`);
+      this.unit.emit({
+        type: 'walk',
+        description: 'walks {direction} and bumps into {obstacle}',
+        params: { direction, obstacle: String(space), blocked: true },
+      });
     }
   }
 }
@@ -40,11 +48,23 @@ class TestAttack extends Action {
   perform(direction = FORWARD) {
     const receiver = this.unit.getSpaceAt(direction).getUnit();
     if (receiver) {
-      this.unit.log(`attacks ${direction} and hits ${receiver}`);
+      this.unit.emit({
+        type: 'attack',
+        description: 'attacks {direction} and hits {target}',
+        params: {
+          direction,
+          target: { type: 'unit', name: receiver.name },
+          hit: true,
+        },
+      });
       const amount = direction === BACKWARD ? Math.ceil(this.power / 2.0) : this.power;
       this.unit.damage(receiver, amount);
     } else {
-      this.unit.log(`attacks ${direction} and hits nothing`);
+      this.unit.emit({
+        type: 'attack',
+        description: 'attacks {direction} and hits nothing',
+        params: { direction, hit: false },
+      });
     }
   }
   static with(config: { power: number }) {
@@ -70,7 +90,7 @@ class TestSludge extends Unit {
   };
 
   constructor() {
-    super('Sludge', 's', '#d08770', 12);
+    super('Sludge', 12);
     this.playTurn = (turn: any) => {
       const threatDirection = RELATIVE_DIRECTIONS.find((direction) => {
         const unit = turn.feel(direction).getUnit();
@@ -94,9 +114,7 @@ const levelConfig = {
     size: { width: 8, height: 1 },
     stairs: { x: 7, y: 0 },
     warrior: {
-      name: 'Joe',
-      character: '@',
-      color: '#8fbcbb',
+      name: 'Aldric',
       maxHealth: 20,
       abilities: {
         walk: TestWalk,

@@ -11,7 +11,7 @@ describe('Pivot', () => {
   beforeEach(() => {
     unit = {
       rotate: vi.fn(),
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     pivot = new Pivot(unit);
   });
@@ -36,13 +36,21 @@ describe('Pivot', () => {
   describe('performing', () => {
     test('flips around when not passing direction', () => {
       pivot.perform();
-      expect(unit.log).toHaveBeenCalledWith(`pivots ${BACKWARD}`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'pivot',
+        description: 'pivots {direction}',
+        params: { direction: BACKWARD },
+      });
       expect(unit.rotate).toHaveBeenCalledWith(BACKWARD);
     });
 
     test('rotates in specified direction', () => {
       pivot.perform(RIGHT);
-      expect(unit.log).toHaveBeenCalledWith(`pivots ${RIGHT}`);
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'pivot',
+        description: 'pivots {direction}',
+        params: { direction: RIGHT },
+      });
       expect(unit.rotate).toHaveBeenCalledWith(RIGHT);
     });
   });

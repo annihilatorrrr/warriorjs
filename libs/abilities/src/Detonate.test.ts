@@ -12,7 +12,7 @@ describe('Detonate', () => {
     unit = {
       damage: vi.fn(),
       isUnderEffect: () => false,
-      log: vi.fn(),
+      emit: vi.fn(),
     };
     detonate = new Detonate(unit, { targetPower: 4, surroundingPower: 2 });
   });
@@ -63,9 +63,11 @@ describe('Detonate', () => {
         .mockReturnValueOnce({ getUnit: () => surroundingReceiver })
         .mockReturnValueOnce({ getUnit: () => unit });
       detonate.perform();
-      expect(unit.log).toHaveBeenCalledWith(
-        `detonates a bomb ${FORWARD} launching a deadly explosion`,
-      );
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'detonate',
+        description: 'detonates a bomb {direction} launching a deadly explosion',
+        params: { direction: FORWARD },
+      });
       expect(unit.getSpaceAt).toHaveBeenCalledWith(FORWARD);
       expect(unit.getSpaceAt).toHaveBeenCalledWith(FORWARD, 1, 1);
       expect(unit.getSpaceAt).toHaveBeenCalledWith(FORWARD, 1, -1);
@@ -80,16 +82,18 @@ describe('Detonate', () => {
       const receiver = {
         isUnderEffect: () => true,
         triggerEffect: vi.fn(),
-        log: vi.fn(),
+        emit: vi.fn(),
       };
       unit.getSpaceAt = vi
         .fn()
         .mockReturnValueOnce({ getUnit: () => receiver })
         .mockReturnValue({ getUnit: () => null });
       detonate.perform();
-      expect(receiver.log).toHaveBeenCalledWith(
-        'caught in the blast, detonating the ticking explosive',
-      );
+      expect(receiver.emit).toHaveBeenCalledWith({
+        type: 'chainDetonate',
+        description: 'caught in the blast, detonating the ticking explosive',
+        params: {},
+      });
       expect(receiver.triggerEffect).toHaveBeenCalledWith('ticking');
     });
   });

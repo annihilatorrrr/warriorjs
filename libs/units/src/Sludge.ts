@@ -9,7 +9,7 @@ class Sludge extends MeleeUnit {
   };
 
   constructor() {
-    super('Sludge', 's', '#d08770', 12);
+    super('Sludge', 12);
   }
 }
 

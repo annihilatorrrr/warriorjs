@@ -6,8 +6,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { type GameContext } from '../../../Game.js';
 import type Profile from '../../../Profile.js';
+import { type GameMenuStep } from '../../../types.js';
 import WelcomeScreen from '../../screens/WelcomeScreen/index.js';
-import { type GameMenuStep } from '../../types.js';
 import Divider from '../Divider/index.js';
 import ErrorMessage from '../ErrorMessage/index.js';
 import ProfileWizard from '../ProfileWizard/index.js';

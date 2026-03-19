@@ -1,4 +1,4 @@
-import { type SensedSpace } from '@warriorjs/core';
+import { type GameAction, type SensedSpace } from '@warriorjs/core';
 import { type AbsoluteDirection, type Location, type RelativeDirection } from '@warriorjs/spatial';
 
 export interface Space {
@@ -33,7 +33,8 @@ export interface Unit {
   isBound(): boolean;
   isUnderEffect(effect: string): boolean;
   triggerEffect(effect: string): void;
-  log(message: string): void;
+  emit(action: GameAction): void;
+  name: string;
 }
 
 export interface AbilityParam {

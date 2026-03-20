@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { type GameContext } from '../../../Game.js';
 import type Profile from '../../../Profile.js';
 import type Tower from '../../../Tower.js';
+import { formatRelativeTime } from '../../../utils/formatRelativeTime.js';
 import ConfirmPrompt from '../ConfirmPrompt/index.js';
 import ErrorMessage from '../ErrorMessage/index.js';
 import SelectPrompt from '../SelectPrompt/index.js';
@@ -68,8 +69,17 @@ export default function ProfileWizard({
   const renderStep = (): React.ReactElement | null => {
     switch (step.type) {
       case 'choose-profile': {
-        const items: ({ label: string; value: Profile | 'new' } | { separator: true })[] = [
-          ...context.profiles.map((p) => ({ label: p.toString(), value: p as Profile | 'new' })),
+        const items: (
+          | { label: string; description?: string; value: Profile | 'new' }
+          | { separator: true }
+        )[] = [
+          ...context.profiles.map((p) => ({
+            label: p.toString(),
+            description: p.lastPlayedAt
+              ? `last played ${formatRelativeTime(p.lastPlayedAt)}`
+              : undefined,
+            value: p as Profile | 'new',
+          })),
           { separator: true as const },
           { label: 'New profile', value: 'new' as const },
         ];

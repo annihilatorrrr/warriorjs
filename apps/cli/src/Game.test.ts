@@ -104,26 +104,57 @@ describe('Game', () => {
         path.normalize('/path/to/game/warriorjs/aldric-the-narrow-path'),
       );
     });
+
+    test('sets lastPlayedAt on the created profile', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-03-20T12:00:00.000Z'));
+      const tower = { id: 'the-narrow-path' };
+      const profile = game.createProfile('Aldric', 'typescript', tower);
+      expect(profile.lastPlayedAt).toBe('2026-03-20T12:00:00.000Z');
+      vi.useRealTimers();
+    });
   });
 
-  test('returns profiles', () => {
+  describe('getProfiles', () => {
     const originalLoad = Profile.load;
-    game.towers = ['tower1', 'tower2'];
-    game.getProfileDirectoriesPaths = () => [
-      '/path/to/game/warriorjs/profile1',
-      '/path/to/game/warriorjs/profile2',
-    ];
-    Profile.load = vi.fn() as any;
-    game.getProfiles();
-    expect(Profile.load).toHaveBeenCalledWith('/path/to/game/warriorjs/profile1', [
-      'tower1',
-      'tower2',
-    ]);
-    expect(Profile.load).toHaveBeenCalledWith('/path/to/game/warriorjs/profile2', [
-      'tower1',
-      'tower2',
-    ]);
-    Profile.load = originalLoad;
+
+    afterEach(() => {
+      Profile.load = originalLoad;
+    });
+
+    test('loads profiles from profile directories', () => {
+      game.towers = ['tower1', 'tower2'];
+      game.getProfileDirectoriesPaths = () => [
+        '/path/to/game/warriorjs/profile1',
+        '/path/to/game/warriorjs/profile2',
+      ];
+      Profile.load = vi.fn() as any;
+      game.getProfiles();
+      expect(Profile.load).toHaveBeenCalledWith('/path/to/game/warriorjs/profile1', [
+        'tower1',
+        'tower2',
+      ]);
+      expect(Profile.load).toHaveBeenCalledWith('/path/to/game/warriorjs/profile2', [
+        'tower1',
+        'tower2',
+      ]);
+    });
+
+    test('sorts profiles by lastPlayedAt descending, null last', () => {
+      const profileA = { lastPlayedAt: '2026-03-18T12:00:00.000Z' } as any;
+      const profileB = { lastPlayedAt: '2026-03-20T12:00:00.000Z' } as any;
+      const profileC = { lastPlayedAt: null } as any;
+
+      game.getProfileDirectoriesPaths = () => ['a', 'b', 'c'];
+      Profile.load = vi
+        .fn()
+        .mockReturnValueOnce(profileA)
+        .mockReturnValueOnce(profileB)
+        .mockReturnValueOnce(profileC) as any;
+
+      const profiles = game.getProfiles();
+      expect(profiles).toEqual([profileB, profileA, profileC]);
+    });
   });
 
   test('knows if profile exists', () => {

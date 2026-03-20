@@ -104,7 +104,9 @@ class Game {
       this.gameDirectoryPath,
       `${warriorName}-${tower.id}`.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     );
-    return new Profile(warriorName, tower, profileDirectoryPath, language);
+    const profile = new Profile(warriorName, tower, profileDirectoryPath, language);
+    profile.lastPlayedAt = new Date().toISOString();
+    return profile;
   }
 
   isExistingProfile(profile: Profile): boolean {
@@ -118,7 +120,13 @@ class Game {
     const profileDirectoriesPaths = this.getProfileDirectoriesPaths();
     return profileDirectoriesPaths
       .map((profileDirectoryPath) => Profile.load(profileDirectoryPath, this.towers))
-      .filter((p): p is Profile => p !== null);
+      .filter((p): p is Profile => p !== null)
+      .sort((a, b) => {
+        if (a.lastPlayedAt === b.lastPlayedAt) return 0;
+        if (a.lastPlayedAt === null) return 1;
+        if (b.lastPlayedAt === null) return -1;
+        return b.lastPlayedAt.localeCompare(a.lastPlayedAt);
+      });
   }
 
   getProfileDirectoriesPaths(): string[] {

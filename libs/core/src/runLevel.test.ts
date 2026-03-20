@@ -1,4 +1,11 @@
-import { BACKWARD, EAST, FORWARD, RELATIVE_DIRECTIONS, WEST } from '@warriorjs/spatial';
+import {
+  BACKWARD,
+  EAST,
+  FORWARD,
+  RELATIVE_DIRECTIONS,
+  type RelativeDirection,
+  WEST,
+} from '@warriorjs/spatial';
 import { expect, test } from 'vitest';
 
 import { type AbilityMeta } from './Ability.js';
@@ -14,7 +21,7 @@ class TestWalk extends Action {
     params: [{ name: 'direction', type: 'Direction', optional: true }],
     returns: 'void',
   };
-  perform(direction = FORWARD) {
+  perform(direction: RelativeDirection = FORWARD) {
     const space = this.unit.getSpaceAt(direction);
     if (space.isEmpty()) {
       this.unit.move(direction);
@@ -52,7 +59,7 @@ class TestAttack extends Action {
     this.description = `Attacks dealing ${power} HP`;
     this.power = power;
   }
-  perform(direction = FORWARD) {
+  perform(direction: RelativeDirection = FORWARD) {
     const receiver = this.unit.getSpaceAt(direction).getUnit();
     if (receiver) {
       this.unit.emit({
@@ -85,7 +92,7 @@ class TestFeel extends Sense {
     params: [{ name: 'direction', type: 'Direction', optional: true }],
     returns: 'Space',
   };
-  perform(direction = FORWARD) {
+  perform(direction: RelativeDirection = FORWARD) {
     return this.unit.getSensedSpaceAt(direction);
   }
 }

@@ -34,6 +34,7 @@ export interface Unit {
   isUnderEffect(effect: string): boolean;
   triggerEffect(effect: string): void;
   emit(action: GameAction): void;
+  isWarrior(): boolean;
   name: string;
 }
 

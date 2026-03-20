@@ -117,4 +117,27 @@ describe('SelectPrompt', () => {
     stdin.write('\r');
     expect(onSelect).toHaveBeenCalledTimes(1);
   });
+
+  test('renders description below the label when provided', () => {
+    const itemsWithDesc = [
+      { label: 'Option A', value: 'a', description: 'Details about A' },
+      { label: 'Option B', value: 'b' },
+    ];
+    const { lastFrame } = render(
+      <SelectPrompt message="Pick:" items={itemsWithDesc} onSelect={vi.fn()} />,
+    );
+    const output = lastFrame()!;
+    expect(output).toContain('Details about A');
+    expect(output).toContain('Option A');
+    expect(output).toContain('Option B');
+  });
+
+  test('does not render description line when not provided', () => {
+    const { lastFrame } = render(
+      <SelectPrompt message="Pick:" items={items} onSelect={vi.fn()} />,
+    );
+    const lines = lastFrame()!.split('\n');
+    // message + 3 items = 4 lines (no extra description lines)
+    expect(lines).toHaveLength(4);
+  });
 });

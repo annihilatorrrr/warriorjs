@@ -5,6 +5,7 @@ import { useState } from 'react';
 interface SelectChoice<T> {
   label: string;
   value: T;
+  description?: string;
   separator?: false;
 }
 
@@ -84,9 +85,14 @@ export default function SelectPrompt<T>({
         const isSelected = currentChoiceIndex === selectedIndex;
         return (
           // biome-ignore lint/suspicious/noArrayIndexKey: static item list
-          <Box key={`choice-${index}`} gap={1}>
-            <Text color={isSelected ? 'yellow' : undefined}>{isSelected ? '❯' : ' '}</Text>
-            <Text dimColor={!isSelected}>{item.label}</Text>
+          <Box key={`choice-${index}`} flexDirection="column">
+            <Box gap={1}>
+              <Text color={isSelected ? 'yellow' : undefined}>{isSelected ? '❯' : ' '}</Text>
+              <Text dimColor={!isSelected}>{item.label}</Text>
+            </Box>
+            {item.description ? (
+              <Text dimColor>{'  '}{item.description}</Text>
+            ) : null}
           </Box>
         );
       })}

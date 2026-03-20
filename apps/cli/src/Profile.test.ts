@@ -186,6 +186,10 @@ describe('Profile', () => {
     expect(profile.clue).toBe(false);
   });
 
+  test('starts lastPlayedAt as null', () => {
+    expect(profile.lastPlayedAt).toBeNull();
+  });
+
   test('makes directory', () => {
     mockFs({ '/path/to': {} });
     profile.makeProfileDirectory();
@@ -308,9 +312,19 @@ describe('Profile', () => {
   });
 
   test('encodes with JSON + base64', () => {
-    expect(profile.encode()).toBe(
-      'eyJ3YXJyaW9yTmFtZSI6IkFsZHJpYyIsInRvd2VySWQiOiJmb28iLCJsYW5ndWFnZSI6ImphdmFzY3JpcHQiLCJsZXZlbE51bWJlciI6MCwiY2x1ZSI6ZmFsc2UsImVwaWMiOmZhbHNlLCJzY29yZSI6MCwiZXBpY1Njb3JlIjowLCJhdmVyYWdlR3JhZGUiOm51bGx9',
-    );
+    const decoded = JSON.parse(Buffer.from(profile.encode(), 'base64').toString());
+    expect(decoded).toEqual({
+      warriorName: 'Aldric',
+      towerId: 'foo',
+      language: 'javascript',
+      levelNumber: 0,
+      clue: false,
+      epic: false,
+      score: 0,
+      epicScore: 0,
+      averageGrade: null,
+      lastPlayedAt: null,
+    });
   });
 
   test('serializes to JSON ignoring properties', () => {
@@ -323,6 +337,7 @@ describe('Profile', () => {
     expect(serializedProfile).not.toHaveProperty('currentEpicGrades');
     expect(serializedProfile).not.toHaveProperty('directoryPath');
     expect(serializedProfile).not.toHaveProperty('tower');
+    expect(serializedProfile).toHaveProperty('lastPlayedAt');
   });
 
   test('has a nice string representation', () => {
@@ -401,6 +416,25 @@ describe('Profile', () => {
       expect(profile.toString()).toBe(
         'Aldric - JavaScript - Foo - first score 123 - epic score 124 (C)',
       );
+    });
+  });
+
+  describe('updateLastPlayedAt', () => {
+    beforeEach(() => {
+      profile.save = vi.fn();
+    });
+
+    test('sets lastPlayedAt to current ISO timestamp', () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2026-03-20T12:00:00.000Z'));
+      profile.updateLastPlayedAt();
+      expect(profile.lastPlayedAt).toBe('2026-03-20T12:00:00.000Z');
+      vi.useRealTimers();
+    });
+
+    test('saves the profile', () => {
+      profile.updateLastPlayedAt();
+      expect(profile.save).toHaveBeenCalled();
     });
   });
 });

@@ -21,6 +21,7 @@ class Profile {
   epic: boolean;
   epicScore: number;
   averageGrade: number | null;
+  lastPlayedAt: string | null;
   currentEpicScore: number;
   currentEpicGrades: Record<number, number>;
   [key: string]: unknown;
@@ -122,6 +123,7 @@ class Profile {
     this.epic = false;
     this.epicScore = 0;
     this.averageGrade = null;
+    this.lastPlayedAt = null;
     this.currentEpicScore = 0;
     this.currentEpicGrades = {};
   }
@@ -201,6 +203,11 @@ class Profile {
     this.save();
   }
 
+  updateLastPlayedAt(): void {
+    this.lastPlayedAt = new Date().toISOString();
+    this.save();
+  }
+
   calculateAverageGrade(): number | null {
     const grades = Object.values(this.currentEpicGrades);
     if (!grades.length) {
@@ -233,6 +240,7 @@ class Profile {
       score: this.score,
       epicScore: this.epicScore,
       averageGrade: this.averageGrade,
+      lastPlayedAt: this.lastPlayedAt,
     };
   }
 

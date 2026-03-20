@@ -188,6 +188,10 @@ class Unit {
     return this.effects.has(name);
   }
 
+  isWarrior(): boolean {
+    return false;
+  }
+
   getOtherUnits(): Unit[] {
     const position = this.requirePosition();
     return position.floor.getUnits().filter((unit) => unit !== this);

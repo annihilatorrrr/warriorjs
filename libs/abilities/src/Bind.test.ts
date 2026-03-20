@@ -59,6 +59,7 @@ describe('Bind', () => {
       beforeEach(() => {
         receiver = {
           name: 'receiver',
+          isWarrior: () => false,
           bind: vi.fn(),
         };
         unit.getSpaceAt = () => ({ getUnit: () => receiver });
@@ -69,7 +70,10 @@ describe('Bind', () => {
         expect(unit.emit).toHaveBeenCalledWith({
           type: 'bind',
           description: 'binds {direction} and restricts {target}',
-          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' } },
+          params: {
+            direction: FORWARD,
+            target: { type: 'unit', name: 'receiver', warrior: false },
+          },
         });
         expect(receiver.bind).toHaveBeenCalled();
       });

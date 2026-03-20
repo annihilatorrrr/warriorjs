@@ -1,6 +1,7 @@
 export interface UnitRef {
   type: 'unit';
   name: string;
+  warrior?: boolean;
 }
 
 export interface GameAction {

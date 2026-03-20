@@ -80,8 +80,8 @@ describe('Shoot', () => {
       let anotherUnit: any;
 
       beforeEach(() => {
-        receiver = { name: 'receiver' };
-        anotherUnit = { name: 'anotherUnit' };
+        receiver = { name: 'receiver', isWarrior: () => false };
+        anotherUnit = { name: 'anotherUnit', isWarrior: () => false };
         unit.getSpaceAt = vi
           .fn()
           .mockReturnValueOnce({ getUnit: () => null })
@@ -94,7 +94,11 @@ describe('Shoot', () => {
         expect(unit.emit).toHaveBeenCalledWith({
           type: 'shoot',
           description: 'shoots {direction} and hits {target}',
-          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+          params: {
+            direction: FORWARD,
+            target: { type: 'unit', name: 'receiver', warrior: false },
+            hit: true,
+          },
         });
         expect(unit.damage).toHaveBeenCalledWith(receiver, 3);
       });

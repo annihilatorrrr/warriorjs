@@ -30,7 +30,11 @@ class Attack extends Action {
       this.unit.emit({
         type: 'attack',
         description: 'attacks {direction} and hits {target}',
-        params: { direction, target: { type: 'unit', name: receiver.name }, hit: true },
+        params: {
+          direction,
+          target: { type: 'unit', name: receiver.name, warrior: receiver.isWarrior() },
+          hit: true,
+        },
       });
       const attackingBackward = direction === BACKWARD;
       const amount = attackingBackward ? Math.ceil(this.power / 2.0) : this.power;

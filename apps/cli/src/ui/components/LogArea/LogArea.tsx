@@ -24,6 +24,7 @@ interface LogLine {
 interface UnitRef {
   type: 'unit';
   name: string;
+  warrior?: boolean;
 }
 
 function isUnitRef(value: unknown): value is UnitRef {
@@ -61,7 +62,7 @@ function colorizeMessage(
       if (value === undefined) {
         nodes.push(<Text key={key++}>{`{${segment}}`}</Text>);
       } else if (isUnitRef(value)) {
-        const color = getUnitAppearance(value.name).color;
+        const color = getUnitAppearance(value.name, value.warrior).color;
         nodes.push(
           <Text key={key++} color={color}>
             {value.name}

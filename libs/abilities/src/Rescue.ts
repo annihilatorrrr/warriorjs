@@ -19,7 +19,10 @@ class Rescue extends Action {
       this.unit.emit({
         type: 'rescue',
         description: 'unbinds {direction} and rescues {target}',
-        params: { direction, target: { type: 'unit', name: receiver.name } },
+        params: {
+          direction,
+          target: { type: 'unit', name: receiver.name, warrior: receiver.isWarrior() },
+        },
       });
       this.unit.release(receiver);
     } else {

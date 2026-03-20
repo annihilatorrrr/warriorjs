@@ -23,10 +23,17 @@ class Walk extends Action {
         params: { direction, blocked: false },
       });
     } else {
+      const unit = space.getUnit();
       this.unit.emit({
         type: 'walk',
         description: 'walks {direction} and bumps into {obstacle}',
-        params: { direction, obstacle: String(space), blocked: true },
+        params: {
+          direction,
+          obstacle: unit
+            ? { type: 'unit', name: unit.name, warrior: unit.isWarrior() }
+            : String(space),
+          blocked: true,
+        },
       });
     }
   }

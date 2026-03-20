@@ -46,16 +46,36 @@ describe('Walk', () => {
       expect(unit.getSpaceAt).toHaveBeenCalledWith(RIGHT);
     });
 
-    test('keeps position if something is in the way', () => {
+    test('emits unit ref when bumping into a unit', () => {
       unit.getSpaceAt = () => ({
         isEmpty: () => false,
-        toString: () => 'space',
+        getUnit: () => ({ name: 'Sludge', isWarrior: () => false }),
+        toString: () => 'Sludge',
       });
       walk.perform();
       expect(unit.emit).toHaveBeenCalledWith({
         type: 'walk',
         description: 'walks {direction} and bumps into {obstacle}',
-        params: { direction: FORWARD, obstacle: 'space', blocked: true },
+        params: {
+          direction: FORWARD,
+          obstacle: { type: 'unit', name: 'Sludge', warrior: false },
+          blocked: true,
+        },
+      });
+      expect(unit.move).not.toHaveBeenCalled();
+    });
+
+    test('emits string when bumping into a wall', () => {
+      unit.getSpaceAt = () => ({
+        isEmpty: () => false,
+        getUnit: () => undefined,
+        toString: () => 'wall',
+      });
+      walk.perform();
+      expect(unit.emit).toHaveBeenCalledWith({
+        type: 'walk',
+        description: 'walks {direction} and bumps into {obstacle}',
+        params: { direction: FORWARD, obstacle: 'wall', blocked: true },
       });
       expect(unit.move).not.toHaveBeenCalled();
     });

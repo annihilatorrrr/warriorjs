@@ -19,7 +19,10 @@ class Bind extends Action {
       this.unit.emit({
         type: 'bind',
         description: 'binds {direction} and restricts {target}',
-        params: { direction, target: { type: 'unit', name: receiver.name } },
+        params: {
+          direction,
+          target: { type: 'unit', name: receiver.name, warrior: receiver.isWarrior() },
+        },
       });
       receiver.bind();
     } else {

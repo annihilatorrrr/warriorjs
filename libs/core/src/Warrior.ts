@@ -13,6 +13,10 @@ class Warrior extends Unit {
     this.maxHealth = maxHealth;
   }
 
+  override isWarrior(): boolean {
+    return true;
+  }
+
   performTurn(): void {
     super.performTurn();
     if (!this.turn?.action || this.isBound()) {

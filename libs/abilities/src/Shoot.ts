@@ -36,7 +36,11 @@ class Shoot extends Action {
       this.unit.emit({
         type: 'shoot',
         description: 'shoots {direction} and hits {target}',
-        params: { direction, target: { type: 'unit', name: receiver.name }, hit: true },
+        params: {
+          direction,
+          target: { type: 'unit', name: receiver.name, warrior: receiver.isWarrior() },
+          hit: true,
+        },
       });
       this.unit.damage(receiver, this.power);
     } else {

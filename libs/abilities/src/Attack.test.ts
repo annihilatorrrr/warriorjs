@@ -66,7 +66,7 @@ describe('Attack', () => {
       let receiver: any;
 
       beforeEach(() => {
-        receiver = { name: 'receiver' };
+        receiver = { name: 'receiver', isWarrior: () => false };
         unit.getSpaceAt = () => ({ getUnit: () => receiver });
       });
 
@@ -75,7 +75,11 @@ describe('Attack', () => {
         expect(unit.emit).toHaveBeenCalledWith({
           type: 'attack',
           description: 'attacks {direction} and hits {target}',
-          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+          params: {
+            direction: FORWARD,
+            target: { type: 'unit', name: 'receiver', warrior: false },
+            hit: true,
+          },
         });
         expect(unit.damage).toHaveBeenCalledWith(receiver, 3);
       });
@@ -85,7 +89,11 @@ describe('Attack', () => {
         expect(unit.emit).toHaveBeenCalledWith({
           type: 'attack',
           description: 'attacks {direction} and hits {target}',
-          params: { direction: BACKWARD, target: { type: 'unit', name: 'receiver' }, hit: true },
+          params: {
+            direction: BACKWARD,
+            target: { type: 'unit', name: 'receiver', warrior: false },
+            hit: true,
+          },
         });
         expect(unit.damage).toHaveBeenCalledWith(receiver, 2);
       });

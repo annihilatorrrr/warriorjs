@@ -62,6 +62,7 @@ describe('Rescue', () => {
       beforeEach(() => {
         receiver = {
           name: 'receiver',
+          isWarrior: () => false,
           isBound: () => true,
         };
         unit.getSpaceAt = () => ({ getUnit: () => receiver });
@@ -83,7 +84,10 @@ describe('Rescue', () => {
         expect(unit.emit).toHaveBeenCalledWith({
           type: 'rescue',
           description: 'unbinds {direction} and rescues {target}',
-          params: { direction: FORWARD, target: { type: 'unit', name: 'receiver' } },
+          params: {
+            direction: FORWARD,
+            target: { type: 'unit', name: 'receiver', warrior: false },
+          },
         });
         expect(unit.release).toHaveBeenCalledWith(receiver);
       });

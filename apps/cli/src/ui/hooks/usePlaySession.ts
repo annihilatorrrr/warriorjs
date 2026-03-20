@@ -120,6 +120,7 @@ function evaluateLevel(
 
 function startLevel(profile: Profile, levelNumber: number, gameContext: GameContext): SessionPhase {
   try {
+    profile.updateLastPlayedAt();
     const { replay, context, outcome } = runPlayerLevel(profile, levelNumber);
 
     if (gameContext.silencePlay) {

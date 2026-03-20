@@ -54,6 +54,7 @@ function createMockProfile(overrides: Partial<Record<string, unknown>> = {}): Pr
     getReadmeFilePath: vi.fn().mockReturnValue('/path/to/README.md'),
     calculateAverageGrade: vi.fn().mockReturnValue(0.8),
     makeProfileDirectory: vi.fn(),
+    updateLastPlayedAt: vi.fn(),
     ...overrides,
   } as unknown as Profile;
 }
@@ -163,6 +164,17 @@ describe('usePlaySession', () => {
   });
 
   describe('playLevel (via mount)', () => {
+    test('calls updateLastPlayedAt when starting a level', () => {
+      renderHook({
+        context,
+        profile: mockProfile,
+        initialLevel: 1,
+        exit,
+      });
+
+      expect(mockProfile.updateLastPlayedAt).toHaveBeenCalled();
+    });
+
     test('sets state to playing on mount', () => {
       const { ref } = renderHook({
         context,

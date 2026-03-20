@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 
 import { type TurnEvent } from '../../../types.js';
 import getUnitAppearance from '../../../utils/getUnitAppearance.js';
-import interpolateAction from '../../../utils/interpolateAction.js';
 import { type PlaybackCursor } from '../../hooks/usePlayback.js';
 
 interface LogAreaProps {
@@ -31,55 +30,66 @@ function isUnitRef(value: unknown): value is UnitRef {
   return typeof value === 'object' && value !== null && (value as UnitRef).type === 'unit';
 }
 
-const STAT_RE = /(\d+ damage|\d+ HP)/;
-
 function colorizeMessage(
   action: GameAction,
   actor: { name: string; warrior: boolean } | null,
   boldStats: boolean,
 ): React.ReactNode[] {
-  const text = actor ? `${actor.name} ${interpolateAction(action)}` : interpolateAction(action);
+  const nodes: React.ReactNode[] = [];
+  let key = 0;
 
-  // Collect unit names to colorize: the acting unit + any unit refs in params.
-  const unitNames = new Map<string, string>();
   if (actor) {
-    unitNames.set(actor.name, getUnitAppearance(actor.name, actor.warrior).color);
+    const color = getUnitAppearance(actor.name, actor.warrior).color;
+    nodes.push(
+      <Text key={key++} color={color}>
+        {actor.name}
+      </Text>,
+    );
+    nodes.push(<Text key={key++}> </Text>);
   }
-  for (const value of Object.values(action.params)) {
-    if (isUnitRef(value)) {
-      unitNames.set(value.name, getUnitAppearance(value.name).color);
+
+  // Split template on {param} placeholders — odd segments are param keys.
+  const segments = action.description.split(/\{(\w+)\}/);
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]!;
+    if (!segment) continue;
+
+    if (i % 2 === 0) {
+      nodes.push(<Text key={key++}>{segment}</Text>);
+    } else {
+      const value = action.params[segment];
+      if (value === undefined) {
+        nodes.push(<Text key={key++}>{`{${segment}}`}</Text>);
+      } else if (isUnitRef(value)) {
+        const color = getUnitAppearance(value.name).color;
+        nodes.push(
+          <Text key={key++} color={color}>
+            {value.name}
+          </Text>,
+        );
+      } else if (typeof value === 'number') {
+        // Pull trailing label (e.g. " damage", " HP") into the bold span.
+        let label = '';
+        const next = segments[i + 1];
+        if (next) {
+          const match = next.match(/^(\s?\w+)/);
+          if (match) {
+            label = match[1]!;
+            segments[i + 1] = next.slice(label.length);
+          }
+        }
+        nodes.push(
+          <Text key={key++} bold={boldStats}>
+            {String(value) + label}
+          </Text>,
+        );
+      } else {
+        nodes.push(<Text key={key++}>{String(value)}</Text>);
+      }
     }
   }
 
-  // Build regex to split on unit names and stat patterns.
-  const escapedNames = Array.from(unitNames.keys()).map((name) =>
-    name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-  );
-  const alternatives = [STAT_RE.source, ...escapedNames];
-  const regex = new RegExp(`(${alternatives.join('|')})`);
-
-  const parts = text.split(regex);
-  return parts.map((part, i) => {
-    const unitColor = unitNames.get(part);
-    if (unitColor) {
-      return (
-        // biome-ignore lint/suspicious/noArrayIndexKey: split parts are positional
-        <Text key={i} color={unitColor}>
-          {part}
-        </Text>
-      );
-    }
-    if (STAT_RE.test(part)) {
-      return (
-        // biome-ignore lint/suspicious/noArrayIndexKey: split parts are positional
-        <Text key={i} bold={boldStats}>
-          {part}
-        </Text>
-      );
-    }
-    // biome-ignore lint/suspicious/noArrayIndexKey: split parts are positional
-    return <Text key={i}>{part}</Text>;
-  });
+  return nodes;
 }
 
 export default function LogArea({

@@ -133,6 +133,73 @@ describe('LogArea', () => {
     expect(output).toContain('attacks forward');
   });
 
+  test('interpolates numeric params without duplication', () => {
+    const damageTurns = [
+      [
+        {
+          action: { type: 'noop', description: '', params: {} },
+          actor: { name: 'Aldric', warrior: true },
+          floorMap: [],
+          warriorStatus: { health: 20, score: 0 },
+        },
+      ],
+      [
+        {
+          action: {
+            type: 'takeDamage',
+            description: 'takes {amount} damage, {remainingHp} HP left',
+            params: { amount: 3, remainingHp: 11 },
+          },
+          actor: { name: 'Aldric', warrior: true },
+          floorMap: [],
+          warriorStatus: { health: 11, score: 0 },
+        },
+      ],
+    ];
+    const { lastFrame } = render(
+      <LogArea turns={damageTurns} mode="playback" cursor={{ turn: 1, event: 0 }} />,
+    );
+    const output = lastFrame()!;
+    expect(output).toContain('3 damage');
+    expect(output).toContain('11 HP');
+    // Ensure no duplication (the original bug).
+    expect(output).not.toContain('3 damage3 damage');
+    expect(output).not.toContain('11 HP11 HP');
+  });
+
+  test('interpolates recovery params without duplication', () => {
+    const recoveryTurns = [
+      [
+        {
+          action: { type: 'noop', description: '', params: {} },
+          actor: { name: 'Warrior', warrior: true },
+          floorMap: [],
+          warriorStatus: { health: 16, score: 0 },
+        },
+      ],
+      [
+        {
+          action: {
+            type: 'recover',
+            description: 'recovers {amount} HP, up to {remainingHp} HP',
+            params: { amount: 2, remainingHp: 18 },
+          },
+          actor: { name: 'Warrior', warrior: true },
+          floorMap: [],
+          warriorStatus: { health: 18, score: 0 },
+        },
+      ],
+    ];
+    const { lastFrame } = render(
+      <LogArea turns={recoveryTurns} mode="playback" cursor={{ turn: 1, event: 0 }} />,
+    );
+    const output = lastFrame()!;
+    expect(output).toContain('2 HP');
+    expect(output).toContain('18 HP');
+    expect(output).not.toContain('2 HP2 HP');
+    expect(output).not.toContain('18 HP18 HP');
+  });
+
   test('review mode centers window on focused line', () => {
     // Build enough turns so lines exceed maxLines.
     const manyTurns = [

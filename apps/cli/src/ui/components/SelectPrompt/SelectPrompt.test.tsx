@@ -133,9 +133,7 @@ describe('SelectPrompt', () => {
   });
 
   test('does not render description line when not provided', () => {
-    const { lastFrame } = render(
-      <SelectPrompt message="Pick:" items={items} onSelect={vi.fn()} />,
-    );
+    const { lastFrame } = render(<SelectPrompt message="Pick:" items={items} onSelect={vi.fn()} />);
     const lines = lastFrame()!.split('\n');
     // message + 3 items = 4 lines (no extra description lines)
     expect(lines).toHaveLength(4);

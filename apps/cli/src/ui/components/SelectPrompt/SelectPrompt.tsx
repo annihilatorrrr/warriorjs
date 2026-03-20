@@ -91,7 +91,10 @@ export default function SelectPrompt<T>({
               <Text dimColor={!isSelected}>{item.label}</Text>
             </Box>
             {item.description ? (
-              <Text dimColor>{'  '}{item.description}</Text>
+              <Text dimColor>
+                {'  '}
+                {item.description}
+              </Text>
             ) : null}
           </Box>
         );
